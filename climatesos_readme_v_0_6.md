@@ -1,7 +1,10 @@
 # ClimateSOS
-## Climate State transition model OS
-##### Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
+## Climate State Transition Model OS
 
+**GitHub project:** https://github.com/hsbay/ClimateSOS  
+**Author / maintainer:** Shannon A. Fiume (@safiume)  
+**License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
+**Development note:** ClimateSOS was developed by Shannon A. Fiume with AI-assisted research, drafting, code-generation, and systems-design support from OpenAI's ChatGPT.
 
 ```text
 A distributed synchronization model for rapid clean-energy transition,
@@ -460,4 +463,3 @@ rather than single-variable optimization.
 ```text
 ClimateSOS Toy Engine v0.6
 ```
-
