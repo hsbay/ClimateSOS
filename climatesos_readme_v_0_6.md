@@ -1,4 +1,7 @@
 # ClimateSOS
+## Climate State transition model OS
+## Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
+
 
 ```text
 A distributed synchronization model for rapid clean-energy transition,
