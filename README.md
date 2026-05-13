@@ -12,7 +12,7 @@ The broader problem scope is defined in the live **2030s Net Zero Playbook**:
 
 The playbook frames the earliest plausible operational net-zero window as a constraint-mapped systems problem: clean growth must synchronize with deliverability, reliability replacement, fossil exit, finance, workforce mobilization, and biosphere restoration.
 
-Stable PDF releases can also be archived in this repository for versioned citation.
+Stable PDF releases are also archived in this repository for versioned citation.
 
 ---
 
@@ -82,15 +82,13 @@ Current major fabrics include:
 - Political / Institutional Fabric
 - Biosphere Fabric
 
-The architecture and biosphere-layer rationale are discussed further in the playbook’s systems architecture sections, including Chapter 11 and Appendix O.
-
-These sections explain why synchronization, ecological coupling, and biosphere stability are treated as first-class architectural constraints rather than downstream externalities.
+The biosphere chapter (Chapter 11) and AI project guardrails in Appendix O direct the Biosphere Fabric systems implementation. See those sections for the underlying rationale and implementation constraints.
 
 ---
 
 ## Identity Tokens & Resulting States
 
-After an identity token passes through a function, queue, switch, or attractor, it may resolve into a resulting state.
+After an identity token passes through a function, queue, switch, or attractor, it may resolve to the following possible states.
 
 | Identity | Resulting State |
 |---|---|
