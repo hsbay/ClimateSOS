@@ -8,15 +8,13 @@
 
 ClimateSOS is an experimental systems architecture and executable modeling framework for understanding the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
-The broader problem scope is defined in the live **2030s Net Zero Playbook**:
-
-## https://bit.ly/NZpbk
+The broader problem scope is defined in the live **2030s Net Zero Playbook**: **https://bit.ly/NZpbk**.
 
 The playbook frames the earliest plausible operational net-zero window as a constraint-mapped systems problem: clean growth must synchronize with deliverability, reliability replacement, fossil exit, finance, workforce mobilization, and biosphere restoration.
 
 Stable PDF releases are also archived in this repository for versioned citation.
 
-The project emerged from the realization that:
+The project coalesced around the realization that:
 
 > clean growth alone does not guarantee fossil displacement.
 
