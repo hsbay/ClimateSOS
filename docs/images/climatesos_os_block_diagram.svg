@@ -1,51 +1,84 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1160" viewBox="0 0 1600 1160" role="img" aria-labelledby="title desc">
+  <title id="title">ClimateSOS Layered Architecture Diagram</title>
+  <desc id="desc">Layered conceptual architecture for ClimateSOS. Icons appear only in the ClimateSOS Kernel layer.</desc>
   <defs>
     <style>
-      .title { font: bold 44px sans-serif; fill: #111; }
-      .subtitle { font: 24px sans-serif; fill: #444; }
-      .section { font: bold 28px sans-serif; fill: #111; }
-      .label { font: 22px sans-serif; fill: #111; }
-      .small { font: 18px sans-serif; fill: #444; }
-      .box { fill: #f5f5f5; stroke: #222; stroke-width: 3; rx: 18; }
-      .inner { fill: #ffffff; stroke: #444; stroke-width: 2; rx: 12; }
-      .line { stroke: #444; stroke-width: 3; }
+      .title { font: 700 44px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .subtitle { font: 24px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #4b5563; }
+      .layerTag { font: 700 17px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .08em; fill: #374151; }
+      .section { font: 700 29px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #111827; }
+      .small { font: 18px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #4b5563; }
+      .micro { font: 15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; fill: #6b7280; }
+      .box { stroke: #1f2937; stroke-width: 2.5; rx: 18; }
+      .inner { fill: #ffffff; stroke: #4b5563; stroke-width: 2; rx: 14; }
+      .line { stroke: #6b7280; stroke-width: 3; }
+      .iconLine { fill: none; stroke: #5b4fd6; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .iconFill { fill: #5b4fd6; }
     </style>
   </defs>
 
-  <rect width="100%" height="100%" fill="#ffffff"/>
+  <rect width="100%" height="100%" fill="#fbfaf8"/>
 
   <text x="800" y="70" text-anchor="middle" class="title">ClimateSOS Layered Architecture Diagram</text>
   <text x="800" y="110" text-anchor="middle" class="subtitle">Conceptual distributed transition operating system architecture.</text>
 
-  <rect x="120" y="170" width="1360" height="120" class="box"/>
-  <text x="800" y="225" text-anchor="middle" class="section">External System Inputs</text>
-  <text x="800" y="260" text-anchor="middle" class="small">Climate • Energy • Biosphere • Finance • Governance • Infrastructure</text>
+  <rect x="110" y="160" width="1380" height="128" class="box" fill="#e7f0ff"/>
+  <text x="145" y="195" class="layerTag">LAYER 1</text>
+  <text x="800" y="218" text-anchor="middle" class="section">External System Inputs</text>
+  <text x="800" y="254" text-anchor="middle" class="small">Climate • Energy • Biosphere • Finance • Governance • Infrastructure</text>
 
-  <rect x="200" y="360" width="1200" height="140" class="box"/>
-  <text x="800" y="415" text-anchor="middle" class="section">Identity / Synchronization Layer</text>
-  <text x="800" y="455" text-anchor="middle" class="small">Identity Tokens • TTL • Synchronization State • Delivery Alignment</text>
+  <rect x="170" y="350" width="1260" height="146" class="box" fill="#f0ecff"/>
+  <text x="205" y="386" class="layerTag">LAYER 2</text>
+  <text x="800" y="410" text-anchor="middle" class="section">Identity / Synchronization Layer</text>
+  <text x="800" y="450" text-anchor="middle" class="small">Identity Tokens • TTL • Synchronization State • Delivery Alignment</text>
 
-  <rect x="120" y="570" width="1360" height="200" class="box"/>
-  <text x="800" y="625" text-anchor="middle" class="section">ClimateSOS Kernel</text>
+  <rect x="110" y="570" width="1380" height="250" class="box" fill="#ebe8ff"/>
+  <text x="145" y="607" class="layerTag">LAYER 3</text>
+  <text x="800" y="630" text-anchor="middle" class="section">ClimateSOS Kernel</text>
+  <text x="800" y="662" text-anchor="middle" class="small">Runtime coordination layer. Observes and arbitrates; it does not command real-world execution.</text>
 
-  <rect x="220" y="670" width="300" height="60" class="inner"/>
-  <text x="370" y="708" text-anchor="middle" class="label">Synchronization Scheduler</text>
+  <rect x="210" y="705" width="340" height="76" class="inner"/>
+  <text x="380" y="730" text-anchor="middle" class="label">Synchronization</text>
+  <text x="380" y="755" text-anchor="middle" class="label">Scheduler</text>
+  <g transform="translate(238 725)">
+    <circle cx="20" cy="20" r="17" class="iconLine"/>
+    <path d="M20 9 v12 l9 6" class="iconLine"/>
+    <path d="M34 6 h10 v10" class="iconLine"/>
+  </g>
 
-  <rect x="650" y="670" width="300" height="60" class="inner"/>
-  <text x="800" y="708" text-anchor="middle" class="label">Pressure Accumulation</text>
+  <rect x="630" y="705" width="340" height="76" class="inner"/>
+  <text x="800" y="730" text-anchor="middle" class="label">Pressure</text>
+  <text x="800" y="755" text-anchor="middle" class="label">Accumulation</text>
+  <g transform="translate(658 725)">
+    <path d="M8 36 C8 20 20 8 36 8" class="iconLine"/>
+    <path d="M17 36 C17 25 25 17 36 17" class="iconLine"/>
+    <path d="M26 36 C26 31 31 26 36 26" class="iconLine"/>
+    <circle cx="38" cy="38" r="4" class="iconFill"/>
+  </g>
 
-  <rect x="1080" y="670" width="300" height="60" class="inner"/>
-  <text x="1230" y="708" text-anchor="middle" class="label">Weighted Attractors</text>
+  <rect x="1050" y="705" width="340" height="76" class="inner"/>
+  <text x="1220" y="730" text-anchor="middle" class="label">Weighted</text>
+  <text x="1220" y="755" text-anchor="middle" class="label">Attractors</text>
+  <g transform="translate(1078 725)">
+    <circle cx="20" cy="20" r="4" class="iconFill"/>
+    <circle cx="38" cy="13" r="4" class="iconFill"/>
+    <circle cx="36" cy="36" r="4" class="iconFill"/>
+    <path d="M20 20 C28 6 38 13 38 13" class="iconLine"/>
+    <path d="M20 20 C24 35 36 36 36 36" class="iconLine"/>
+    <path d="M38 13 C48 25 36 36 36 36" class="iconLine"/>
+  </g>
 
-  <rect x="120" y="850" width="1360" height="120" class="box"/>
-  <text x="800" y="905" text-anchor="middle" class="section">System Outcomes</text>
-  <text x="800" y="945" text-anchor="middle" class="small">CleanBound • MixedBound • FossilBound • NoAck • BioBound</text>
+  <rect x="110" y="895" width="1380" height="128" class="box" fill="#e9f7ef"/>
+  <text x="145" y="930" class="layerTag">LAYER 4</text>
+  <text x="800" y="954" text-anchor="middle" class="section">System Outcomes</text>
+  <text x="800" y="992" text-anchor="middle" class="small">CleanBound • MixedBound • FossilBound • NoAck • BioBound</text>
 
-  <line x1="800" y1="290" x2="800" y2="360" class="line"/>
-  <line x1="800" y1="500" x2="800" y2="570" class="line"/>
-  <line x1="800" y1="770" x2="800" y2="850" class="line"/>
+  <line x1="800" y1="288" x2="800" y2="350" class="line"/>
+  <line x1="800" y1="496" x2="800" y2="570" class="line"/>
+  <line x1="800" y1="820" x2="800" y2="895" class="line"/>
 
-  <text x="800" y="1040" text-anchor="middle" class="small">
+  <text x="800" y="1092" text-anchor="middle" class="micro">
     Conceptual systems architecture diagram • Illustrative ontology / prototype model • Not a calibrated operational deployment model.
   </text>
 </svg>
