@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1100" viewBox="0 0 1600 1100">
+  <defs>
+    <style>
+      .title { font: bold 44px sans-serif; fill: #111; }
+      .subtitle { font: 24px sans-serif; fill: #444; }
+      .section { font: bold 28px sans-serif; fill: #111; }
+      .label { font: 22px sans-serif; fill: #111; }
+      .small { font: 18px sans-serif; fill: #444; }
+      .box { fill: #f5f5f5; stroke: #222; stroke-width: 3; rx: 18; }
+      .inner { fill: #ffffff; stroke: #444; stroke-width: 2; rx: 12; }
+      .line { stroke: #444; stroke-width: 3; }
+    </style>
+  </defs>
+
+  <rect width="100%" height="100%" fill="#ffffff"/>
+
+  <text x="800" y="70" text-anchor="middle" class="title">ClimateSOS Layered Architecture Diagram</text>
+  <text x="800" y="110" text-anchor="middle" class="subtitle">Conceptual distributed transition operating system architecture.</text>
+
+  <rect x="120" y="170" width="1360" height="120" class="box"/>
+  <text x="800" y="225" text-anchor="middle" class="section">External System Inputs</text>
+  <text x="800" y="260" text-anchor="middle" class="small">Climate • Energy • Biosphere • Finance • Governance • Infrastructure</text>
+
+  <rect x="200" y="360" width="1200" height="140" class="box"/>
+  <text x="800" y="415" text-anchor="middle" class="section">Identity / Synchronization Layer</text>
+  <text x="800" y="455" text-anchor="middle" class="small">Identity Tokens • TTL • Synchronization State • Delivery Alignment</text>
+
+  <rect x="120" y="570" width="1360" height="200" class="box"/>
+  <text x="800" y="625" text-anchor="middle" class="section">ClimateSOS Kernel</text>
+
+  <rect x="220" y="670" width="300" height="60" class="inner"/>
+  <text x="370" y="708" text-anchor="middle" class="label">Synchronization Scheduler</text>
+
+  <rect x="650" y="670" width="300" height="60" class="inner"/>
+  <text x="800" y="708" text-anchor="middle" class="label">Pressure Accumulation</text>
+
+  <rect x="1080" y="670" width="300" height="60" class="inner"/>
+  <text x="1230" y="708" text-anchor="middle" class="label">Weighted Attractors</text>
+
+  <rect x="120" y="850" width="1360" height="120" class="box"/>
+  <text x="800" y="905" text-anchor="middle" class="section">System Outcomes</text>
+  <text x="800" y="945" text-anchor="middle" class="small">CleanBound • MixedBound • FossilBound • NoAck • BioBound</text>
+
+  <line x1="800" y1="290" x2="800" y2="360" class="line"/>
+  <line x1="800" y1="500" x2="800" y2="570" class="line"/>
+  <line x1="800" y1="770" x2="800" y2="850" class="line"/>
+
+  <text x="800" y="1040" text-anchor="middle" class="small">
+    Conceptual systems architecture diagram • Illustrative ontology / prototype model • Not a calibrated operational deployment model.
+  </text>
+</svg>
