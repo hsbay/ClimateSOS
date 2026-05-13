@@ -78,7 +78,7 @@ Current major fabrics include:
 - Political / Institutional Fabric
 - Biosphere Fabric
 
-The biosphere chapter (Chapter 11) and AI project guardrails in Appendix O direct the Biosphere Fabric systems implementation. See those sections for the underlying rationale and implementation constraints.
+The biosphere chapter 11 and AI project guardrails in Appendix O direct the Biosphere Fabric systems implementation. See those sections for the underlying rationale and implementation constraints.
 
 ---
 
