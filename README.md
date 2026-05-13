@@ -4,7 +4,9 @@
 
 ---
 
-# Read the defining playbook
+# Overview
+
+ClimateSOS is an experimental systems architecture and executable modeling framework for understanding the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
 The broader problem scope is defined in the live **2030s Net Zero Playbook**:
 
@@ -13,24 +15,6 @@ The broader problem scope is defined in the live **2030s Net Zero Playbook**:
 The playbook frames the earliest plausible operational net-zero window as a constraint-mapped systems problem: clean growth must synchronize with deliverability, reliability replacement, fossil exit, finance, workforce mobilization, and biosphere restoration.
 
 Stable PDF releases are also archived in this repository for versioned citation.
-
----
-
-# Architecture Diagrams
-
-## ClimateSOS Layered Architecture Diagram
-
-![ClimateSOS Layered Architecture Diagram](docs/images/climatesos_os_block_diagram.svg)
-
-## ClimateSOS Synchronization Flow Diagram
-
-![ClimateSOS Synchronization Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
-
----
-
-# Overview
-
-ClimateSOS is an experimental systems architecture and executable modeling framework for understanding the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
 The project emerged from the realization that:
 
@@ -64,6 +48,18 @@ ClimateSOS models these interactions using concepts drawn from:
 Instead of treating the transition primarily as a stakeholder map or policy roadmap, ClimateSOS treats it as:
 
 > a constrained distributed execution environment with synchronization requirements, bottlenecks, queues, tipping states, fallback attractors, and biosphere boundary conditions.
+
+---
+
+# Architecture Diagrams
+
+## ClimateSOS Layered Architecture Diagram
+
+![ClimateSOS Layered Architecture Diagram](docs/images/climatesos_os_block_diagram.svg)
+
+## ClimateSOS Synchronization Flow Diagram
+
+![ClimateSOS Synchronization Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
 
 ---
 
