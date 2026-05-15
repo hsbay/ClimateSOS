@@ -172,7 +172,9 @@ ClimateSOS was conceived, researched, directed, architected, and developed by Sh
 
 # Status Notice
 
-This repository is experimental research software, and conceptual systems architecture code generation should be interpreted as:
+This repository is experimental research software and conceptual systems architecture.
+
+Nothing here should be interpreted as:
 - operational infrastructure control software,
 - investment advice,
 - policy instruction,
