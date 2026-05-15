@@ -6,13 +6,13 @@
 
 # Overview
 
-ClimateSOS is an experimental systems architecture and executable modeling framework for understanding the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
+ClimateSOS is an experimental systems architecture and executable modeling framework to better understand the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
-The broader problem scope is defined in the live **2030s Net Zero Playbook**: **https://bit.ly/NZpbk**.
+For a full treatment of the problem scope, see the living source documentation **2030s Net Zero Playbook**: **https://bit.ly/NZpbk**.
 
 The playbook frames the earliest plausible operational net-zero window as a constraint-mapped systems problem: clean growth must synchronize with deliverability, reliability replacement, fossil exit, finance, workforce mobilization, and biosphere restoration.
 
-Stable PDF releases are also archived in this repository for versioned citation.
+Stable PDF releases are also archived in this repository for easier viewing and versioned citation.
 
 The project coalesced around the realization that:
 
@@ -76,13 +76,13 @@ Current major fabrics include:
 - Political / Institutional Fabric
 - Biosphere Fabric
 
-The biosphere chapter 11 and AI project guardrails in Appendix O direct the Biosphere Fabric systems implementation. See those sections for the underlying rationale and implementation constraints.
+The Biosphere chapter 11 and the AI project guardrails in Appendix O direct the implementation of the Biosphere Fabric systems. See those sections for the underlying rationale and implementation constraints.
 
 ---
 
 ## Identity Tokens & Resulting States
 
-After an identity token passes through a function, queue, switch, or attractor, it may resolve to the following possible states.
+After an identity token passes through a function, queue, switch, or attractor, it can resolve to the following possible states.
 
 | Identity | Resulting State |
 |---|---|
@@ -137,7 +137,7 @@ The Biosphere Fabric includes:
 
 The Biosphere Fabric also represents ecological networks, ecosystem interdependence, and trophic interdependence: the coupled relationships among habitats, niches, organisms, dependent species, nutrient cycles, water flows, food-web dynamics, and ecosystem functions.
 
-This matters because biosphere stability is carried by both organisms and habitats, and also by the ecological relationships, interdependence, nutrient cycles, water flows, and ecosystem functions that operate together across living systems and their interlinkages.
+This matters because biosphere stability is carried by both organisms and habitats, as well as by ecological relationships, interdependence, nutrient cycles, water flows, and ecosystem functions that operate together across living systems and their interlinkages.
 
 The architecture treats biosphere integrity as a boundary condition, not merely a carbon-removal target.
 
@@ -166,15 +166,13 @@ The framework blends technical systems architecture with ecological and planetar
 
 # Attribution
 
-ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems-design iteration under Shannon’s direction.
+ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems design iteration under Shannon’s direction.
 
 ---
 
 # Status Notice
 
-This repository is experimental research software and conceptual systems architecture.
-
-Nothing here should be interpreted as:
+This repository is experimental research software, and conceptual systems architecture code generation should be interpreted as:
 - operational infrastructure control software,
 - investment advice,
 - policy instruction,
