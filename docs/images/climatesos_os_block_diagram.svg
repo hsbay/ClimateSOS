@@ -13,8 +13,9 @@
       .box { stroke: #1f2937; stroke-width: 2.5; rx: 18; }
       .inner { fill: #ffffff; stroke: #4b5563; stroke-width: 2; rx: 14; }
       .line { stroke: #6b7280; stroke-width: 3; }
-      .iconLine { fill: none; stroke: #5b4fd6; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+      .iconLine { fill: none; stroke: #5b4fd6; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
       .iconFill { fill: #5b4fd6; }
+      .iconDivider { stroke: #9ca3af; stroke-width: 2; }
     </style>
   </defs>
 
@@ -39,35 +40,45 @@
   <text x="800" y="662" text-anchor="middle" class="small">Runtime coordination layer. Observes and arbitrates; it does not command real-world execution.</text>
 
   <rect x="210" y="705" width="340" height="76" class="inner"/>
-  <text x="380" y="730" text-anchor="middle" class="label">Synchronization</text>
-  <text x="380" y="755" text-anchor="middle" class="label">Scheduler</text>
-  <g transform="translate(238 725)">
-    <circle cx="20" cy="20" r="17" class="iconLine"/>
-    <path d="M20 9 v12 l9 6" class="iconLine"/>
-    <path d="M34 6 h10 v10" class="iconLine"/>
+  <g transform="translate(258 743)" aria-label="Synchronization scheduler icon">
+    <circle cx="0" cy="0" r="25" class="iconLine"/>
+    <path d="M0 -15 v16 l13 9" class="iconLine"/>
+    <path d="M17 -20 h14 v14" class="iconLine"/>
   </g>
+  <line x1="318" y1="718" x2="318" y2="768" class="iconDivider"/>
+  <text x="342" y="734" class="label">Synchronization</text>
+  <text x="342" y="759" class="label">Scheduler</text>
 
   <rect x="630" y="705" width="340" height="76" class="inner"/>
-  <text x="800" y="730" text-anchor="middle" class="label">Pressure</text>
-  <text x="800" y="755" text-anchor="middle" class="label">Accumulation</text>
-  <g transform="translate(658 725)">
-    <path d="M8 36 C8 20 20 8 36 8" class="iconLine"/>
-    <path d="M17 36 C17 25 25 17 36 17" class="iconLine"/>
-    <path d="M26 36 C26 31 31 26 36 26" class="iconLine"/>
-    <circle cx="38" cy="38" r="4" class="iconFill"/>
+  <g transform="translate(678 743)" aria-label="Pressure accumulation icon">
+    <path d="M-28 20 A28 28 0 0 1 28 20" class="iconLine"/>
+    <path d="M0 20 L18 -8" class="iconLine"/>
+    <circle cx="0" cy="20" r="4.5" class="iconFill"/>
+    <path d="M-20 10 l-8 -3" class="iconLine"/>
+    <path d="M-8 -7 l-4 -8" class="iconLine"/>
+    <path d="M8 -7 l4 -8" class="iconLine"/>
+    <path d="M20 10 l8 -3" class="iconLine"/>
   </g>
+  <line x1="738" y1="718" x2="738" y2="768" class="iconDivider"/>
+  <text x="762" y="734" class="label">Pressure</text>
+  <text x="762" y="759" class="label">Accumulation</text>
 
   <rect x="1050" y="705" width="340" height="76" class="inner"/>
-  <text x="1220" y="730" text-anchor="middle" class="label">Weighted</text>
-  <text x="1220" y="755" text-anchor="middle" class="label">Attractors</text>
-  <g transform="translate(1078 725)">
-    <circle cx="20" cy="20" r="4" class="iconFill"/>
-    <circle cx="38" cy="13" r="4" class="iconFill"/>
-    <circle cx="36" cy="36" r="4" class="iconFill"/>
-    <path d="M20 20 C28 6 38 13 38 13" class="iconLine"/>
-    <path d="M20 20 C24 35 36 36 36 36" class="iconLine"/>
-    <path d="M38 13 C48 25 36 36 36 36" class="iconLine"/>
+  <g transform="translate(1098 743)" aria-label="Weighted attractors icon">
+    <circle cx="0" cy="0" r="16" class="iconLine"/>
+    <circle cx="0" cy="0" r="4" class="iconFill"/>
+    <circle cx="0" cy="-25" r="5" class="iconFill"/>
+    <circle cx="25" cy="0" r="5" class="iconFill"/>
+    <circle cx="0" cy="25" r="5" class="iconFill"/>
+    <circle cx="-25" cy="0" r="5" class="iconFill"/>
+    <path d="M0 -16 v-9" class="iconLine"/>
+    <path d="M16 0 h9" class="iconLine"/>
+    <path d="M0 16 v9" class="iconLine"/>
+    <path d="M-16 0 h-9" class="iconLine"/>
   </g>
+  <line x1="1158" y1="718" x2="1158" y2="768" class="iconDivider"/>
+  <text x="1182" y="734" class="label">Weighted</text>
+  <text x="1182" y="759" class="label">Attractors</text>
 
   <rect x="110" y="895" width="1380" height="128" class="box" fill="#e9f7ef"/>
   <text x="145" y="930" class="layerTag">LAYER 4</text>
