@@ -15,7 +15,6 @@
       .line { stroke: #6b7280; stroke-width: 3; }
       .iconLine { fill: none; stroke: #5b4fd6; stroke-width: 4.2; stroke-linecap: round; stroke-linejoin: round; }
       .iconFill { fill: #5b4fd6; }
-      .iconDivider { stroke: #9ca3af; stroke-width: 2; }
     </style>
   </defs>
 
@@ -40,17 +39,16 @@
   <text x="800" y="662" text-anchor="middle" class="small">Runtime coordination layer. Observes and arbitrates; it does not command real-world execution.</text>
 
   <rect x="210" y="705" width="340" height="76" class="inner"/>
-  <g transform="translate(258 743)" aria-label="Synchronization scheduler icon">
+  <g transform="translate(270 743)" aria-label="Synchronization scheduler icon">
     <circle cx="0" cy="0" r="25" class="iconLine"/>
     <path d="M0 -15 v16 l13 9" class="iconLine"/>
     <path d="M17 -20 h14 v14" class="iconLine"/>
   </g>
-  <line x1="318" y1="718" x2="318" y2="768" class="iconDivider"/>
-  <text x="342" y="734" class="label">Synchronization</text>
-  <text x="342" y="759" class="label">Scheduler</text>
+  <text x="330" y="734" class="label">Synchronization</text>
+  <text x="330" y="759" class="label">Scheduler</text>
 
   <rect x="630" y="705" width="340" height="76" class="inner"/>
-  <g transform="translate(678 743)" aria-label="Pressure accumulation icon">
+  <g transform="translate(690 743)" aria-label="Pressure accumulation icon">
     <path d="M-28 20 A28 28 0 0 1 28 20" class="iconLine"/>
     <path d="M0 20 L18 -8" class="iconLine"/>
     <circle cx="0" cy="20" r="4.5" class="iconFill"/>
@@ -59,12 +57,11 @@
     <path d="M8 -7 l4 -8" class="iconLine"/>
     <path d="M20 10 l8 -3" class="iconLine"/>
   </g>
-  <line x1="738" y1="718" x2="738" y2="768" class="iconDivider"/>
-  <text x="762" y="734" class="label">Pressure</text>
-  <text x="762" y="759" class="label">Accumulation</text>
+  <text x="750" y="734" class="label">Pressure</text>
+  <text x="750" y="759" class="label">Accumulation</text>
 
   <rect x="1050" y="705" width="340" height="76" class="inner"/>
-  <g transform="translate(1098 743)" aria-label="Weighted attractors icon">
+  <g transform="translate(1110 743)" aria-label="Weighted attractors icon">
     <circle cx="0" cy="0" r="16" class="iconLine"/>
     <circle cx="0" cy="0" r="4" class="iconFill"/>
     <circle cx="0" cy="-25" r="5" class="iconFill"/>
@@ -76,9 +73,8 @@
     <path d="M0 16 v9" class="iconLine"/>
     <path d="M-16 0 h-9" class="iconLine"/>
   </g>
-  <line x1="1158" y1="718" x2="1158" y2="768" class="iconDivider"/>
-  <text x="1182" y="734" class="label">Weighted</text>
-  <text x="1182" y="759" class="label">Attractors</text>
+  <text x="1170" y="734" class="label">Weighted</text>
+  <text x="1170" y="759" class="label">Attractors</text>
 
   <rect x="110" y="895" width="1380" height="128" class="box" fill="#e9f7ef"/>
   <text x="145" y="930" class="layerTag">LAYER 4</text>
