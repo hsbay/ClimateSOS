@@ -79,7 +79,7 @@
 
   <line x1="800" y1="1010" x2="800" y2="1085" class="line"/>
 
-  <rect x="120" y="1085" width="1360" height="280" class="box"/>
+  <rect x="120" y="1085" width="1360" height="310" class="box"/>
   <text x="800" y="1145" text-anchor="middle" class="section">ClimateSOS Kernel</text>
 
   <rect x="220" y="1210" width="350" height="68" class="inner"/>
@@ -91,10 +91,10 @@
   <rect x="1030" y="1210" width="350" height="68" class="inner"/>
   <text x="1205" y="1252" text-anchor="middle" class="label">Weighted Attractors</text>
 
-  <rect x="490" y="1308" width="620" height="68" class="inner"/>
-  <text x="800" y="1350" text-anchor="middle" class="label">Delivery / Alignment Switch</text>
+  <rect x="490" y="1290" width="620" height="68" class="inner"/>
+  <text x="800" y="1332" text-anchor="middle" class="label">Delivery / Alignment Switch</text>
 
-  <line x1="800" y1="1365" x2="800" y2="1440" class="line"/>
+  <line x1="800" y1="1358" x2="800" y2="1440" class="line"/>
 
   <rect x="80" y="1440" width="1440" height="150" class="box"/>
   <text x="800" y="1495" text-anchor="middle" class="section">System Outcomes</text>
