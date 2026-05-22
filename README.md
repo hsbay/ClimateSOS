@@ -1,6 +1,6 @@
 # ClimateSOS
 
-> A distributed transition operating system for synchronizing clean-energy transition, fossil retirement, and biosphere stabilization under real-world constraints.
+> A prototype transition-modeling application with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
 
 ---
 
