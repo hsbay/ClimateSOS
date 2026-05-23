@@ -51,13 +51,9 @@ Instead of treating the transition primarily as a stakeholder map or policy road
 
 # Architecture Diagrams
 
-## ClimateSOS Layered Architecture Diagram
-
 ![ClimateSOS Layered Architecture Diagram](docs/images/climatesos_os_block_diagram.svg)
 
-## ClimateSOS Synchronization Flow Diagram
-
-![ClimateSOS Synchronization Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
+![ClimateSOS Execution Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
 
 ---
 
