@@ -53,7 +53,7 @@ Instead of treating the transition primarily as a stakeholder map or policy road
 
 ![ClimateSOS Conceptual System Flow Diagram](docs/images/conceptual_system_flow.svg)
 
-![ClimateSOS Execution Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
+![ClimateSOS Execution Flow Diagram](docs/images/execution_flow_diagram.svg)
 
 ---
 
