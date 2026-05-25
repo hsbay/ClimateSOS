@@ -1,6 +1,6 @@
 # ClimateSOS
 
-> A distributed transition operating system for synchronizing clean-energy transition, fossil retirement, and biosphere stabilization under real-world constraints.
+> A prototype transition-modeling application with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
 
 ---
 
@@ -51,13 +51,9 @@ Instead of treating the transition primarily as a stakeholder map or policy road
 
 # Architecture Diagrams
 
-## ClimateSOS Layered Architecture Diagram
+![ClimateSOS Conceptual System Flow Diagram](docs/images/conceptual_system_flow.svg)
 
-![ClimateSOS Layered Architecture Diagram](docs/images/climatesos_os_block_diagram.svg)
-
-## ClimateSOS Synchronization Flow Diagram
-
-![ClimateSOS Synchronization Flow Diagram](docs/images/climatesos_execution_flow_diagram.svg)
+![ClimateSOS Execution Flow Diagram](docs/images/execution_flow_diagram.svg)
 
 ---
 
