@@ -1,8 +1,9 @@
-# <i><img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" valign=bottom />  Foundational Charter</i>
+# <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" valign='bottom' width=280/> <br><i>Foundational Charter</i>
 **GitHub project:** https://github.com/hsbay/ClimateSOS  
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
 **Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems-design iteration under Shannon’s direction.
+___
 
 ## Principles, Safeguards, and Validity Conditions
 
