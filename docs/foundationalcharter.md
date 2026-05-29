@@ -51,7 +51,7 @@ ClimateSOS must evaluate transition pathways within Earth-system bounds and supp
 
 Emissions reduction is necessary but not sufficient. A pathway that reduces carbon emissions while shifting harm into other planetary boundaries is not valid.
 
-ClimateSOS must not treat a pathway as valid if it relies on, produces, or causes degradation of:
+ClimateSOS must not treat a pathway as valid if it relies on, produces, or causes degradation to:
 
 - climate stability
 - biosphere integrity
@@ -202,7 +202,7 @@ If one domain succeeds by degrading or violating another, the result is not full
 
 ### 2.12 Residual Minimization Guardrail
 
-ClimateSOS should strongly prefer pathways that reduce emissions, ecological damage, and social harm to the smallest feasible residual. Any exception must be extraordinary, explicitly justified, transparently governed, bounded in scope, duration, and residual harm, and still materially participate in fossil exit rather than fossil persistence, even if on a slower pathway.
+ClimateSOS should strongly prefer pathways that reduce emissions, ecological damage, and social harm to the smallest feasible residual. Any exception must be extraordinary, explicitly justified, transparently governed, bounded in scope, duration, and residual harm, and must still commit to fossil phaseout rather than fossil persistence, even if on a slower pathway.
 
 Residual impacts must be tightly bounded, explicitly justified, transparently governed, and not used to preserve fossil dependence, ecological degradation, or social harm.
 
