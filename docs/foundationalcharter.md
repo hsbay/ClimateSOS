@@ -4,7 +4,8 @@
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
 **Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems-design iteration under Shannon’s direction.
 **Version:** 0.5
-___
+
+---
 
 ## Principles, Safeguards, and Validity Conditions
 
@@ -16,7 +17,7 @@ ClimateSOS is an experimental transition-state operating model for reasoning abo
 
 ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere integrity, and flourishing for humans, other species, ecosystems, and the living world, within the context of long-term stewardship.
 
-A pathway, scenario, or output is valid only within that operating envelope. Technical feasibility, efficiency, scalability, emissions reduction, financial performance, or system throughput are not sufficient on their own. They matter only when pursued in ways that preserve planetary boundaries, avoid harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, and enable flourishing across human communities, other species, and ecosystems.
+All ClimateSOS program execution, resulting data, pathways, scenarios, and outputs are valid only within that operating envelope. Technical feasibility, efficiency, scalability, emissions reduction, financial performance, or system throughput are not sufficient on their own. They matter only when pursued in ways that preserve planetary boundaries, avoid harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, and enable flourishing across human communities, other species, and ecosystems.
 
 The rights, safeguards, and guardrails in this charter are foundational. Some are mutually dependent, and some may require sequencing where explicitly stated. Unless a dependency is explicit, they should be evaluated and implemented in parallel rather than treated as sequential steps or optional layers.
 
@@ -92,7 +93,7 @@ ClimateSOS must not treat pathways as valid if they impose harm on workers, low-
 
 Harm avoidance is not reducible to backlash avoidance, political durability, or social acceptance. The transition must avoid harm because climate harm is unacceptable, not merely because climate harm may slow implementation.
 
-ClimateSOS should therefore reject or flag pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
+ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
 
 ---
 
@@ -201,7 +202,7 @@ If one domain succeeds by degrading or violating another, the result is not full
 
 ### 2.12 Residual Minimization Guardrail
 
-ClimateSOS should prefer pathways that reduce emissions, ecological damage, and social harm to the smallest feasible residual.
+ClimateSOS should strongly prefer pathways that reduce emissions, ecological damage, and social harm to the smallest feasible residual. Any exception must be extraordinary, explicitly justified, transparently governed, bounded in scope, duration, and residual harm, and still materially participate in fossil exit rather than fossil persistence, even if on a slower pathway.
 
 Residual impacts must be tightly bounded, explicitly justified, transparently governed, and not used to preserve fossil dependence, ecological degradation, or social harm.
 
@@ -223,7 +224,7 @@ Equitable durability requires that workers, ratepayers, host communities, Indige
 
 ClimateSOS and derivative tools should be used only where the use is necessary, proportionate, context-appropriate, and lower-risk than available alternatives for the transition question being evaluated.
 
-ClimateSOS should not be applied merely because it is available. Use must be justified by the need to clarify transition constraints, surface failure modes, improve accountability, reduce harm, or support better human decision-making.
+ClimateSOS should not be applied to consequential transition questions merely because it is available. Applied use should be justified by the need to clarify transition constraints, surface failure modes, improve accountability, reduce harm, or support better human decision-making. This does not restrict good-faith inspection, critique, reuse, adaptation, replication, education, research, red-teaming, or derivative work conducted within the safeguards of this charter.
 
 ClimateSOS design and implementation should follow minimal-engineering discipline: build only what is necessary to clarify transition constraints, evaluate validity, surface failure modes, improve accountability, or reduce harm. Additional complexity should be justified by clear public-interest, scientific, safety, or stewardship value.
 
@@ -302,7 +303,7 @@ This includes competence in:
 - cybersecurity
 - appeal and remedy procedures
 
-ClimateSOS should not enable policy, investment, infrastructure, or community-impact decisions by users who lack the competence or accountability needed to interpret its outputs responsibly.
+ClimateSOS outputs must not be used as the basis for policy, investment, infrastructure, or community-impact decisions without the competence, accountability, and accountable human review needed to interpret them responsibly.
 
 ---
 
