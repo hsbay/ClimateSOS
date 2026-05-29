@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./climatesos_hex_font_cropped.svg" alt="ClimateSOS" width="187" />
+  <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" width="187" />
 </p>
 
 # ClimateSOS Foundational Charter
