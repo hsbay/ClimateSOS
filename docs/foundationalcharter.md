@@ -1,8 +1,4 @@
-<p align="center">
-  <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" width="187" />
-</p>
-
-# ClimateSOS Foundational Charter
+# <i><img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" valign=bottom />  Foundational Charter</i>
 
 ## Principles, Safeguards, and Validity Conditions
 
