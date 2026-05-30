@@ -1,6 +1,7 @@
 # <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./images/climatesos_hex_dk.png">
   <source media="(prefers-color-scheme: light)" srcset="./images/climatesos_hex_font_cropped.svg">
+  <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" width="260">
 </picture><br><i>Foundational Charter</i>
 
 **GitHub project:** https://github.com/hsbay/ClimateSOS  
