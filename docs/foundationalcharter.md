@@ -1,7 +1,4 @@
-# <picture>
-  <source media="(prefers-color-scheme: dark,dimm)" srcset="./images/climatesos_hex_dk.png">
-  <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" width="260">
-</picture><br><i>Foundational Charter</i>
+# <picture><img src="./images/climatesos_hex_dk.png" alt="ClimateSOS" width="260"></picture><br><i>Foundational Charter</i>
 
 **GitHub project:** https://github.com/hsbay/ClimateSOS  
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
