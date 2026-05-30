@@ -1,4 +1,5 @@
-# <img src="./images/climatesos_hex_font_cropped.svg" alt="ClimateSOS" valign='bottom' width=280/> <br><i>Foundational Charter</i>
+# <picture><img src="./images/climatesos_hex_dk.png" alt="ClimateSOS" width="260"></picture><br><i>Foundational Charter</i>
+
 **GitHub project:** https://github.com/hsbay/ClimateSOS  
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
