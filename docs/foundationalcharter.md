@@ -87,13 +87,13 @@ Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not 
 
 ---
 
-### 2.4 Climate Justice / Harm-Avoidance Guardrail
+### 2.4 Climate Justice / Avoid-harm Guardrail
 
 Climate justice is a validity condition, not an optional policy preference.
 
 ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity.
 
-Harm avoidance is not reducible to backlash avoidance, political durability, or social acceptance. The transition must avoid harm because climate harm is unacceptable, not merely because climate harm may slow implementation.
+Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm or shift harm onto peoples, communities, workers, ecosystems, other species, or future generations. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
 ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
 
