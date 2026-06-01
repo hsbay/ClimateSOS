@@ -349,6 +349,10 @@ The charter also borrows concepts from, or is inspired by, EU Trustworthy AI and
 
 These references are not treated as substitutes for the ClimateSOS charter. They provide supporting context for the specific planetary, justice, biosphere, AI, and transition-validity safeguards defined here.
 
+Although this project does not derive from direct reading of Joy Buolamwini’s or Timnit Gebru’s work, it belongs within a broader responsible AI, algorithmic justice, and AI documentation context that their work helped shape. That context includes Dr. Joy Buolamwini and the Algorithmic Justice League’s work on algorithmic bias, auditability, and AI harms; Dr. Timnit Gebru and collaborators’ work on dataset and model documentation, accountability, and the risks of large-scale AI systems; and broader human-rights-centered AI governance frameworks.
+
+The distinctive project-specific contribution, documented in Appendix O, is the use of planetary-boundary, exceedance-risk, climate-justice, fossil-lock-in, biosphere-integrity, and harm-avoidance guardrails as active generative constraints during project creation, not merely as post-hoc review criteria.
+
 ---
 
 ## 3. Human Workforce Productivity Clarification
