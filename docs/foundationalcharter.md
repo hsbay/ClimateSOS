@@ -87,13 +87,13 @@ Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not 
 
 ---
 
-### 2.4 Climate Justice / Harm-Avoidance Guardrail
+### 2.4 Climate Justice / Avoid-harm Guardrail
 
 Climate justice is a validity condition, not an optional policy preference.
 
 ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity.
 
-Harm avoidance is not reducible to backlash avoidance, political durability, or social acceptance. The transition must avoid harm because climate harm is unacceptable, not merely because climate harm may slow implementation.
+Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm or shift harm onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
 ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
 
@@ -348,6 +348,10 @@ The ClimateSOS Foundational Charter is informed by IEEE Ethically Aligned Design
 The charter also borrows concepts from, or is inspired by, EU Trustworthy AI and responsible AI frameworks, OECD / UNESCO / Council of Europe AI governance principles, Planetary Boundaries and Doughnut-like sustainability frames, open-source / FOSS and open-design traditions, and model-card / AI documentation frameworks.
 
 These references are not treated as substitutes for the ClimateSOS charter. They provide supporting context for the specific planetary, justice, biosphere, AI, and transition-validity safeguards defined here.
+
+Although this project does not derive from direct reading of Joy Buolamwini’s or Timnit Gebru’s work, it belongs within a broader responsible AI, algorithmic justice, and AI documentation context that their work helped shape. That context includes Dr. Joy Buolamwini and the Algorithmic Justice League’s work on algorithmic bias, auditability, and AI harms; Dr. Timnit Gebru and collaborators’ work on dataset and model documentation, accountability, and the risks of large-scale AI systems; and broader human-rights-centered AI governance frameworks.
+
+The distinctive project-specific contribution, documented in Appendix O of the 2030s Net Zero Playbook, is the use of planetary-boundary-exceedance risk, climate-justice, fossil-lock-in, biosphere-integrity, and avoid-harm guardrails as active generative constraints during project creation, not merely as post-hoc review criteria. These guardrails were used to shape the reasoning environment for developing the [2030s Net Zero Playbook](https://bit.ly/NZpbk) and [ClimateSOS](https://github.com/hsbay/ClimateSOS) so that accelerated transition pathways were evaluated against physical Earth-system limits, justice constraints, fossil-displacement logic, and biosphere integrity from the outset.
 
 ---
 
