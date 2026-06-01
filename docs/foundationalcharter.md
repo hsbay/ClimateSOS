@@ -383,7 +383,7 @@ Relevant outcome states include:
 - NoAck
 - Unbound
 
-A pathway that clears technical queues but violates foundational safeguards will not resolve to full success.
+A pathway may clear its technical queues and still fail if it violates foundational safeguards. In ClimateSOS, that kind of failure should resolve to a negative validity state, such as HarmBound or BoundaryStress, to show that the pathway caused or shifted harm even though its technical steps were completed.
 
 Examples:
 
