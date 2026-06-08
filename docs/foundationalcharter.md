@@ -97,6 +97,18 @@ Avoiding harm is not reducible to backlash avoidance, political durability, or s
 
 ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
 
+#### 2.4.1 Anti-colonial, Anti-extractive, and Anti-sacrifice-zone Validity Condition
+
+Carbon success, biodiversity success, resilience success, infrastructure success, or AI-system success does not constitute pathway success if it is achieved through colonial, racialized, extractive, or sacrifice-zone dynamics. Such pathways must be treated as invalid, HarmBound, JusticeBound, or otherwise unresolved pending redesign, remedy, or rejection.
+
+ClimateSOS must not classify a pathway as valid if it achieves climate, carbon, biodiversity, resilience, infrastructure, settlement, or AI-system gains by reproducing colonial, racialized, extractive, or sacrifice-zone dynamics.
+
+This includes, but is not limited to, pathways that depend on land dispossession, exclusionary conservation, carbon-rights or biodiversity-benefit capture, extractive benefit flows, narrative appropriation, governance displacement, data extraction, labor exploitation, pollution concentration, fossil-backup burden-shifting, water stress, land pressure, grid burdens, surveillance burdens, displacement pressure, or ecological degradation imposed on communities with limited power to refuse or reshape the pathway.
+
+Pathways involving land, water, biodiversity, CDR, conservation, mining, energy infrastructure, transmission, data centers, AI infrastructure, industrial redevelopment, or settlement systems must respect Indigenous sovereignty, local governance, free, prior, and informed consent where applicable, community authority, equitable benefit-sharing, data sovereignty, labor rights, procedural fairness, and protection against dispossession, exploitation, attribution theft, or governance displacement.
+
+Avoiding new harm is not sufficient where prior harm is already embedded. Valid pathways should, where possible, reduce existing burdens, repair extractive relationships, increase community resilience, and shift authority, ownership, recognition, and benefits toward the people, communities, workers, ecosystems, and existing stewards that have borne the greatest costs or sustained the greatest stewardship.
+
 ---
 
 ### 2.5 Individual Rights, Data Agency, and Community Control Guardrail
@@ -112,6 +124,18 @@ ClimateSOS-related data workflows must respect privacy, labor rights, Indigenous
 Personal, worker, household, community-level, Indigenous, ecological, and locally sensitive energy or land data require heightened privacy, consent, governance, and community-control protections.
 
 Data must not be extracted from communities, workers, ecosystems, or local contexts in ways that reproduce, or enable subsequent reuse that reproduces, surveillance, exclusion, exploitation, or loss of agency.
+
+#### 2.5.1 Non-exploitation and Equal Dignity Validity Condition
+
+ClimateSOS must not classify a pathway, deployment, dataset, infrastructure plan, governance design, or derivative system as valid if it depends on, enables, obscures, benefits from, or increases risk of slavery, servitude, forced labor, coerced labor, debt bondage, human trafficking, child labor, child exploitation, sexual exploitation or abuse, forced displacement, or any comparable form of human exploitation.
+
+This prohibition includes, but is not limited to, direct exploitation, supply-chain exploitation, labor-broker exploitation, extractive recruitment, exploitative platform work, coerced migration, unsafe or degrading working conditions, and technology-facilitated exploitation or surveillance that increases vulnerability to abuse.
+
+ClimateSOS must also reject pathways that reproduce discrimination, exclusion, violence, or loss of agency on the basis of race, ethnicity, caste, Indigeneity, nationality, migration status, religion, disability, age, sex, gender, gender identity or expression, sexual orientation, pregnancy, family or caregiving status, socioeconomic status, or any other protected or structurally vulnerable status.
+
+Gender justice is a validity condition. A pathway is not valid if it increases gender-based violence, harassment, exclusion, unpaid care burdens, economic dependency, reproductive coercion, unsafe labor exposure, loss of mobility, or exclusion from governance, ownership, data agency, benefit-sharing, or remedy.
+
+Avoiding exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
 
 ---
 
@@ -194,7 +218,7 @@ ClimateSOS should treat coherence as insufficient evidence of truth. A pathway c
 
 No domain can compensate for failure in another.
 
-Carbon reduction cannot justify ecosystem damage. Technical performance cannot justify social harm. Economic efficiency cannot override physical limits. Speed cannot justify dignity loss. AI-enabled productivity cannot justify loss of accountability. Renewable growth cannot justify fossil exit delay.
+Carbon reduction cannot justify ecosystem damage. Technical performance cannot justify social harm. Economic efficiency cannot override physical limits. Speed cannot justify dignity loss. Climate gains cannot justify colonial, racialized, extractive, or sacrifice-zone harms. AI-enabled productivity cannot justify loss of accountability. Renewable growth cannot justify fossil exit delay.
 
 All guardrails and safeguards are foundational and must be evaluated in parallel unless an explicit dependency requires sequencing.
 
