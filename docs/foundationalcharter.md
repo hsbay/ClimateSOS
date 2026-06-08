@@ -17,7 +17,7 @@ This charter defines the rights, commitments, safeguards, and validity condition
 
 ### Introduction
 
-ClimateSOS is an experimental transition-state operating model for evaluating the reasoning logic of accelerated decarbonization, fossil exit, clean-energy delivery, institutional constraints, and biosphere restoration. It is not infrastructure control software, investment advice, policy instruction, autonomous governance authority, or a substitute for accountable human judgment.
+ClimateSOS is an experimental transition-state operating model for evaluating the pathway logic of accelerated decarbonization, fossil exit, clean-energy delivery, institutional constraints, and biosphere restoration. It is not infrastructure control software, investment advice, policy instruction, autonomous governance authority, or a substitute for accountable human judgment.
 
 This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere integrity, and flourishing for humans, other species, ecosystems, and the living world, within the context of long-term stewardship.
 
