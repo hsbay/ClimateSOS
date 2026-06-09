@@ -5,7 +5,7 @@
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
 **Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI's ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems-design iteration under Shannon's direction.  
-**Version:** 0.6  
+**Version:** 0.7  
 
 ---
 
@@ -94,13 +94,13 @@ Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not 
 
 ---
 
-### 2.4 Climate Justice / Avoid-harm Guardrail
+### 2.4 Climate Justice / Avoid Harm Guardrail
 
 Climate justice is a validity condition, not an optional policy preference.
 
-ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity.
+ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity. The action to avoid harm is not reducible to backlash avoidance, political durability, or social acceptance.
 
-Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, or future generations with the least capacity to absorb, refuse, repair, or recover from it, or onto ecosystems with the least capacity to absorb, regenerate, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
+The action to avoid committing harm means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, or future generations with the least capacity to absorb, refuse, repair, or recover from it, or onto ecosystems with the least capacity to absorb, regenerate, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
 ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded working conditions, displacement, pollution, ecological degradation, or residual harms onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or already overburdened communities.
 
@@ -112,7 +112,7 @@ This includes, but is not limited to, pathways that depend on land dispossession
 
 Pathways involving land, water, biodiversity, CDR, conservation, mining, energy infrastructure, transmission, data centers, AI infrastructure, industrial redevelopment, or settlement systems must respect Indigenous sovereignty, local governance, free, prior, and informed consent where applicable, community authority, equitable benefit-sharing, data sovereignty, labor rights, procedural fairness, and protection against dispossession, exploitation, attribution theft, or governance displacement.
 
-Avoiding new harm is not sufficient where prior harm is already embedded. Valid pathways should, where possible, reduce existing burdens, repair extractive relationships, increase community resilience, and shift authority, ownership, recognition, and benefits toward the people, communities, workers, existing stewards, and ecosystems that have borne the greatest costs or sustained the greatest stewardship.
+The action to avoid committing new harm is insufficient where prior harm is already embedded. Valid pathways should, where possible, reduce existing burdens, repair extractive relationships, increase community resilience, and shift authority, ownership, recognition, and benefits toward the people, communities, workers, existing stewards, and ecosystems that have borne the greatest costs or sustained the greatest stewardship.
 
 ---
 
@@ -146,7 +146,7 @@ ClimateSOS must also reject pathways that reproduce discrimination, exclusion, v
 
 Gender justice is a validity condition. A pathway is not valid if it increases gender-based violence, harassment, exclusion, unpaid care burdens, economic dependency, reproductive coercion, unsafe labor exposure, loss of mobility, or exclusion from governance, ownership, data agency, benefit-sharing, or remedy.
 
-Avoiding exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
+Preventing exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
 
 ---
 
@@ -380,7 +380,7 @@ Execution remains distributed across accountable human institutions, communities
 
 ### 2.23 Cross-Cutting Repair, Remedy, and Barrier Removal
 
-Where ClimateSOS-informed recommendations, outputs, or derivative tools identify, rely on, reproduce, or intersect with prior, ongoing, or foreseeable harm, they should, where feasible, support pathways that go beyond seeking to avoid harm. They should help reduce existing burdens, expand participation, strengthen access to appeal and remedy, restore damaged ecological and social conditions, and dismantle barriers that have prevented affected communities, workers, local stewards, and ecosystems from sharing in authority, protection, benefit, and recovery.
+Where ClimateSOS-informed recommendations, outputs, or derivative tools identify, rely on, reproduce, or intersect with prior, ongoing, or foreseeable harm, they should, where feasible, support pathways that go beyond seeking to avoid committing harm. They should help reduce existing burdens, expand participation, strengthen access to appeal and remedy, restore damaged ecological and social conditions, and dismantle barriers that have prevented affected communities, workers, local stewards, and ecosystems from sharing in authority, protection, benefit, and recovery.
 
 This safeguard applies across the Foundational Charter, including harms related to climate injustice, extraction, pollution concentration, sacrifice-zone dynamics, digital exclusion, accessibility, labor displacement, institutional exclusion, cultural erasure, ecological degradation, biosphere instability, data misuse, and governance exclusion. ClimateSOS must not represent technically successful pathways as fully valid where feasible repair, remedy, or barrier removal has been ignored.
 
