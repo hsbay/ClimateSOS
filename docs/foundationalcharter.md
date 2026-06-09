@@ -130,7 +130,9 @@ Personal, worker, household, community-level, Indigenous, ecological, and locall
 
 ClimateSOS and derivative tools must not widen the digital divide or convert unequal access to broadband, devices, compute, technical expertise, language access, accessibility support, institutional capacity, open data, or interoperable tools into unequal access to participation, benefit-sharing, appeal, remedy, governance authority, or transition opportunity.
 
-Where ClimateSOS-informed recommendations, outputs, or derivative tools are used in public-interest, community-facing, or capacity-constrained contexts, they should be designed, where feasible, to help close digital access and capacity gaps through accessible interfaces, open and inspectable methods, local adaptability, multilingual support, accessibility support, documentation, training, and capacity-building.
+Digital access and capacity gaps are often shaped by gender, income, wealth, geography, disability, language, Indigeneity, age, migration status, education access and attainment, caregiving burdens, safety risks, and institutional exclusion. ClimateSOS-informed recommendations, outputs, or derivative tools should therefore avoid treating digital access as neutral, universal, or already equitably distributed.
+
+Where ClimateSOS-informed recommendations, outputs, or derivative tools are used in public-interest, community-facing, or capacity-constrained contexts, they should be designed, where feasible, to help close digital access and capacity gaps through accessible interfaces, open and inspectable methods, local adaptability, multilingual support, disability access, gender-responsive participation, documentation, training, capacity-building, and remedy pathways.
 
 Data must not be extracted from communities, workers, ecosystems, or local contexts in ways that reproduce, or enable subsequent reuse that reproduces, surveillance, exclusion, exploitation, or loss of agency.
 
@@ -378,7 +380,7 @@ Execution remains distributed across accountable human institutions, communities
 
 ### 2.23 Safeguards and Guardrails References
 
-The ClimateSOS Foundational Charter is informed by IEEE Ethically Aligned Design, especially its emphasis on human rights, well-being, data agency, effectiveness, transparency, accountability, awareness of misuse, and competence.
+The ClimateSOS Foundational Charter is informed by the IEEE *Ethically Aligned Design*, especially its emphasis on human rights, well-being, data agency, effectiveness, transparency, accountability, awareness of misuse, and competence. It is also intended to be broadly consistent with the UNFCCC Technology Executive Committee technical paper *Artificial Intelligence for Climate Action: Advancing Mitigation and Adaptation in Developing Countries*, particularly its recommendations on AI governance, capacity-building, digital inclusion, sustainability, bias prevention, local and Indigenous knowledge, and misuse safeguards.
 
 The charter also borrows concepts from, or is inspired by, EU Trustworthy AI and responsible AI frameworks, OECD / UNESCO / Council of Europe AI governance principles, Planetary Boundaries and Doughnut-like sustainability frames, open-source / FOSS and open-design traditions, and model-card / AI documentation frameworks.
 
