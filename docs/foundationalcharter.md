@@ -206,26 +206,26 @@ A valid pathway should preserve or enable the agency, habitat, continuity, cultu
 
 ---
 
-### 2.10 Truth-Seeking and Epistemic Discipline Guardrail
+### 2.10 Truth-Seeking, Scientific Integrity, and Epistemic Discipline Guardrail
 
 ClimateSOS must prioritize grounded, traceable, uncertainty-aware reasoning over plausible synthesis that is linguistically valid but insufficiently grounded.
 
+Scientific integrity requires ClimateSOS to distinguish evidence, assumptions, uncertainty, model outputs, and value judgments, and to prevent coherent synthesis, architectural elegance, or persuasive language from substituting for verified grounding.
+
 ClimateSOS outputs should distinguish:
 
-- source-grounded inputs
-- inferred system behavior
-- scenario assumptions
-- model limitations
-- independent judgment
-- unresolved uncertainty
-- contested claims
-- speculative or hypothetical reasoning
+* source-grounded inputs
+* inferred system behavior
+* scenario assumptions
+* model limitations
+* independent judgment
+* unresolved uncertainty
+* contested claims
+* speculative or hypothetical reasoning
 
 Outputs should expose confidence, uncertainty, assumption, and source-status metadata wherever possible.
 
 ClimateSOS should treat coherence as insufficient evidence of truth. A pathway can be internally consistent and still be wrong if it rests on false assumptions, missing variables, invalid coupling, weak sources, or untested abstractions.
-
----
 
 ### 2.11 Non-Substitution Guardrail
 
