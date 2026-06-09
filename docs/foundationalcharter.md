@@ -392,6 +392,14 @@ The distinctive project-specific contribution, documented in Appendix O of the 2
 
 ---
 
+### 2.24 Cross-Cutting Repair, Remedy, and Barrier Removal
+
+Where ClimateSOS-informed recommendations, outputs, or derivative tools identify, rely on, reproduce, or intersect with prior, ongoing, or foreseeable harm, they should, where feasible, support pathways that go beyond avoiding additional harm. They should help reduce existing burdens, expand participation, strengthen access to appeal and remedy, restore damaged ecological and social conditions, and dismantle barriers that have prevented affected communities, workers, local stewards, and ecosystems from sharing in authority, protection, benefit, and recovery.
+
+This safeguard applies across the Foundational Charter, including harms related to climate injustice, extraction, pollution concentration, sacrifice-zone dynamics, digital exclusion, accessibility, labor displacement, institutional exclusion, cultural erasure, ecological degradation, biosphere instability, data misuse, and governance exclusion. ClimateSOS must not represent technically successful pathways as fully valid where feasible repair, remedy, or barrier removal has been ignored.
+
+---
+
 ## 3. Human Workforce Productivity Clarification
 
 ClimateSOS models units of workforce productivity, including human workforce productivity units or equivalent abstractions.
