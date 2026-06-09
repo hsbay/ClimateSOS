@@ -5,7 +5,7 @@
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
 **Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI's ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems-design iteration under Shannon's direction.  
-**Version:** 0.5  
+**Version:** 0.6  
 
 ---
 
@@ -15,11 +15,13 @@
 
 This charter defines the rights, commitments, safeguards, and validity conditions that are foundational to, and binding on, the ClimateSOS platform, systems architecture specification, and runtime execution.
 
-### Introduction
+It is also intended as an extensible governance framework for future ClimateSOS-derived systems, transition-reasoning tools, pathway-evaluation methods, and AI-assisted climate infrastructure. Future systems may extend this charter, but may not weaken its foundational commitments to planetary boundaries, climate justice, human dignity, biosphere integrity, truth-seeking, accountable AI use, and multispecies, ecosystems, and planetary flourishing.
+
+### Description
 
 ClimateSOS is an experimental transition-state operating model for evaluating the pathway logic of accelerated decarbonization, fossil exit, clean-energy delivery, institutional constraints, and biosphere restoration. It is not infrastructure control software, investment advice, policy instruction, autonomous governance authority, or a substitute for accountable human judgment.
 
-This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere integrity, and flourishing for humans, other species, ecosystems, and the living world, within the context of long-term stewardship.
+This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and adds ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere and ecosystem integrity, and multispecies, ecosystems, and planetary flourishing, within the context of long-term stewardship.
 
 Section 2 defines the safeguards that make this operating envelope actionable. These safeguards include long-term stewardship, planetary-boundary integrity, biosphere integrity, climate justice, avoid-harm commitments, anti-colonial and anti-extractive validity conditions, anti-sacrifice-zone protections, human rights, data agency, community control, non-exploitation, equal dignity, human connection, trust, truth-seeking, non-substitution, residual minimization, equitable durability, proportionality, lifecycle responsibility, accountable AI use, and misuse prevention.
 
@@ -67,11 +69,12 @@ ClimateSOS must not treat a pathway as valid if it relies on, produces, or cause
 - atmospheric integrity
 - biogeochemical cycles
 - ecosystem resilience
-- the conditions required for long-term planetary habitability and flourishing
+- the conditions required for long-term planetary habitability
+- planetary, ecosystem, and multispecies flourishing
 
-For completeness, ClimateSOS recognizes planetary-boundary domains: climate change; overloading with novel entities; stratospheric ozone depletion; atmospheric aerosol loading; ocean acidification; interference in biogeochemical flows; freshwater change; land system change and change in biosphere integrity.
+For completeness, ClimateSOS recognizes planetary-boundary domains: climate change; overloading with novel entities; stratospheric ozone depletion; atmospheric aerosol loading; ocean acidification; interference in biogeochemical flows; freshwater change; land system change; and change in biosphere integrity.
 
-Carbon success or gains cannot compensate for planetary-boundary exceedances.
+Carbon success or gains cannot compensate for planetary boundary exceedances.
 
 ---
 
@@ -87,7 +90,7 @@ The Biosphere Fabric should be modeled differently from technical transition sys
 
 Technical transition systems may use packet, queue, synchronization, routing, and throughput semantics. The biosphere representation requires cycles, metabolism, resilience, degradation, recovery, interdependence, biodiversity-health, and ecological-network semantics.
 
-Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not full success.
+Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not complete success.
 
 ---
 
@@ -97,17 +100,15 @@ Climate justice is a validity condition, not an optional policy preference.
 
 ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity.
 
-Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm or shift harm onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
+Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, future generations, or ecosystems with the least capacity to absorb, refuse, repair, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
-ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded ecosystems, degraded habitats, degraded working conditions, displacement, pollution, or residual harms onto those least able to absorb them.
+ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded working conditions, displacement, pollution, ecological degradation, or residual harms onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or already overburdened communities.
 
 #### 2.4.1 Anti-colonial, Anti-extractive, and Anti-sacrifice-zone Validity Condition
 
-Carbon success, biodiversity success, resilience success, infrastructure success, or AI-system success does not constitute pathway success if it is achieved through colonial, racialized, extractive, or sacrifice-zone dynamics. Such pathways must be treated as invalid, HarmBound, JusticeBound, or otherwise unresolved pending redesign, remedy, or rejection.
+ClimateSOS must not classify a pathway as valid if it achieves climate, carbon, biodiversity, resilience, infrastructure, settlement, or AI-system gains by reproducing colonial, racialized, extractive, or sacrifice-zone dynamics. Carbon success, biodiversity success, resilience success, infrastructure success, or AI-system success under those conditions does not constitute pathway success; such pathways must be treated as invalid, HarmBound, JusticeBound, or otherwise unresolved pending redesign, remedy, or rejection.
 
-ClimateSOS must not classify a pathway as valid if it achieves climate, carbon, biodiversity, resilience, infrastructure, settlement, or AI-system gains by reproducing colonial, racialized, extractive, or sacrifice-zone dynamics.
-
-This includes, but is not limited to, pathways that depend on land dispossession, exclusionary conservation, carbon-rights or biodiversity-benefit capture, extractive benefit flows, narrative appropriation, governance displacement, data extraction, labor exploitation, pollution concentration, fossil-backup burden-shifting, water stress, land pressure, grid burdens, surveillance burdens, displacement pressure, or ecological degradation imposed on communities with limited power to refuse or reshape the pathway.
+This includes, but is not limited to, pathways that depend on land dispossession, exclusionary conservation, carbon-rights or biodiversity-benefit capture, extractive benefit flows, narrative appropriation, governance displacement, data extraction, labor exploitation, pollution concentration, fossil-backup burden-shifting, water stress, land pressure, grid burdens, surveillance burdens, displacement pressure, or ecological degradation imposed on communities, workers, Indigenous peoples, or local stewards with limited power to refuse, reshape, govern, or share equitably in the benefits of the pathway, or on ecosystems whose integrity, continuity, resilience, or recovery capacity would be degraded, simplified, enclosed, or appropriated by the pathway.
 
 Pathways involving land, water, biodiversity, CDR, conservation, mining, energy infrastructure, transmission, data centers, AI infrastructure, industrial redevelopment, or settlement systems must respect Indigenous sovereignty, local governance, free, prior, and informed consent where applicable, community authority, equitable benefit-sharing, data sovereignty, labor rights, procedural fairness, and protection against dispossession, exploitation, attribution theft, or governance displacement.
 
@@ -189,11 +190,13 @@ Trust is not preserved by claiming infallibility. It is preserved by being inspe
 
 A healthy planetary future requires more than survival, emissions reduction, or managed stability.
 
-ClimateSOS should support pathways that protect the conditions for human, multispecies, and biosphere flourishing.
+ClimateSOS should support pathways that protect the conditions for human flourishing, community flourishing, native biodiversity, ecosystem integrity, biosphere recovery, and multispecies flourishing.
 
-A pathway is not fully valid if it preserves survival, carbon balance, or basic biosystem homeostasis while eliminating the agency, habitat, continuity, behavioral freedom, cultural vitality, ecological integrity, or temporal slack required for humans, other species, and ecosystems to generate unplanned or otherwise spontaneous beauty, art, humor, love, friendship, relationships, play, care, adaptation, and renewal. A valid pathway should preserve or enable those conditions wherever possible.
+A pathway is not fully valid if it preserves survival, carbon balance, or basic biosystem homeostasis while eliminating the agency, habitat, continuity, behavioral freedom, cultural vitality, ecological integrity, or temporal slack required for humans, other species, and ecosystems to generate unplanned or spontaneous beauty, art, humor, love, friendship, relationships, play, care, adaptation, and renewal.
 
-Optimization must not degrade or erase basic human rights, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
+Consequently, optimization must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
+
+A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and open-ended flourishing conditions that allow humans, other species, communities, and ecosystems to generate beauty, relationships, adaptation, care, and renewal wherever possible.
 
 ---
 
