@@ -15,13 +15,13 @@
 
 This charter defines the rights, commitments, safeguards, and validity conditions that are foundational to, and binding on, the ClimateSOS platform, systems architecture specification, and runtime execution.
 
-It is also intended as an extensible governance framework for future ClimateSOS-derived systems, transition-reasoning tools, pathway-evaluation methods, and AI-assisted climate infrastructure. Future systems may extend this charter, but may not weaken its foundational commitments to planetary boundaries, climate justice, human dignity, biosphere integrity, truth-seeking, accountable AI use, and multispecies, ecosystems, and planetary flourishing.
+It is also intended as an extensible governance framework for future ClimateSOS-derived systems, transition-reasoning tools, pathway-evaluation methods, and AI-assisted climate infrastructure. Future systems may extend this charter, but may not weaken its foundational commitments to planetary boundaries, climate justice, human dignity, biosphere integrity, truth-seeking, accountable AI use, and multispecies, ecological, and planetary flourishing.
 
 ### Description
 
 ClimateSOS is an experimental transition-state operating model for evaluating the pathway logic of accelerated decarbonization, fossil exit, clean-energy delivery, institutional constraints, and biosphere restoration. It is not infrastructure control software, investment advice, policy instruction, autonomous governance authority, or a substitute for accountable human judgment.
 
-This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and adds ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere and ecosystem integrity, and multispecies, ecosystems, and planetary flourishing, within the context of long-term stewardship.
+This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere and ecosystem integrity, and multispecies, ecological, and planetary flourishing, within the context of long-term stewardship.
 
 Section 2 defines the safeguards that make this operating envelope actionable. These safeguards include long-term stewardship, planetary-boundary integrity, biosphere integrity, climate justice, avoid-harm commitments, anti-colonial and anti-extractive validity conditions, anti-sacrifice-zone protections, human rights, data agency, community control, non-exploitation, equal dignity, human connection, trust, truth-seeking, non-substitution, residual minimization, equitable durability, proportionality, lifecycle responsibility, accountable AI use, and misuse prevention.
 
@@ -100,7 +100,7 @@ Climate justice is a validity condition, not an optional policy preference.
 
 ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity.
 
-Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, future generations, or ecosystems with the least capacity to absorb, refuse, repair, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
+Avoiding harm is not reducible to backlash avoidance, political durability, or social acceptance. It means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, or future generations with the least capacity to absorb, refuse, repair, or recover from it, or onto ecosystems with the least capacity to absorb, regenerate, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
 ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded working conditions, displacement, pollution, ecological degradation, or residual harms onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or already overburdened communities.
 
@@ -192,7 +192,7 @@ A healthy planetary future requires more than survival, emissions reduction, or 
 
 ClimateSOS should support pathways that protect the conditions for human flourishing, community flourishing, native biodiversity, ecosystem integrity, biosphere recovery, and multispecies flourishing.
 
-A pathway is not fully valid if it preserves survival, carbon balance, or basic biosystem homeostasis while eliminating the agency, habitat, continuity, behavioral freedom, cultural vitality, ecological integrity, or temporal slack required for humans, other species, and ecosystems to generate unplanned or spontaneous beauty, art, humor, love, friendship, relationships, play, care, adaptation, and renewal.
+A pathway is not fully valid if it preserves survival, carbon balance, or basic biosystem homeostasis while eliminating the agency, habitat, continuity, behavioral freedom, cultural vitality, ecological integrity, or temporal slack required for humans, other species, and ecosystems to generate unplanned or spontaneous beauty, art, humor, love, friendship, relationship, play, care, adaptation, and renewal.
 
 Consequently, optimization must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
 
