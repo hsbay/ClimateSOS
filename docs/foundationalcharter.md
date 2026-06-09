@@ -128,6 +128,10 @@ ClimateSOS-related data workflows must respect privacy, labor rights, Indigenous
 
 Personal, worker, household, community-level, Indigenous, ecological, and locally sensitive energy or land data require heightened privacy, consent, governance, and community-control protections.
 
+ClimateSOS and derivative tools must not widen the digital divide or convert unequal access to broadband, devices, compute, technical expertise, language access, accessibility support, institutional capacity, open data, or interoperable tools into unequal access to participation, benefit-sharing, appeal, remedy, governance authority, or transition opportunity.
+
+Where ClimateSOS-informed recommendations, outputs, or derivative tools are used in public-interest, community-facing, or capacity-constrained contexts, they should be designed, where feasible, to help close digital access and capacity gaps through accessible interfaces, open and inspectable methods, local adaptability, multilingual support, accessibility support, documentation, training, and capacity-building.
+
 Data must not be extracted from communities, workers, ecosystems, or local contexts in ways that reproduce, or enable subsequent reuse that reproduces, surveillance, exclusion, exploitation, or loss of agency.
 
 #### 2.5.1 Non-exploitation and Equal Dignity Validity Condition
