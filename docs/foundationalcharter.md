@@ -196,7 +196,7 @@ A pathway is not fully valid if it preserves survival, carbon balance, or basic 
 
 Consequently, optimization must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
 
-A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and open-ended flourishing conditions that allow humans, other species, communities, and ecosystems to generate beauty, relationships, adaptation, care, and renewal wherever possible.
+A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and open-ended flourishing conditions that allow humans, other species, communities, and ecosystems to generate beauty, relationship, adaptation, care, and renewal wherever possible.
 
 ---
 
