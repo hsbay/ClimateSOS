@@ -1,4 +1,4 @@
-# <picture><img src="./images/climatesos_hex_dk.png" alt="ClimateSOS" width="260"></picture><br><i>Foundational Charter</i>
+# <picture><img src="./images/climatesos_hex_dk.png" alt="ClimateSOS" width="260"></picture><br>*Foundational Charter*
 
 **GitHub project:** https://github.com/hsbay/ClimateSOS  
 **2030s Net Zero Playbook:** https://bit.ly/NZpbk See Appendix O — AI Thread Alignment And Reproducibility  
@@ -378,7 +378,15 @@ Execution remains distributed across accountable human institutions, communities
 
 ---
 
-### 2.23 Safeguards and Guardrails References
+### 2.23 Cross-Cutting Repair, Remedy, and Barrier Removal
+
+Where ClimateSOS-informed recommendations, outputs, or derivative tools identify, rely on, reproduce, or intersect with prior, ongoing, or foreseeable harm, they should, where feasible, support pathways that go beyond seeking to avoid harm. They should help reduce existing burdens, expand participation, strengthen access to appeal and remedy, restore damaged ecological and social conditions, and dismantle barriers that have prevented affected communities, workers, local stewards, and ecosystems from sharing in authority, protection, benefit, and recovery.
+
+This safeguard applies across the Foundational Charter, including harms related to climate injustice, extraction, pollution concentration, sacrifice-zone dynamics, digital exclusion, accessibility, labor displacement, institutional exclusion, cultural erasure, ecological degradation, biosphere instability, data misuse, and governance exclusion. ClimateSOS must not represent technically successful pathways as fully valid where feasible repair, remedy, or barrier removal has been ignored.
+
+---
+
+### 2.24 Safeguards and Guardrails References
 
 The ClimateSOS Foundational Charter is informed by the IEEE *Ethically Aligned Design*, especially its emphasis on human rights, well-being, data agency, effectiveness, transparency, accountability, awareness of misuse, and competence. It is also intended to be broadly consistent with the UNFCCC Technology Executive Committee technical paper *Artificial Intelligence for Climate Action: Advancing Mitigation and Adaptation in Developing Countries*, particularly its recommendations on AI governance, capacity-building, digital inclusion, sustainability, bias prevention, local and Indigenous knowledge, and misuse safeguards.
 
@@ -389,14 +397,6 @@ These references are not treated as substitutes for the ClimateSOS charter. They
 Although this project does not derive from direct reading of Joy Buolamwini’s or Timnit Gebru’s work, it belongs within a broader responsible AI, algorithmic justice, and AI documentation context that their work helped shape. That context includes Dr. Joy Buolamwini and the Algorithmic Justice League’s work on algorithmic bias, auditability, and AI harms; Dr. Timnit Gebru and collaborators’ work on dataset and model documentation, accountability, and the risks of large-scale AI systems; and broader human-rights-centered AI governance frameworks.
 
 The distinctive project-specific contribution, documented in Appendix O of the 2030s Net Zero Playbook, is the use of planetary-boundary-exceedance risk, climate-justice, fossil-lock-in, biosphere-integrity, and avoid-harm guardrails as active generative constraints during project creation, not merely as post-hoc review criteria. These guardrails were used to shape the reasoning environment for developing the [2030s Net Zero Playbook](https://bit.ly/NZpbk) and [ClimateSOS](https://github.com/hsbay/ClimateSOS) so that accelerated transition pathways were evaluated against physical Earth-system limits, justice constraints, fossil-displacement logic, and biosphere integrity from the outset.
-
----
-
-### 2.24 Cross-Cutting Repair, Remedy, and Barrier Removal
-
-Where ClimateSOS-informed recommendations, outputs, or derivative tools identify, rely on, reproduce, or intersect with prior, ongoing, or foreseeable harm, they should, where feasible, support pathways that go beyond avoiding additional harm. They should help reduce existing burdens, expand participation, strengthen access to appeal and remedy, restore damaged ecological and social conditions, and dismantle barriers that have prevented affected communities, workers, local stewards, and ecosystems from sharing in authority, protection, benefit, and recovery.
-
-This safeguard applies across the Foundational Charter, including harms related to climate injustice, extraction, pollution concentration, sacrifice-zone dynamics, digital exclusion, accessibility, labor displacement, institutional exclusion, cultural erasure, ecological degradation, biosphere instability, data misuse, and governance exclusion. ClimateSOS must not represent technically successful pathways as fully valid where feasible repair, remedy, or barrier removal has been ignored.
 
 ---
 
