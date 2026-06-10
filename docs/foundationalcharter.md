@@ -283,13 +283,15 @@ These burdens must not be externalized onto overburdened communities, workers, e
 
 ### 2.16 AI and Advanced Systems Guardrail
 
-AI-assisted net-zero transition systems must operate within the same planetary, biosphere, justice, dignity, trust, and flourishing safeguards and guardrails as ClimateSOS pathways, outputs, uses, and derivative tools.
+AI-assisted net-zero transition systems must operate within all safeguards and guardrails of this charter, including the planetary, biosphere, justice, dignity, trust, flourishing, data-agency, traceability, and accountability safeguards that apply to ClimateSOS pathways, outputs, uses, and derivative tools.
 
-AI may support research, drafting, stress-testing, modeling, permitting analysis, grid planning, finance analysis, workforce planning, resource optimization, and transition coordination.
+AI may support research, drafting, stress-testing, modeling, permitting analysis, grid planning, finance analysis, workforce planning, resource optimization, documentation, and transition coordination.
 
-AI must not replace human judgment, public authority, community participation, legal accountability, or accountable institutional decision-making.
+AI must remain assistive and accountable. Its use in consequential transition workflows must comply with the Charter’s no-sole-delegation, fitness-for-purpose, traceability, data-agency, privacy, and community-control guardrails.
 
-AI systems must not optimize short-term throughput, energy demand, economic output, or apparent emissions performance in ways that increase fossil dependence, resource depletion, inequality, ecological harm, social fragmentation, surveillance, or unverifiable transition claims.
+AI systems must not optimize short-term throughput, energy demand, economic output, or apparent emissions performance in ways that increase fossil dependence, resource depletion, inequality, ecological harm, social fragmentation, surveillance, labor exploitation, exclusionary decision-making, status quo bias, or unverifiable transition claims.
+
+AI is valuable to ClimateSOS only insofar as it improves planning, sequencing, inspection, accountability, or operational performance across already-identified transition constraints. It does not change the physics, justice obligations, biosphere limits, or human-accountability requirements of the transition.
 
 ---
 
