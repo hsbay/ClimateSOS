@@ -261,9 +261,9 @@ Equitable durability requires that workers, ratepayers, host communities, Indige
 
 ### 2.14 Proportionality and Appropriate Use Guardrail
 
-ClimateSOS and derivative tools should be used only where the use is necessary, proportionate, context-appropriate, and lower-risk than available alternatives for the transition question being evaluated.
+ClimateSOS and derivative tools should be designed, documented, maintained, adapted, and used only where the work is necessary, proportionate, context-appropriate, and lower-risk than available alternatives for the net-zero transition question being evaluated.
 
-ClimateSOS should not be applied to consequential transition questions merely because it is available. Applied use should be justified by the need to clarify transition constraints, surface failure modes, improve accountability, reduce harm, or support better human decision-making. This does not restrict good-faith inspection, critique, reuse, adaptation, replication, education, research, red-teaming, or derivative work conducted within the safeguards of this charter.
+ClimateSOS should not be applied to consequential transition questions merely because it is available. Consequential application should be justified by the need to clarify transition constraints, surface failure modes, improve accountability, reduce harm, or support better human decision-making. Good-faith inspection, critique, reuse, adaptation, replication, education, research, red-teaming, and derivative work remain permitted when conducted within the safeguards of this charter.
 
 ClimateSOS design and implementation should follow minimal-engineering discipline: build only what is necessary to clarify transition constraints, evaluate validity, surface failure modes, improve accountability, or reduce harm. Additional complexity should be justified by clear public-interest, scientific, safety, or stewardship value.
 
@@ -283,7 +283,7 @@ These burdens must not be externalized onto overburdened communities, workers, e
 
 ### 2.16 AI and Advanced Systems Guardrail
 
-AI-assisted transition systems must operate within the same planetary, justice, dignity, trust, and biosphere constraints as all other ClimateSOS pathways.
+AI-assisted net-zero transition systems must operate within the same planetary, biosphere, justice, dignity, trust, and flourishing safeguards and guardrails as ClimateSOS pathways, outputs, uses, and derivative tools.
 
 AI may support research, drafting, stress-testing, modeling, permitting analysis, grid planning, finance analysis, workforce planning, resource optimization, and transition coordination.
 
