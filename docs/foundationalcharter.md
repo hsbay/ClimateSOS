@@ -21,23 +21,23 @@ It is also intended as an extensible governance framework for future ClimateSOS-
 
 ClimateSOS is an experimental transition-state operating model for evaluating the pathway logic of accelerated decarbonization, fossil exit, clean-energy delivery, institutional constraints, and biosphere restoration. It is not infrastructure control software, investment advice, policy instruction, autonomous governance authority, or a substitute for accountable human judgment.
 
-This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and any ClimateSOS-informed pathway, scenario, dataset, model, output, deployment, or governance design must remain. ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere and ecosystem integrity, and multispecies, ecological, and planetary flourishing, within the context of long-term stewardship.
+This charter establishes the operating envelope within which ClimateSOS, its derivative tools, and all ClimateSOS-informed outputs, uses, and derived systems must remain. ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere and ecosystem integrity, and multispecies, ecological, and planetary flourishing, within the context of long-term stewardship.
 
-Section 2 defines the safeguards that make this operating envelope actionable. These safeguards include long-term stewardship, planetary-boundary integrity, biosphere integrity, climate justice, avoid-committing-harm validity conditions, anti-colonial and anti-extractive validity conditions, anti-sacrifice-zone protections, human rights, data agency, community control, non-exploitation, equal dignity, human connection, trust, truth-seeking, scientific integrity, non-substitution, residual minimization, equitable durability, proportionality, lifecycle responsibility, accountable AI use, and misuse prevention.
+Section 2 defines the safeguards that make this operating envelope actionable. These safeguards include long-term stewardship; planetary-boundary and biosphere-integrity guardrails; climate-justice, avoid-committing-harm, anti-colonial, anti-extractive, and anti-sacrifice-zone conditions; individual rights, data agency, community control, non-exploitation, equal dignity, human dignity, human connection, trust, and flourishing; truth-seeking, scientific integrity, epistemic discipline, traceability, competence, proportionality, and fitness-for-purpose; non-substitution, residual minimization, equitable durability, lifecycle responsibility, repair, remedy, and barrier removal; and accountable AI and advanced-systems constraints, including human agency, no sole delegation, AI load discipline, no command authority, and misuse prevention.
 
-For avoidance of doubt, technical feasibility, efficiency, scalability, emissions reduction, financial performance, system throughput, carbon accounting success, biodiversity gains, resilience gains, infrastructure gains, or AI-system performance are not sufficient on their own. They matter only when pursued in ways that preserve planetary boundaries, avoid harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, prevent exploitation, reject colonial, racialized, extractive, and sacrifice-zone dynamics, and enable human, community, ecosystem, multispecies, ecological, and planetary flourishing.
+Technical success is insufficient on its own. Technical feasibility, efficiency, scalability, emissions reduction, financial performance, system throughput, carbon accounting success, biodiversity gains, resilience gains, infrastructure gains, or AI-system performance matter only when pursued in ways that preserve planetary boundaries, avoid committing harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, prevent exploitation, reject colonial, racialized, extractive, and sacrifice-zone dynamics, and enable human, community, ecosystem, multispecies, ecological, and planetary flourishing.
 
 The rights, safeguards, and guardrails in this charter are foundational. Some are mutually dependent, and some may require sequencing where explicitly stated. Unless a dependency is explicit, they must be evaluated and implemented in parallel rather than treated as sequential steps, optional layers, or post-hoc review criteria. A pathway that violates any foundational safeguard is not fully valid within ClimateSOS and must be redesigned, constrained, rejected, or treated as unresolved pending remedy.
 
 ---
 
-## 1. Core Principle
+## 1. Core Principle and Purpose
 
-ClimateSOS exists to support decarbonization transition reasoning in service of a livable, just, and flourishing planet.
+ClimateSOS exists to make existing and prospective decarbonization pathways inspectable, comparable, and testable against net-zero transition constraints in service of a livable, just, and flourishing planet.
 
 The purpose of ClimateSOS is to help evaluate whether climate and energy transition pathways can synchronize fast enough to avoid fossil lock-in while remaining bounded by planetary, moral, social, and biosphere safeguards.
 
-A pathway is not valid merely because it is clean, fast, profitable, scalable, efficient, or technically feasible. It is valid only if it remains consistent with the foundational commitments in this charter.
+No pathway is valid unless it remains consistent with the foundational commitments in this charter.
 
 ---
 
@@ -90,19 +90,19 @@ The Biosphere Fabric should be modeled differently from technical transition sys
 
 Technical transition systems may use packet, queue, synchronization, routing, and throughput semantics. The biosphere representation requires cycles, metabolism, resilience, degradation, recovery, interdependence, biodiversity-health, and ecological-network semantics.
 
-Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, not complete success.
+Carbon success with ecosystem harm resolves to HarmBound or BoundaryStress, and not complete success.
 
 ---
 
-### 2.4 Climate Justice / Avoid Harm Guardrail
+### 2.4 Climate Justice / Avoid Committing Harm Guardrail
 
-Climate justice is a validity condition, not an optional policy preference.
+Climate justice is a validity condition, not an optional policy preference. For ClimateSOS, climate justice means that decarbonization pathways must preserve human dignity, protect Indigenous rights and self-determination, avoid committing harm to people and communities, and avoid degrading the biosphere, ecosystems, or planetary conditions on which present and future life depends.
 
-ClimateSOS must not treat pathways as valid if they impose harm on workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity. The action to avoid harm is not reducible to backlash avoidance, political durability, or social acceptance.
+ClimateSOS must not treat pathways as valid if they impose harm on people, including workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or communities already disproportionately burdened by pollution, climate risk, infrastructure exclusion, ecological loss, or energy insecurity. The duty to avoid committing harm is not reducible to backlash avoidance, political durability, or social acceptance.
 
-The action to avoid committing harm means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, or future generations with the least capacity to absorb, refuse, repair, or recover from it, or onto ecosystems with the least capacity to absorb, regenerate, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
+The duty to avoid committing harm means actively avoiding actions, pathways, deployments, or transition strategies that commit harm, and especially those that shift harm onto people, communities, workers, or future generations with the least capacity to absorb, refuse, repair, or recover from it, or onto ecosystems with the least capacity to absorb, regenerate, or recover from it. The transition must avoid committing harm because harm is unacceptable, not merely because harm may slow implementation.
 
-ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded working conditions, displacement, pollution, ecological degradation, or residual harms onto workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, or already overburdened communities.
+ClimateSOS should therefore reject pathways that achieve technical decarbonization by shifting costs, siting burdens, reliability risks, surveillance burdens, degraded working conditions, displacement, pollution, ecological degradation, or residual harms onto people, including workers, low-income populations, host communities, Indigenous peoples, underrepresented populations, historically marginalized groups, future generations, and already overburdened communities, or onto ecosystems.
 
 #### 2.4.1 Anti-colonial, Anti-extractive, and Anti-sacrifice-zone Validity Condition
 
@@ -110,9 +110,9 @@ ClimateSOS must not classify a pathway as valid if it achieves climate, carbon, 
 
 This includes, but is not limited to, pathways that depend on land dispossession, exclusionary conservation, carbon-rights or biodiversity-benefit capture, extractive benefit flows, narrative appropriation, governance displacement, data extraction, labor exploitation, pollution concentration, fossil-backup burden-shifting, water stress, land pressure, grid burdens, surveillance burdens, displacement pressure, or ecological degradation imposed on communities, workers, Indigenous peoples, or local stewards with limited power to refuse, reshape, govern, or share equitably in the benefits of the pathway, or on ecosystems whose integrity, continuity, resilience, or recovery capacity would be degraded, simplified, enclosed, or appropriated by the pathway.
 
-Pathways involving land, water, biodiversity, CDR, conservation, mining, energy infrastructure, transmission, data centers, AI infrastructure, industrial redevelopment, or settlement systems must respect Indigenous sovereignty, local governance, free, prior, and informed consent where applicable, community authority, equitable benefit-sharing, data sovereignty, labor rights, procedural fairness, and protection against dispossession, exploitation, attribution theft, or governance displacement.
+All pathways must respect Indigenous sovereignty, local governance, and community authority; require free, prior, and informed consent when pathways affect Indigenous peoples, lands, waters, knowledge, data, governance, rights, or claims; provide equitable benefit-sharing; uphold data sovereignty, labor rights, and procedural fairness; and protect against dispossession, exploitation, attribution theft, and governance displacement.
 
-The action to avoid committing new harm is insufficient where prior harm is already embedded. Valid pathways should, where possible, reduce existing burdens, repair extractive relationships, increase community resilience, and shift authority, ownership, recognition, and benefits toward the people, communities, workers, existing stewards, and ecosystems that have borne the greatest costs or sustained the greatest stewardship.
+Where prior, ongoing, or foreseeable harm is already embedded, ClimateSOS should apply the cross-cutting repair, remedy, and barrier-removal safeguard in Section 2.23.
 
 ---
 
@@ -130,7 +130,7 @@ Personal, worker, household, community-level, Indigenous, ecological, and locall
 
 ClimateSOS and derivative tools must not widen the digital divide or convert unequal access to broadband, devices, compute, technical expertise, language access, accessibility support, institutional capacity, open data, or interoperable tools into unequal access to participation, benefit-sharing, appeal, remedy, governance authority, or transition opportunity.
 
-Digital access and capacity gaps are often shaped by gender, income, wealth, geography, disability, language, Indigeneity, age, migration status, education access and attainment, caregiving burdens, safety risks, and institutional exclusion. ClimateSOS-informed recommendations, outputs, or derivative tools should therefore avoid treating digital access as neutral, universal, or already equitably distributed.
+Digital access and capacity gaps are often shaped by gender, income, wealth, geography, disability, language, Indigeneity, age, migration status, education access and attainment, caregiving burdens, safety risks, and institutional exclusion. ClimateSOS-informed recommendations, outputs, or derivative tools should not assume digital access is neutral, universal, or already equitably distributed.
 
 Where ClimateSOS-informed recommendations, outputs, or derivative tools are used in public-interest, community-facing, or capacity-constrained contexts, they should be designed, where feasible, to help close digital access and capacity gaps through accessible interfaces, open and inspectable methods, local adaptability, multilingual support, disability access, gender-responsive participation, documentation, training, capacity-building, and remedy pathways.
 
@@ -166,7 +166,7 @@ Human connection, trust, care, belonging, cooperation, friendship, community, in
 
 ClimateSOS must preserve, strengthen, and where needed help repair the social conditions that allow people and communities to remain relationally enriched.
 
-A pathway that achieves technical decarbonization while degrading social trust, isolating people, weakening or severing community bonds, weakening public participation, or replacing accountable human relationship with opaque automation is not fully valid under this charter.
+A pathway that achieves technical decarbonization while degrading social trust, isolating people, weakening or severing community bonds, weakening public participation, or replacing accountable human relationships with opaque automation is invalid under this charter.
 
 ---
 
@@ -202,7 +202,7 @@ A pathway is not fully valid if it preserves survival, carbon balance, or basic 
 
 Consequently, optimization must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
 
-A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and open-ended flourishing conditions that allow humans, other species, communities, and ecosystems to generate beauty, relationship, adaptation, care, and renewal wherever possible.
+A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and flourishing preconditions that allow humans, other species, communities, and ecosystems to generate beauty, relationship, adaptation, care, and renewal wherever possible.
 
 ---
 
@@ -396,7 +396,7 @@ These references are not treated as substitutes for the ClimateSOS charter. They
 
 Although this project does not derive from direct reading of Joy Buolamwini’s or Timnit Gebru’s work, it belongs within a broader responsible AI, algorithmic justice, and AI documentation context that their work helped shape. That context includes Dr. Joy Buolamwini and the Algorithmic Justice League’s work on algorithmic bias, auditability, and AI harms; Dr. Timnit Gebru and collaborators’ work on dataset and model documentation, accountability, and the risks of large-scale AI systems; and broader human-rights-centered AI governance frameworks.
 
-The distinctive project-specific contribution, documented in Appendix O of the 2030s Net Zero Playbook, is the use of planetary-boundary-exceedance risk, climate-justice, fossil-lock-in, biosphere-integrity, avoid-committing-harm, and evidence-discipline guardrails as active generative constraints during project creation, not merely as post-hoc review criteria. These guardrails were used to shape the reasoning environment for developing the [2030s Net Zero Playbook](https://bit.ly/NZpbk) and [ClimateSOS](https://github.com/hsbay/ClimateSOS) so that accelerated transition pathways were evaluated against physical Earth-system limits, justice constraints, fossil-displacement logic, biosphere integrity, and epistemic discipline from the outset.
+The distinctive project-specific contribution, documented in Appendix O of the *2030s Net Zero Playbook*, is the use of planetary-boundary-exceedance risk, climate-justice, fossil-lock-in, biosphere-integrity, avoid-committing-harm, and evidence-discipline guardrails as active generative constraints during project creation, not merely as post-hoc review criteria. These guardrails were used to shape the reasoning environment for developing the *[2030s Net Zero Playbook](https://bit.ly/NZpbk)* and [ClimateSOS](https://github.com/hsbay/ClimateSOS) so that accelerated transition pathways were evaluated against physical Earth-system limits, justice constraints, fossil-displacement logic, biosphere integrity, and epistemic discipline from the outset.
 
 ---
 
