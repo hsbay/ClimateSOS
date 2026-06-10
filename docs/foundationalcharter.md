@@ -291,7 +291,7 @@ AI must remain assistive and accountable. Its use in consequential transition wo
 
 AI systems must not optimize short-term throughput, energy demand, economic output, or apparent emissions performance in ways that increase fossil dependence, resource depletion, inequality, ecological harm, social fragmentation, surveillance, labor exploitation, exclusionary decision-making, status quo bias, or unverifiable transition claims.
 
-AI is valuable to ClimateSOS only insofar as it improves planning, sequencing, inspection, accountability, or operational performance across already-identified transition constraints. It does not change the physics, justice obligations, biosphere limits, or human-accountability requirements of the transition.
+AI is valuable to ClimateSOS only insofar as it improves planning, sequencing, inspection, accountability, or operational performance across already-identified transition constraints. It does not change the physics, justice obligations, biosphere limits, or human accountability requirements of the transition.
 
 ---
 
@@ -329,22 +329,28 @@ A ClimateSOS output that cannot be inspected, challenged, corrected, or contextu
 
 ### 2.19 Competence Guardrail
 
-ClimateSOS reports and data may be made freely available for non-advice research, education, critique, and public-interest exploration. When aiding or enabling policy, investment advice, guidance, infrastructure planning, or community-impact decisions, ClimateSOS reports and data should be used only by individuals or teams maintaining sufficient competence and accountability in the relevant domains.
+ClimateSOS reports and data may be made freely available for non-advice research, education, critique, and public-interest exploration. When assisting or informing policy, investment, infrastructure-planning, or community-impact decisions, ClimateSOS reports and data must be used only by individuals or teams maintaining sufficient competence and accountability in the relevant domains.
 
 This includes competence in:
 
 - energy systems
 - climate science
 - infrastructure planning
-- biosphere and ecological constraints
+- clean energy finance and financial system realignment
+- fossil finance, refinancing, and asset-stranding dynamics
+- fossil asset retirement, phaseout sequencing, and related governance
+- reliability and adequacy replacement
+- utility regulation, capacity markets, and market design
+- workforce transition, pension protection, and regional reinvestment
+- biosphere and ecological systems science
 - justice and rights-preserving governance
-- model limitations
+- model assumptions, limitations, and error modes
 - data protection
 - uncertainty interpretation
 - cybersecurity
 - appeal and remedy procedures
 
-ClimateSOS outputs must not be used as the basis for policy, investment, infrastructure, or community-impact decisions without the competence, accountability, and accountable human review needed to interpret them responsibly.
+ClimateSOS outputs must not be used as the basis for policy, investment, infrastructure, or community-impact decisions without the competence, accountability, and qualified human review needed to interpret them responsibly.
 
 ---
 
