@@ -418,31 +418,31 @@ Workforce productivity modeling exists to represent labor capacity, training thr
 
 ## 4. Runtime Validity States
 
-ClimateSOS should represent guardrail violations in its runtime semantics.
+ClimateSOS must represent guardrail violations in its runtime semantics.
 
 Relevant outcome states include:
 
-- CleanBound
-- MixedBound
-- FossilBound
-- BioBound
-- RestorationBound
-- CarbonRemovalBound
-- WaterCycleBound
-- BoundaryStress
-- HarmBound
-- NoAck
-- Unbound
+* CleanBound
+* MixedBound
+* FossilBound
+* BioBound
+* RestorationBound
+* CarbonRemovalBound
+* WaterCycleBound
+* BoundaryStress
+* HarmBound
+* NoAck
+* Unbound
 
-A pathway may clear its technical queues and still fail if it violates foundational safeguards. In ClimateSOS, that kind of failure should resolve to a negative validity state, such as HarmBound or BoundaryStress, to show that the pathway caused or shifted harm even though its technical steps were completed.
+A pathway may clear its technical queues and still fail if it violates foundational safeguards. In ClimateSOS, this failure mode should resolve to a negative validity state, such as HarmBound or BoundaryStress, to show that the pathway committed, enabled, reproduced, shifted, or worsened harm even though its technical steps were completed.
 
 Examples:
 
-- carbon success plus ecosystem harm resolves to HarmBound or BoundaryStress
-- clean delivery plus unjust burden-shifting resolves to HarmBound or NoAck
-- restoration with verified ecological recovery may resolve to BioBound or RestorationBound
-- technical feasibility without accountability remains Unbound or NoAck
-- fossil fallback or fossil persistence may resolve to MixedBound or FossilBound
+* carbon success plus ecosystem harm resolves to HarmBound or BoundaryStress
+* clean delivery plus unjust burden-shifting resolves to HarmBound or NoAck
+* restoration with verified ecological recovery may resolve to BioBound or RestorationBound
+* technical feasibility without accountability remains Unbound or NoAck
+* fossil fallback or fossil persistence may resolve to MixedBound or FossilBound
 
 ---
 
