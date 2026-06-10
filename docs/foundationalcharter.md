@@ -196,13 +196,13 @@ Trust is not preserved by claiming infallibility. It is preserved by being inspe
 
 A healthy planetary future requires more than survival, emissions reduction, or managed stability.
 
-ClimateSOS should support pathways that protect the conditions for human flourishing, community flourishing, native biodiversity, ecosystem integrity, biosphere recovery, and multispecies flourishing.
+ClimateSOS valid pathways must protect the preconditions for human flourishing, community flourishing, native biodiversity, ecosystem integrity, biosphere recovery, multispecies flourishing, and planetary flourishing.
 
-A pathway is not fully valid if it preserves survival, carbon balance, or basic biosystem homeostasis while eliminating the agency, habitat, continuity, behavioral freedom, cultural vitality, ecological integrity, or temporal slack required for humans, other species, and ecosystems to generate unplanned or spontaneous beauty, art, humor, love, friendship, relationship, play, care, adaptation, and renewal.
+A pathway is not fully valid if it preserves survival, carbon balance, or basic ecological homeostasis and regeneration while eliminating, degrading, over-managing, or optimizing away flourishing preconditions, including agency, habitat, continuity, behavioral freedom, expression, cultural vitality, ecological integrity, movement, relational life, or temporal slack required for humans, other species, communities, and ecosystems to create, generate, participate in, or sustain unplanned or spontaneous beauty, art, music, dance, humor, love, friendship, relationship, play, care, adaptation, renewal, mutualism, and ecological becoming.
 
-Consequently, optimization must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, or the open-ended capacity of beings and ecosystems to become more than the system predicts.
+Optimization or alignment must not degrade or erase basic human rights, human dignity, curiosity, knowledge-seeking, understanding, creativity, dreaming, imagination, feeling, serendipity, wildness, plural life paths, cultural continuity, social development, ecological agency, species-specific lifeways, or the open-ended capacity of beings and ecosystems to become more than the system predicts. A pathway that does so is invalid under this charter.
 
-A valid pathway should preserve or enable the agency, habitat, continuity, cultural vitality, ecological integrity, temporal slack, and flourishing preconditions that allow humans, other species, communities, and ecosystems to generate beauty, relationship, adaptation, care, and renewal wherever possible.
+A valid pathway must preserve or enable the preconditions and conditions for flourishing wherever those conditions are materially affected by the pathway, including agency, habitat, continuity, cultural vitality, ecological integrity, movement, regeneration, temporal slack, species-specific lifeways, and the protected space for humans, other species, communities, and ecosystems to participate in or generate beauty, relationship, care, adaptation, renewal, mutualism, and ecological becoming.
 
 ---
 
