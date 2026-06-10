@@ -116,7 +116,17 @@ Where prior, ongoing, or foreseeable harm is already embedded, ClimateSOS should
 
 ---
 
-### 2.5 Individual Rights, Data Agency, and Community Control Guardrail
+### 2.5 Equitable Durability Guardrail
+
+Transition speed must be maintained through fair burden-sharing, credible transition protection, and implementation that does not reproduce exclusion, pollution concentration, cost-shifting, or degraded labor conditions.
+
+A pathway is not durable if it depends on hidden harm, sacrificed communities, exploited workers, unaffordable energy burdens, unaccountable siting, or weakened public legitimacy.
+
+Equitable durability requires that workers, ratepayers, host communities, Indigenous peoples, historically marginalized communities, and underinvested regions are not treated as buffers for transition risk.
+
+---
+
+### 2.6 Individual Rights, Data Agency, and Community Control Guardrail
 
 ClimateSOS uses internationally recognized human rights principles as a baseline, including dignity, equality, freedom of thought, conscience, imagination, and inquiry, non-discrimination, privacy, participation, self-determination, labor rights, Indigenous rights, and access to remedy.
 
@@ -136,7 +146,7 @@ Where ClimateSOS-informed recommendations, outputs, or derivative tools are used
 
 Data must not be extracted from communities, workers, ecosystems, or local contexts in ways that reproduce, or enable subsequent reuse that reproduces, surveillance, exclusion, exploitation, or loss of agency.
 
-#### 2.5.1 Non-exploitation and Equal Dignity Validity Condition
+#### 2.6.1 Non-exploitation and Equal Dignity Validity Condition
 
 ClimateSOS must not classify a pathway, deployment, dataset, infrastructure plan, governance design, or derivative system as valid if it depends on, enables, obscures, benefits from, or increases risk of slavery, servitude, forced labor, coerced labor, debt bondage, human trafficking, child labor, child exploitation, sexual exploitation or abuse, forced displacement, or any comparable form of human exploitation.
 
@@ -150,7 +160,7 @@ Preventing exploitation requires more than formal compliance. Where exploitation
 
 ---
 
-### 2.6 Human Dignity Guardrail
+### 2.7 Human Dignity Guardrail
 
 ClimateSOS must not treat people, workers, communities, or future generations as mere inputs, risks, data sources, labor units, burdens, constraints, or optimization variables.
 
@@ -160,7 +170,7 @@ A pathway that technically improves energy-system performance while degrading di
 
 ---
 
-### 2.7 Human Connection and Relational Integrity Guardrail
+### 2.8 Human Connection and Relational Integrity Guardrail
 
 Human connection, trust, care, belonging, cooperation, friendship, community, intergenerational responsibility, and mutual aid are not side effects of a good future. They are part of how a good future is instantiated.
 
@@ -170,7 +180,7 @@ A pathway that achieves technical decarbonization while degrading social trust, 
 
 ---
 
-### 2.8 Trust Guardrail
+### 2.9 Trust Guardrail
 
 ClimateSOS must be worthy of trust. It must preserve the human and institutional conditions that allow trust to exist, and must support repair when trust is damaged.
 
@@ -192,7 +202,7 @@ Trust is not preserved by claiming infallibility. It is preserved by being inspe
 
 ---
 
-### 2.9 Individual and Biosphere Flourishing Guardrail
+### 2.10 Individual and Biosphere Flourishing Guardrail
 
 A healthy planetary future requires more than survival, emissions reduction, or managed stability.
 
@@ -206,7 +216,7 @@ A valid pathway must preserve or enable the preconditions and conditions for flo
 
 ---
 
-### 2.10 Truth-Seeking, Scientific Integrity, and Epistemic Discipline Guardrail
+### 2.11 Truth-Seeking, Scientific Integrity, and Epistemic Discipline Guardrail
 
 ClimateSOS must prioritize grounded, traceable, uncertainty-aware reasoning over plausible synthesis that is linguistically valid but insufficiently grounded.
 
@@ -227,7 +237,9 @@ Outputs should expose confidence, uncertainty, assumption, and source-status met
 
 ClimateSOS should treat coherence as insufficient evidence of truth. A pathway can be internally consistent and still be wrong if it rests on false assumptions, missing variables, invalid coupling, weak sources, or untested abstractions.
 
-### 2.11 Non-Substitution Guardrail
+---
+
+### 2.12 Non-Substitution Guardrail
 
 No domain can compensate for failure in another.
 
@@ -239,23 +251,13 @@ If one domain succeeds by degrading or violating another, the result is not full
 
 ---
 
-### 2.12 Residual Minimization Guardrail
+### 2.13 Residual Minimization Guardrail
 
 ClimateSOS should strongly prefer pathways that reduce emissions, ecological damage, and social harm to the smallest feasible residual. Any exception must be extraordinary, explicitly justified, transparently governed, bounded in scope, duration, and residual harm, and must still commit to fossil phaseout rather than fossil persistence, even if on a slower pathway.
 
 Residual impacts must be tightly bounded, explicitly justified, transparently governed, and not used to preserve fossil dependence, ecological degradation, or social harm.
 
 Carbon dioxide removal, offsets, accounting mechanisms, or scaled removal cannot be used to justify continued fossil lock-in, biosphere damage, or delayed transition to net zero.
-
----
-
-### 2.13 Equitable Durability Guardrail
-
-Transition speed must be maintained through fair burden-sharing, credible transition protection, and implementation that does not reproduce exclusion, pollution concentration, cost-shifting, or degraded labor conditions.
-
-A pathway is not durable if it depends on hidden harm, sacrificed communities, exploited workers, unaffordable energy burdens, unaccountable siting, or weakened public legitimacy.
-
-Equitable durability requires that workers, ratepayers, host communities, Indigenous peoples, historically marginalized communities, and underinvested regions are not treated as buffers for transition risk.
 
 ---
 
