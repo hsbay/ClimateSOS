@@ -19,7 +19,7 @@ ClimateSOS is an experimental transition-state operating model for reasoning abo
 
 ClimateSOS does not begin with optimization and add ethics afterward. It begins from planetary responsibility, human dignity, climate justice, truth-seeking, public accountability, trust, human connection, biosphere integrity, and flourishing for humans, other species, ecosystems, and the living world, within the context of long-term stewardship.
 
-All ClimateSOS program execution, resulting data, pathways, scenarios, and outputs are valid only within that operating envelope. Technical feasibility, efficiency, scalability, emissions reduction, financial performance, or system throughput are not sufficient on their own. They matter only when pursued in ways that preserve planetary boundaries, avoid committing harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, and enable flourishing across human communities, other species, and ecosystems.
+All ClimateSOS program execution, resulting data, pathways, scenarios, and outputs are valid only within that operating envelope. Technical feasibility, efficiency, scalability, emissions reduction, financial performance, or system throughput are not sufficient on their own. They matter only when pursued in ways that preserve planetary boundaries, avoid harm, protect dignity and human connection, maintain accountable human judgment, support trust and repair, and enable flourishing across human communities, other species, and ecosystems.
 
 The rights, safeguards, and guardrails in this charter are foundational. Some are mutually dependent, and some may require sequencing where explicitly stated. Unless a dependency is explicit, they should be evaluated and implemented in parallel rather than treated as sequential steps or optional layers.
 
@@ -380,7 +380,6 @@ Relevant outcome states include:
 - WaterCycleBound
 - BoundaryStress
 - HarmBound
-- JusticeBound
 - NoAck
 - Unbound
 
@@ -414,4 +413,4 @@ ClimateSOS is only useful if it helps make reality clearer without making respon
 
 The goal is not merely a faster transition.
 
-The goal is a transition that remains inside planetary boundaries, exits fossil dependence, protects dignity and trust, avoids committing harm, preserves human connection, strengthens biosphere integrity, remains accountable to human judgment, and enables and expands flourishing for humans, other species, ecosystems, and the living world.
+The goal is a transition that remains inside planetary boundaries, exits fossil dependence, protects dignity and trust, avoids harm, preserves human connection, strengthens biosphere integrity, remains accountable to human judgment, and enables and expands flourishing for humans, other species, ecosystems, and the living world.
