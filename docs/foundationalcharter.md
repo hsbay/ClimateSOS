@@ -154,7 +154,7 @@ This prohibition includes, but is not limited to, direct exploitation, supply-ch
 
 ClimateSOS must also reject pathways that reproduce discrimination, exclusion, violence, or loss of agency on the basis of race, ethnicity, caste, Indigeneity, nationality, migration status, religion, disability, age, sex, gender, gender identity or expression, sexual orientation, pregnancy, family or caregiving status, socioeconomic status, or any other protected or structurally vulnerable status.
 
-Gender justice is a validity condition. A pathway is not valid if it increases gender-based violence, harassment, exclusion, unpaid care burdens, economic dependency, reproductive coercion, unsafe labor exposure, loss of mobility, or exclusion from governance, ownership, data agency, benefit-sharing, or remedy.
+Gender justice is a validity condition. A pathway is not valid if it increases gender-based violence, including violence or harassment based on sex, sex characteristics, sexual orientation, gender, gender identity, gender expression, or how any of these are perceived, expressed, or lived; exclusion; unpaid care burdens; economic dependency; reproductive coercion; unsafe labor exposure; loss of mobility; or exclusion from governance, ownership, data agency, benefit-sharing, or remedy.
 
 Preventing exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
 
