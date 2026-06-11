@@ -433,6 +433,7 @@ Relevant outcome states include:
 * WaterCycleBound
 * BoundaryStress
 * HarmBound
+* JusticeBound
 * NoAck
 * Unbound
 
@@ -466,4 +467,4 @@ ClimateSOS is only useful if it helps make reality clearer without making respon
 
 The goal is not merely a faster transition.
 
-The goal is a transition that remains inside planetary boundaries, exits fossil dependence, protects dignity and trust, avoids harm, preserves human connection, strengthens biosphere integrity, remains accountable to human judgment, and enables and expands flourishing for humans, other species, ecosystems, and the living world.
+The goal is a transition that remains inside planetary boundaries, exits fossil dependence, protects dignity and trust, avoids committing harm, preserves human connection, strengthens biosphere integrity, remains accountable to human judgment, and enables and expands flourishing for humans, other species, ecosystems, and the living world.
