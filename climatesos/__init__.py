@@ -1,10 +1,7 @@
-"""ClimateSOS v0.7 toy runtime.
+# Climate State transition model OS
+# Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
 
-Author / maintainer: Shannon A. Fiume (@safiume)
-License: CC BY 4.0, 2026
-Development note: Created under Shannon A. Fiume's direction with AI-assisted
-code-generation, implementation assistance, and systems-design iteration.
-"""
+"""ClimateSOS v0.7 toy runtime."""
 
 from .evaluator import evaluate_token
 from .models import EvaluationResult, Fabric, IdentityToken, Queue, RemedyBus, ScenarioState
