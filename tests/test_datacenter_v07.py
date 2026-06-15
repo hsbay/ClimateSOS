@@ -110,3 +110,30 @@ def test_datacenter_case_c_remedybus_acceptance_re_evaluates_to_conditional_pass
     assert result.guardrail_resolution == GuardrailResolution.CONDITIONAL_PASS
     assert result.validity is True
     assert result.remedy_bus_status == RemedyBusStatus.REMEDY_ACCEPTED
+    assert "Initial token resulting state: HarmBound" in result.explanation_trace
+
+
+def test_datacenter_case_c2_accepted_remedy_without_verified_conditions_is_not_valid() -> None:
+    scenario = ScenarioState(
+        current_year=2027,
+        queues=_queues(),
+        fossil_fallback_available=False,
+        remedy_bus=RemedyBus(
+            status=RemedyBusStatus.REMEDY_ACCEPTED,
+            conditions_verified=False,
+        ),
+    )
+
+    result = evaluate_token(
+        scenario,
+        _datacenter_token(
+            guardrail_resolution=GuardrailResolution.UNRESOLVED,
+            resulting_state=ResultingState.HARM_BOUND,
+        ),
+    )
+
+    assert result.resulting_state == ResultingState.CLEAN_BOUND
+    assert result.guardrail_resolution == GuardrailResolution.UNRESOLVED
+    assert result.validity is False
+    assert result.remedy_bus_status == RemedyBusStatus.REMEDY_ACCEPTED
+    assert "Initial token resulting state: HarmBound" in result.explanation_trace
