@@ -20,15 +20,11 @@ _VALID_GUARDRAILS = {
 
 
 def evaluate_token(scenario: ScenarioState, token: IdentityToken) -> EvaluationResult:
-    """Evaluate one identity token against the v0.7 data-center semantics.
-
-    This is intentionally small. It is not a calibrated model or a policy
-    recommendation system. It only tests the runtime seams defined by the
-    v0.7 OS spec: queues, fossil fallback, guardrail resolution, RemedyBus,
-    resulting state, and explanation trace.
-    """
+    """Evaluate one identity token against the v0.7 data-center semantics."""
 
     trace: list[str] = [f"Evaluating token: {token.name}"]
+    if token.resulting_state is not None:
+        trace.append(f"Initial token resulting state: {token.resulting_state.value}")
     guardrail = token.guardrail_resolution
 
     blocking_queues = _blocking_required_queues(scenario, token)
