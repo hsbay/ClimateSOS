@@ -1,3 +1,6 @@
+# Climate State transition model OS
+# Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
+
 """Data models for the ClimateSOS v0.7 toy evaluator."""
 
 from dataclasses import dataclass, field
