@@ -1,3 +1,6 @@
+# Climate State transition model OS
+# Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
+
 from climatesos import (
     GuardrailResolution,
     IdentityToken,
