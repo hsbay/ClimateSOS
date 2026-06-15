@@ -1,3 +1,6 @@
+# Climate State transition model OS
+# Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
+
 """Minimal RemedyBus helpers for the ClimateSOS v0.7 toy runtime."""
 
 from .models import RemedyBus
