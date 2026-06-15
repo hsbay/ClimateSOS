@@ -27,7 +27,14 @@ class Queue:
     ttl_years: float | None = None
 
     @property
-    def is_clear(self) -> bool:
+    def is_nonblocking(self) -> bool:
+        """Return true when the queue does not block token evaluation.
+
+        A constrained queue is not fully clear, but it is nonblocking in the
+        bounded v0.7 data-center tests. Later runtimes may attach warnings,
+        pressure, or BoundaryStress to constrained queues.
+        """
+
         return self.status in {QueueStatus.CLEAR, QueueStatus.CONSTRAINED}
 
     @property
