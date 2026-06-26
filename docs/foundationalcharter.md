@@ -158,6 +158,18 @@ Gender justice is a validity condition. A pathway is not valid if it increases g
 
 Preventing exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
 
+#### 2.6.2 Governance Accountability and Contestability
+
+ClimateSOS does not prescribe a single governance model, override public institutions, or determine which community, legal, regulatory, democratic, or institutional authority should prevail in contested decisions. It does not govern. It evaluates whether a pathway, governance design, or decision process remains consistent with the Charter’s validity conditions.
+
+In keeping with the intent of this Charter, governance should strongly enable affected people, workers, communities, local stewards, accountable institutions, and future-facing public-interest bodies to understand, contest, revise, and seek remedy for decisions that materially affect them.
+
+ClimateSOS-informed governance should therefore identify, where relevant, who has voice, who has decision authority, who defines success, who interprets harm, who controls or can access relevant data, who may object or appeal, who has access to remedy or repair, who bears transition risk, who receives transition benefit, and who can revise rules when harms, exclusions, conflicts, or misuses are discovered.
+
+Procedural legitimacy does not by itself make a pathway valid. A locally supported, legally authorized, contractually protected, or institutionally approved pathway may still resolve to HarmBound, FossilBound, JusticeBound, BoundaryStress, or another unresolved validity state if it preserves fossil dependence, shifts harm, violates planetary boundaries, suppresses affected voices, blocks remedy, or sacrifices communities, workers, ecosystems, future generations, or the broader public good.
+
+Where local interests and broader planetary or public-interest obligations conflict, ClimateSOS should not erase either side or treat either side as automatically dispositive. It should surface the conflict, identify harms and constraints on each side, and surface redesign pathways that protect workers and communities while still enabling fossil exit, emissions reduction, biosphere integrity, and long-term flourishing.
+
 ---
 
 ### 2.7 Human Dignity Guardrail
@@ -199,6 +211,14 @@ Trustworthiness requires:
 ClimateSOS should not claim authority it does not possess. It should not obscure uncertainty, hide assumptions, overstate precision, mask fossil persistence, or present speculative outputs as validated conclusions.
 
 Trust is not preserved by claiming infallibility. It is preserved by being inspectable, challengeable, correctable, and repairable.
+
+#### 2.9.1 Objection, Dissent, and Contestability
+
+In participatory, public-interest, or community-facing uses, objections, dissent, and affected-community concerns should be treated as information about possible harm, exclusion, burden-shifting, invalid assumptions, or governance failure, not as implementation friction to suppress.
+
+Objections should be evaluated in light of the Charter’s safeguards, evidence, affected rights, planetary-boundary constraints, and foreseeable harms. Good-faith objections may reveal necessary redesign, remedy, compensation, sequencing, or transition protection.
+
+Objections, legal claims, procedural mechanisms, or institutional vetoes that are used to preserve fossil dependence, block remedy, obscure harm, entrench exploitation, suppress affected communities, or shift burdens onto others should not be treated as sufficient to validate an otherwise harmful pathway.
 
 ---
 
