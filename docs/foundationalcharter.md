@@ -259,6 +259,16 @@ ClimateSOS should treat coherence as insufficient evidence of truth. A pathway c
 
 ---
 
+#### 2.11.1 Material Validity and Evaluation Scope
+
+For any pathway, product, output, claim, recommendation, model result, or derivative system, ClimateSOS should identify the materially relevant factors needed to evaluate validity.
+
+For climate-transition evaluation, this includes emissions, fossil lock-in, lifecycle impacts, justice burdens, supply-chain dependencies, finance conditions, governance constraints, biosphere effects, and evidence gaps.
+
+An output that omits materially relevant factors, narrows the evaluation boundary in ways that hide harm, or treats an incomplete scope as decision-ready should not be treated as fully valid until the missing context is disclosed, evaluated, or resolved.
+
+---
+
 ### 2.12 Non-Substitution Guardrail
 
 No domain can compensate for failure in another.
