@@ -301,6 +301,16 @@ A claim should not be treated as valid merely because it is technically plausibl
 
 ---
 
+#### 2.11.3 Manufactured Doubt and Epistemic Manipulation
+
+ClimateSOS must not treat manufactured doubt, false balance, uncertainty amplification intended or likely to mislead, conflicted expertise, expert laundering, evidence selection intended or likely to mislead, fossil-delay narratives, or responsibility-shifting narratives as neutral uncertainty or good-faith disagreement when the available evidence is sufficient to identify material risk, harm, fossil dependence, rights impacts, or transition urgency.
+
+ClimateSOS outputs must distinguish legitimate scientific uncertainty, scoped analysis, contested interpretation, unresolved evidence, good-faith dissent, rights-based objections, and affected-party concerns from claims or narratives that materially misrepresent evidence, omit material contrary evidence, rely on false, misleading, or distorted information, are institutionally conflicted, or function to delay, dilute, obscure, or deflect action on fossil phase-out, emissions reduction, equitable durability, justice obligations, remedy, human rights, Indigenous rights, biosphere integrity, or planetary-boundary protection.
+
+Where manufactured doubt, misleading uncertainty amplification, false balance, conflicted expertise, misleading evidence selection, false information, or misleading responsibility-shifting materially affects a pathway, product, output, claim, recommendation, model result, governance design, or derivative system, ClimateSOS must not rely on the affected data, claim, assumption, source, intermediate result, or derived output; should remove or quarantine the affected material or derived result; reevaluate the pathway without reliance on false, misleading, or distorted information; and, where validity cannot be reestablished, reject the pathway, claim, or output.
+
+---
+
 ### 2.12 Non-Substitution Guardrail
 
 No domain can compensate for failure in another.
