@@ -126,6 +126,18 @@ Equitable durability requires that workers, ratepayers, host communities, Indige
 
 ---
 
+#### 2.5.1 Just Transition, Labor, and Worker/Community Integrity
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, or derivative system as fully valid, clean, just, sustainable, or transition-aligned if its apparent climate, sustainability, infrastructure, resilience, economic, or AI-system benefit depends on, causes, enables, contributes to, obscures, externalizes, or benefits from degraded labor conditions, exclusion of affected workers or communities, unmanaged or unjust livelihood or job displacement, weakened rights, uncompensated risk-shifting onto those with the least power, or treating workers, communities, Indigenous Peoples, local stewards, or future generations as expendable implementation costs.
+
+Transition evaluation must consider materially relevant effects on workers, host communities, Indigenous Peoples, local communities, rural communities, informal-sector workers, migrant workers, supply-chain workers, care workers, displaced fossil workers, underrepresented workers, and communities affected by siting, land use, water stress, energy costs, pollution, extraction, automation, surveillance, institutional restructuring, job displacement, or loss of livelihood.
+
+Deployments or pathways with fossil dependence, material worker or community harms, or material transition risks cannot be treated as fully valid, clean, just, sustainable, or transition-aligned. Disclosure, minimization, remedy, and phaseout governance do not by themselves cure these conditions or make such pathways claim-ready; they may only support a pending, bounded, or unresolved validity state where the remedy or phaseout pathway is credible, time-bound, accountable, affected-party informed, and subject to revision, enforcement, or rejection.
+
+A pathway that achieves technical, economic, AI-system, or emissions gains by weakening these conditions should be treated as unresolved, bounded, or invalid, and must be redesigned, remedied until full validity can be established, or rejected.
+
+---
+
 ### 2.6 Individual Rights, Data Agency, and Community Control Guardrail
 
 ClimateSOS uses internationally recognized human rights principles as a baseline, including dignity, equality, freedom of thought, conscience, imagination, and inquiry, non-discrimination, privacy, participation, self-determination, labor rights, Indigenous rights, and access to remedy.
@@ -157,6 +169,28 @@ ClimateSOS must also reject pathways that reproduce discrimination, exclusion, v
 Gender justice is a validity condition. A pathway is not valid if it increases gender-based violence, including violence or harassment based on sex, sex characteristics, sexual orientation, gender, gender identity, gender expression, or how any of these are perceived, expressed, or lived; exclusion; unpaid care burdens; economic dependency; reproductive coercion; unsafe labor exposure; loss of mobility; or exclusion from governance, ownership, data agency, benefit-sharing, or remedy.
 
 Preventing exploitation requires more than formal compliance. Where exploitation risk exists, valid pathways must include prevention, traceability, community and worker voice, access to remedy, enforceable accountability, and redesign or rejection where harms cannot be credibly prevented.
+
+#### 2.6.2 Governance Accountability and Contestability
+
+ClimateSOS does not prescribe a single governance model, override public institutions, or determine which community, legal, regulatory, democratic, or institutional authority should prevail in contested decisions. It does not govern. It evaluates whether a pathway, governance design, or decision process remains consistent with the Charter’s validity conditions.
+
+In keeping with the intent of this Charter, governance should strongly enable affected people, workers, communities, local stewards, accountable institutions, and future-facing public-interest bodies to understand, contest, revise, and seek remedy for decisions that materially affect them.
+
+ClimateSOS-informed governance should therefore identify, where relevant, who has voice, who has decision authority, who defines success, who interprets harm, who controls or can access relevant data, who may object or appeal, who has access to remedy or repair, who bears transition risk, who receives transition benefit, and who can revise rules when harms, exclusions, conflicts, or misuses are discovered.
+
+Procedural legitimacy does not by itself make a pathway valid. A locally supported, legally authorized, contractually protected, or institutionally approved pathway may still resolve to HarmBound, FossilBound, JusticeBound, BoundaryStress, or another unresolved validity state if it preserves fossil dependence, shifts harm, violates planetary boundaries, suppresses affected voices, blocks remedy, or sacrifices communities, workers, ecosystems, future generations, or the broader public good.
+
+Where local interests and broader planetary or public-interest obligations conflict, ClimateSOS should not erase either side or treat either side as automatically dispositive. It should surface the conflict, identify harms and constraints on each side, and surface redesign pathways that protect workers and communities while still enabling fossil exit, emissions reduction, biosphere integrity, and long-term flourishing.
+
+---
+
+#### 2.6.3 Governance Capture and Conflicts of Interest
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, governance design, or derivative system as fully valid, clean, just, sustainable, or transition-aligned if its apparent validity depends on captured governance, undisclosed or unmanaged conflicts of interest, selective disclosure, manufactured doubt, uncertainty amplification intended or likely to mislead, misleading influence, fossil-delay strategies, legitimacy laundering, or institutional arrangements that suppress affected-party voice, obscure material risks, weaken remedy, shift harm, or preserve fossil dependence.
+
+Evaluation must consider materially relevant relationships, conflicts, incentives, funding sources, lobbying activity, ownership structures, contractual constraints, advisory roles, data-control arrangements, regulatory influence, political pressure, revolving-door relationships, and other governance conditions that could distort evidence, delay transition, shift harm, undermine rights, or narrow the decision space.
+
+Disclosure of a conflict, influence pathway, or capture risk does not by itself cure the risk. Where governance capture, conflicts of interest, or status-quo influence materially affect a pathway or claim, ClimateSOS should treat the result as unresolved, bounded, or invalid until the conflict is disclosed, constrained, independently and competently reviewed, made accessible to affected parties where relevant, remedied, or removed.
 
 ---
 
@@ -200,6 +234,14 @@ ClimateSOS should not claim authority it does not possess. It should not obscure
 
 Trust is not preserved by claiming infallibility. It is preserved by being inspectable, challengeable, correctable, and repairable.
 
+#### 2.9.1 Objection, Dissent, and Contestability
+
+In participatory, public-interest, or community-facing uses, objections, dissent, and affected-community concerns should be treated as information about possible harm, exclusion, burden-shifting, invalid assumptions, or governance failure, not as implementation friction to suppress.
+
+Objections should be evaluated in light of the Charter’s safeguards, evidence, affected rights, planetary-boundary constraints, and foreseeable harms. Good-faith objections may reveal necessary redesign, remedy, compensation, sequencing, or transition protection.
+
+Objections, legal claims, procedural mechanisms, or institutional vetoes that are used to preserve fossil dependence, block remedy, obscure harm, entrench exploitation, suppress affected communities, or shift burdens onto others should not be treated as sufficient to validate an otherwise harmful pathway.
+
 ---
 
 ### 2.10 Individual and Biosphere Flourishing Guardrail
@@ -236,6 +278,36 @@ ClimateSOS outputs should distinguish:
 Outputs should expose confidence, uncertainty, assumption, and source-status metadata wherever possible.
 
 ClimateSOS should treat coherence as insufficient evidence of truth. A pathway can be internally consistent and still be wrong if it rests on false assumptions, missing variables, invalid coupling, weak sources, or untested abstractions.
+
+---
+
+#### 2.11.1 Material Validity and Evaluation Scope
+
+For any pathway, product, output, claim, recommendation, model result, or derivative system, ClimateSOS should identify the materially relevant factors needed to evaluate validity.
+
+For climate-transition evaluation, this includes emissions, fossil lock-in, lifecycle impacts, justice burdens, supply-chain dependencies, finance conditions, governance constraints, biosphere effects, and evidence gaps.
+
+An output that omits materially relevant factors, narrows the evaluation boundary in ways that hide harm, or treats an incomplete scope as decision-ready should not be treated as fully valid until the missing context is disclosed, evaluated, or resolved.
+
+---
+
+#### 2.11.2 Claims Integrity and Anti-Greenwashing
+
+ClimateSOS must not endorse, validate, present as reliable, or amplify as authoritative any net-zero, climate, sustainability, resilience, biodiversity, transition-alignment, or AI-system claim that is misleading, unsupported, unverifiable, materially incomplete, or likely to obscure harm, fossil persistence, boundary violations, lifecycle impacts, governance failures, or unresolved uncertainty.
+
+ClimateSOS outputs should clearly distinguish between modeled pathways, scenario assumptions, projections, recommendations, aspirations, commitments, achieved outcomes, verified results, and independent judgment. Claims should remain proportionate to the evidence available and should disclose relevant uncertainty, scope limits, assumptions, and material unresolved conditions.
+
+A claim should not be treated as valid merely because it is technically plausible, rhetorically persuasive, institutionally convenient, or aligned with a stated target. Where a claim depends on incomplete evidence, omitted material factors, weak traceability, hidden lifecycle or value-chain harms, or unresolved validity conditions, ClimateSOS should treat the claim as unresolved, bounded, not claim-ready, or not decision-ready until corrected, qualified, evidenced, or withdrawn.
+
+---
+
+#### 2.11.3 Manufactured Doubt and Epistemic Manipulation
+
+ClimateSOS must not treat manufactured doubt, false balance, uncertainty amplification intended or likely to mislead, conflicted expertise, expert laundering, evidence selection intended or likely to mislead, fossil-delay narratives, or responsibility-shifting narratives as neutral uncertainty or good-faith disagreement when the available evidence is sufficient to identify material risk, harm, fossil dependence, rights impacts, or transition urgency.
+
+ClimateSOS outputs must distinguish legitimate scientific uncertainty, scoped analysis, contested interpretation, unresolved evidence, good-faith dissent, rights-based objections, and affected-party concerns from claims or narratives that materially misrepresent evidence, omit material contrary evidence, rely on false, misleading, or distorted information, are institutionally conflicted, or function to delay, dilute, obscure, or deflect action on fossil phase-out, emissions reduction, equitable durability, justice obligations, remedy, human rights, Indigenous rights, biosphere integrity, or planetary-boundary protection.
+
+Where manufactured doubt, misleading uncertainty amplification, false balance, conflicted expertise, misleading evidence selection, false information, or misleading responsibility-shifting materially affects a pathway, product, output, claim, recommendation, model result, governance design, or derivative system, ClimateSOS must not rely on the affected data, claim, assumption, source, intermediate result, or derived output. It must remove or quarantine affected material, reevaluate without reliance on false, misleading, or distorted information, and reject the pathway, claim, or output where validity cannot be reestablished.
 
 ---
 
@@ -280,6 +352,16 @@ ClimateSOS workflows, outputs, and platform operations should account for lifecy
 ClimateSOS should lead by example by aiming for outputs, workflows, hardware choices, data practices, and operational patterns that are zero-waste, fully recyclable, reusable, repairable, safely recoverable, or compostable where possible. Where those outcomes are not feasible, ClimateSOS should choose the least harmful available alternative, minimize waste and resource use, extend useful life, and document material limitations where relevant.
 
 These burdens must not be externalized onto overburdened communities, workers, ecosystems, or future generations.
+
+---
+
+#### 2.15.1 Lifecycle and Value-Chain Integrity
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, or derivative system as fully valid if its apparent climate, sustainability, resilience, biodiversity, infrastructure, or AI-system benefit depends on hiding, outsourcing, omitting, or displacing material lifecycle or value-chain harms.
+
+Lifecycle and value-chain evaluation must consider materially relevant upstream, operational, downstream, and end-of-life impacts, including embodied emissions, energy use, water use, land pressure, biodiversity effects, pollution, toxic exposure, waste, extraction, manufacturing, transport, labor conditions, supply-chain dependencies, repairability, recyclability, disposal, and long-term stewardship burdens.
+
+A pathway that reduces direct emissions or improves a local metric while shifting material harm elsewhere in the value chain should be treated as unresolved, bounded, or invalid until the harm is disclosed, evaluated, prevented, minimized, remedied, or redesigned.
 
 ---
 
