@@ -313,6 +313,16 @@ These burdens must not be externalized onto overburdened communities, workers, e
 
 ---
 
+#### 2.15.1 Lifecycle and Value-Chain Integrity
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, or derivative system as fully valid if its apparent climate, sustainability, resilience, biodiversity, infrastructure, or AI-system benefit depends on hiding, outsourcing, omitting, or displacing material lifecycle or value-chain harms.
+
+Lifecycle and value-chain evaluation must consider materially relevant upstream, operational, downstream, and end-of-life impacts, including embodied emissions, energy use, water use, land pressure, biodiversity effects, pollution, toxic exposure, waste, extraction, manufacturing, transport, labor conditions, supply-chain dependencies, repairability, recyclability, disposal, and long-term stewardship burdens.
+
+A pathway that reduces direct emissions or improves a local metric while shifting material harm elsewhere in the value chain should be treated as unresolved, bounded, or invalid until the harm is disclosed, evaluated, prevented, minimized, remedied, or redesigned.
+
+---
+
 ### 2.16 AI and Advanced Systems Guardrail
 
 AI-assisted net-zero transition systems must operate within all safeguards and guardrails of this charter, including the planetary, biosphere, justice, dignity, trust, flourishing, data-agency, traceability, and accountability safeguards that apply to ClimateSOS pathways, outputs, uses, and derivative tools.
