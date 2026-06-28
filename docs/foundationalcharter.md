@@ -126,6 +126,18 @@ Equitable durability requires that workers, ratepayers, host communities, Indige
 
 ---
 
+#### 2.5.1 Just Transition, Labor, and Worker/Community Integrity
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, or derivative system as fully valid, clean, just, sustainable, or transition-aligned if its apparent climate, sustainability, infrastructure, resilience, economic, or AI-system benefit depends on, causes, enables, contributes to, obscures, externalizes, or benefits from degraded labor conditions, exclusion of affected workers or communities, unmanaged or unjust livelihood or job displacement, weakened rights, uncompensated risk-shifting onto those with the least power, or treating workers, communities, Indigenous Peoples, local stewards, or future generations as expendable implementation costs.
+
+Transition evaluation must consider materially relevant effects on workers, host communities, Indigenous Peoples, local communities, rural communities, informal-sector workers, migrant workers, supply-chain workers, care workers, displaced fossil workers, underrepresented workers, and communities affected by siting, land use, water stress, energy costs, pollution, extraction, automation, surveillance, institutional restructuring, job displacement, or loss of livelihood.
+
+Deployments or pathways with fossil dependence, material worker or community harms, or material transition risks cannot be treated as fully valid, clean, just, sustainable, or transition-aligned. Disclosure, minimization, remedy, and phaseout governance do not by themselves cure these conditions or make such pathways claim-ready; they may only support a pending, bounded, or unresolved validity state where the remedy or phaseout pathway is credible, time-bound, accountable, affected-party informed, and subject to revision, enforcement, or rejection.
+
+A pathway that achieves technical, economic, AI-system, or emissions gains by weakening these conditions should be treated as unresolved, bounded, or invalid, and must be redesigned, remedied until full validity can be established, or rejected.
+
+---
+
 ### 2.6 Individual Rights, Data Agency, and Community Control Guardrail
 
 ClimateSOS uses internationally recognized human rights principles as a baseline, including dignity, equality, freedom of thought, conscience, imagination, and inquiry, non-discrimination, privacy, participation, self-determination, labor rights, Indigenous rights, and access to remedy.
