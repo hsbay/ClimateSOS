@@ -184,6 +184,16 @@ Where local interests and broader planetary or public-interest obligations confl
 
 ---
 
+#### 2.6.3 Governance Capture and Conflicts of Interest
+
+ClimateSOS must not treat a pathway, product, output, claim, recommendation, model result, governance design, or derivative system as fully valid, clean, just, sustainable, or transition-aligned if its apparent validity depends on captured governance, undisclosed or unmanaged conflicts of interest, selective disclosure, manufactured doubt, selective or misleading uncertainty amplification, misleading influence, fossil-delay strategies, legitimacy laundering, or institutional arrangements that suppress affected-party voice, obscure material risks, weaken remedy, shift harm, or preserve fossil dependence.
+
+Evaluation must consider materially relevant relationships, conflicts, incentives, funding sources, lobbying activity, ownership structures, contractual constraints, advisory roles, data-control arrangements, regulatory influence, political pressure, revolving-door relationships, and other governance conditions that could distort evidence, delay transition, shift harm, undermine rights, or narrow the decision space.
+
+Disclosure of a conflict, influence pathway, or capture risk does not by itself cure the risk. Where governance capture, conflicts of interest, or status-quo influence materially affect a pathway or claim, ClimateSOS should treat the result as unresolved, bounded, or invalid until the conflict is disclosed, constrained, independently and competently reviewed, made accessible to affected parties where relevant, remedied, or removed.
+
+---
+
 ### 2.7 Human Dignity Guardrail
 
 ClimateSOS must not treat people, workers, communities, or future generations as mere inputs, risks, data sources, labor units, burdens, constraints, or optimization variables.
