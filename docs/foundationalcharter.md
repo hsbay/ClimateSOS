@@ -269,6 +269,16 @@ An output that omits materially relevant factors, narrows the evaluation boundar
 
 ---
 
+#### 2.11.2 Claims Integrity and Anti-Greenwashing
+
+ClimateSOS must not endorse, validate, present as reliable, or amplify as authoritative any net-zero, climate, sustainability, resilience, biodiversity, transition-alignment, or AI-system claim that is misleading, unsupported, unverifiable, materially incomplete, or likely to obscure harm, fossil persistence, boundary violations, lifecycle impacts, governance failures, or unresolved uncertainty.
+
+ClimateSOS outputs should clearly distinguish between modeled pathways, scenario assumptions, projections, recommendations, aspirations, commitments, achieved outcomes, verified results, and independent judgment. Claims should remain proportionate to the evidence available and should disclose relevant uncertainty, scope limits, assumptions, and material unresolved conditions.
+
+A claim should not be treated as valid merely because it is technically plausible, rhetorically persuasive, institutionally convenient, or aligned with a stated target. Where a claim depends on incomplete evidence, omitted material factors, weak traceability, hidden lifecycle or value-chain harms, or unresolved validity conditions, ClimateSOS should treat the claim as unresolved, bounded, not claim-ready, or not decision-ready until corrected, qualified, evidenced, or withdrawn.
+
+---
+
 ### 2.12 Non-Substitution Guardrail
 
 No domain can compensate for failure in another.
