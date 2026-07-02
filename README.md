@@ -1,6 +1,7 @@
 # ClimateSOS
 
 > A prototype net-zero transition-modeling framework with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
+
 ---
 
 ## Overview
@@ -216,6 +217,6 @@ Nothing here should be interpreted as:
 - policy instruction,
 - or predictive certainty,
 - autonomous governance authority,
-- a substitute for accountable human judgment.
+- or a substitute for accountable human judgment.
 
 The framework exists to explore synchronization dynamics, bottlenecks, attractor behavior, biosphere coupling, and transition-state dynamics in accelerated decarbonization pathways.
