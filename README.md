@@ -4,7 +4,7 @@
 
 ---
 
-# Overview
+## Overview
 
 ClimateSOS is an experimental systems architecture and executable modeling framework to better understand the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
@@ -61,7 +61,7 @@ ClimateSOS is not a literal operating system and does not control real-world inf
 
 ---
 
-# Architecture Diagrams
+## Architecture Diagrams
 
 ![ClimateSOS Conceptual System Flow Diagram](docs/images/conceptual_system_flow.svg)
 
@@ -69,9 +69,9 @@ ClimateSOS is not a literal operating system and does not control real-world inf
 
 ---
 
-# Key Architectural Concepts
+## Key Architectural Concepts
 
-## Fabrics
+### Fabrics
 
 Fabrics coordinate distributed system behavior.
 
@@ -88,7 +88,7 @@ The Biosphere chapter 11 and the AI project guardrails in Appendix O direct the 
 
 ---
 
-## Identity Tokens & Resulting States
+### Identity Tokens & Resulting States
 
 After an identity token passes through a function, queue, switch, or attractor, it can resolve to the following possible states.
 
@@ -100,16 +100,16 @@ After an identity token passes through a function, queue, switch, or attractor, 
 
 ---
 
-## Attractor Patterns
+### Attractor Patterns
 
 ClimateSOS models recurring nonlinear system behaviors as attractors.
 
-### Clean Attractors
+#### Clean Attractors
 - procurement cascades
 - clean-demand synchronization
 - supply-chain conversion
 
-### Fossil Attractors
+#### Fossil Attractors
 - reliability panic
 - bailout cascades
 - fallback persistence
@@ -117,7 +117,7 @@ ClimateSOS models recurring nonlinear system behaviors as attractors.
 
 ---
 
-# The Biosphere Layer
+## The Biosphere Layer
 
 ClimateSOS treats the biosphere differently from technical fabrics.
 
@@ -177,7 +177,7 @@ The ClimateSOS repository includes AI-related tags because AI-assisted analysis 
 
 ---
 
-# Conceptual Influences
+## Conceptual Influences
 
 ClimateSOS draws conceptual inspiration from multiple fields, including:
 
@@ -198,7 +198,7 @@ The framework blends technical systems architecture with ecological and planetar
 
 ---
 
-# Attribution
+## Attribution
 
 **Author / maintainer:** Shannon A. Fiume (@safiume)  
 **License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026
@@ -207,7 +207,7 @@ ClimateSOS was conceived, researched, directed, architected, and developed by Sh
 
 ---
 
-# Status Notice
+## Status Notice
 
 This repository is experimental research software and conceptual systems architecture.
 
