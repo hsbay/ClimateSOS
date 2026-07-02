@@ -215,7 +215,7 @@ Nothing here should be interpreted as:
 - operational infrastructure control software,
 - investment advice,
 - policy instruction,
-- or predictive certainty,
+- predictive certainty,
 - autonomous governance authority,
 - or a substitute for accountable human judgment.
 
