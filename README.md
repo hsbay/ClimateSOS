@@ -1,7 +1,6 @@
 # ClimateSOS
 
-> A prototype transition-modeling application with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
-
+> A prototype net-zero transition-modeling framework with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
 ---
 
 ## Overview
@@ -84,7 +83,7 @@ Current major fabrics include:
 - Political / Institutional Fabric
 - Biosphere Fabric
 
-The Biosphere chapter 11 and the AI project guardrails in Appendix O direct the implementation of the Biosphere Fabric systems. See those sections for the underlying rationale and implementation constraints.
+Chapter 11 of the Playbook, “Planetary Biosphere Restoration,” together with the AI project guardrails in Appendix O, directs the implementation of the Biosphere Fabric systems. See those sections for the underlying rationale, safeguards, and implementation boundaries.
 
 ---
 
@@ -215,6 +214,8 @@ Nothing here should be interpreted as:
 - operational infrastructure control software,
 - investment advice,
 - policy instruction,
-- or predictive certainty.
+- or predictive certainty,
+- autonomous governance authority,
+- a substitute for accountable human judgment.
 
 The framework exists to explore synchronization dynamics, bottlenecks, attractor behavior, biosphere coupling, and transition-state dynamics in accelerated decarbonization pathways.
