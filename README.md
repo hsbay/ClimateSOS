@@ -157,7 +157,7 @@ ClimateSOS is governed by the [ClimateSOS Foundational Charter](docs/foundationa
 
 The Charter makes that operating envelope explicit. It defines the project’s purpose, its boundaries of use, its duty to avoid committing harm to people, communities, ecosystems, and future generations, and the conditions a pathway must satisfy before it can be treated as valid within ClimateSOS.
 
-The Charter treats technical success as insufficient on its own. For example, a pathway that appears to reduce emissions, accelerate deployment, improve efficiency, or increase AI-system performance is not fully valid if those gains violate planetary boundaries, degrade biosphere integrity, cause or shift harm onto people or communities, weaken accountable human judgment, obscure fossil persistence, hide lifecycle harms, or reproduce exploitative, extractive, or sacrifice-zone dynamics.
+The Charter treats technical success as insufficient on its own. For example, a pathway that appears to reduce emissions, accelerate deployment, improve efficiency, or increase AI-system performance is not fully valid if those gains violate planetary boundaries, degrade biosphere integrity, cause or shift harm to people or communities, weaken accountable human judgment, obscure fossil persistence, hide lifecycle harms, or reproduce exploitative, extractive, or sacrifice-zone dynamics.
 
 ClimateSOS provides an example framework for *AI safety*, *AI ethics*, and *AI governance* in guardrail-bounded climate-transition reasoning. It is not an AI agent, autonomous planner, or decision-making authority. It is an AI-assisted transition-reasoning project informed by the Charter, and it could inform future AI-supported pathway-evaluation tools.
 
