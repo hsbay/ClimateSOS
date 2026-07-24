@@ -1,10 +1,10 @@
 # ClimateSOS
 
-> A prototype transition-modeling application with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
+> A prototype net-zero transition-modeling framework with distributed operating-system-inspired internals for analyzing whether clean-energy deployment, fossil retirement, reliability replacement, and biosphere stabilization can synchronize under real-world constraints.
 
 ---
 
-# Overview
+## Overview
 
 ClimateSOS is an experimental systems architecture and executable modeling framework to better understand the clean-energy transition as a distributed synchronization problem rather than a purely policy, market, or technology problem.
 
@@ -49,7 +49,19 @@ Instead of treating the transition primarily as a stakeholder map or policy road
 
 ---
 
-# Architecture Diagrams
+## Why the name ClimateSOS?
+
+The name has two meanings.
+
+**SOS** reflects the project’s emergency-use purpose: helping expose failure modes in distributed, coordinated, sequenced transition pathways before those failures harden into fossil lock-in, delay, or biosphere harm.
+
+**OS** reflects the project’s distributed operating-system-inspired architecture. ClimateSOS models transition pathways as guardrail-bounded processes moving through flows, queues, fabrics, constraints, state transitions, fallback states, and validity checks.
+
+ClimateSOS is not a literal operating system and does not control real-world infrastructure or institutions. It does not allocate capital, authorize permits, operate grids, manage assets, direct institutions, or make policy. It is a modeling and reasoning framework for inspecting whether proposed transition pathways remain synchronized, bounded, and valid.
+
+---
+
+## Architecture Diagrams
 
 ![ClimateSOS Conceptual System Flow Diagram](docs/images/conceptual_system_flow.svg)
 
@@ -57,9 +69,9 @@ Instead of treating the transition primarily as a stakeholder map or policy road
 
 ---
 
-# Key Architectural Concepts
+## Key Architectural Concepts
 
-## Fabrics
+### Fabrics
 
 Fabrics coordinate distributed system behavior.
 
@@ -72,11 +84,11 @@ Current major fabrics include:
 - Political / Institutional Fabric
 - Biosphere Fabric
 
-The Biosphere chapter 11 and the AI project guardrails in Appendix O direct the implementation of the Biosphere Fabric systems. See those sections for the underlying rationale and implementation constraints.
+Chapter 11 of the Playbook, “Planetary Biosphere Restoration,” together with the AI project guardrails in Appendix O, directs the implementation of the Biosphere Fabric systems. See those sections for the underlying rationale, safeguards, and implementation boundaries.
 
 ---
 
-## Identity Tokens & Resulting States
+### Identity Tokens & Resulting States
 
 After an identity token passes through a function, queue, switch, or attractor, it can resolve to the following possible states.
 
@@ -88,16 +100,16 @@ After an identity token passes through a function, queue, switch, or attractor, 
 
 ---
 
-## Attractor Patterns
+### Attractor Patterns
 
 ClimateSOS models recurring nonlinear system behaviors as attractors.
 
-### Clean Attractors
+#### Clean Attractors
 - procurement cascades
 - clean-demand synchronization
 - supply-chain conversion
 
-### Fossil Attractors
+#### Fossil Attractors
 - reliability panic
 - bailout cascades
 - fallback persistence
@@ -105,7 +117,7 @@ ClimateSOS models recurring nonlinear system behaviors as attractors.
 
 ---
 
-# The Biosphere Layer
+## The Biosphere Layer
 
 ClimateSOS treats the biosphere differently from technical fabrics.
 
@@ -139,7 +151,33 @@ The architecture treats biosphere integrity as a boundary condition, not merely 
 
 ---
 
-# Conceptual Influences
+## Guardrails and AI governance
+
+ClimateSOS is governed by the [ClimateSOS Foundational Charter](docs/foundationalcharter.md), which defines safeguards and validity conditions for the project and its derivative tools. From inception, ClimateSOS has been developed within an operating envelope of planetary, justice, biosphere, evidence, and AI-accountability guardrails.
+
+The Charter makes that operating envelope explicit. It defines the project’s purpose, its boundaries of use, its duty to avoid committing harm to people, communities, ecosystems, and future generations, and the conditions a pathway must satisfy before it can be treated as valid within ClimateSOS.
+
+The Charter treats technical success as insufficient on its own. For example, a pathway that appears to reduce emissions, accelerate deployment, improve efficiency, or increase AI-system performance is not fully valid if those gains violate planetary boundaries, degrade biosphere integrity, cause or shift harm to people or communities, weaken accountable human judgment, obscure fossil persistence, hide lifecycle harms, or reproduce exploitative, extractive, or sacrifice-zone dynamics.
+
+ClimateSOS provides an example framework for *AI safety*, *AI ethics*, and *AI governance* in guardrail-bounded climate-transition reasoning. It is not an AI agent, autonomous planner, or decision-making authority. It is an AI-assisted transition-reasoning project informed by the Charter, and it could inform future AI-supported pathway-evaluation tools.
+
+Those tools require clear safeguards:
+
+- alignment with planetary boundaries, biosphere integrity, climate justice, repair, remedy, and long-term stewardship
+- protection of human rights, agency, community control, privacy, dignity, and capacity for flourishing
+- no sole delegation to AI systems
+- no command authority over real-world infrastructure, policy, finance, or communities
+- traceable and contestable assumptions, claims, sources, uncertainties, and outputs
+- fitness-for-purpose review, domain competence, and accountable human judgment
+- misuse prevention against fossil delay, greenwashing, burden-shifting, governance capture, and unaccountable automation
+- lifecycle and value-chain integrity so harms are not hidden, outsourced, or displaced
+- AI load discipline so AI growth does not undermine clean-only growth or fossil phaseout
+
+The ClimateSOS repository includes AI-related tags because AI-assisted analysis requires guardrails, accountability, traceability, and limits on automated authority.
+
+---
+
+## Conceptual Influences
 
 ClimateSOS draws conceptual inspiration from multiple fields, including:
 
@@ -160,13 +198,16 @@ The framework blends technical systems architecture with ecological and planetar
 
 ---
 
-# Attribution
+## Attribution
 
-ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems design iteration under Shannon’s direction.
+**Author / maintainer:** Shannon A. Fiume (@safiume)  
+**License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026
+
+ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted research support, drafting, code-generation, implementation assistance, and systems design iteration under Shannon’s direction.  
 
 ---
 
-# Status Notice
+## Status Notice
 
 This repository is experimental research software and conceptual systems architecture.
 
@@ -174,6 +215,8 @@ Nothing here should be interpreted as:
 - operational infrastructure control software,
 - investment advice,
 - policy instruction,
-- or predictive certainty.
+- predictive certainty,
+- autonomous governance authority,
+- or a substitute for accountable human judgment.
 
 The framework exists to explore synchronization dynamics, bottlenecks, attractor behavior, biosphere coupling, and transition-state dynamics in accelerated decarbonization pathways.
