@@ -1,16 +1,16 @@
 # ClimateSOS Product Pathway Adapter Specification
 
-**GitHub project:** [https://github.com/hsbay/ClimateSOS](https://github.com/hsbay/ClimateSOS)
-**Author / maintainer:** Shannon A. Fiume (@safiume)
-**License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026
-**Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted drafting, code-generation, implementation assistance, and systems-design iteration under Shannon’s direction.
-**Status:** Draft
+**GitHub project:** [https://github.com/hsbay/ClimateSOS](https://github.com/hsbay/ClimateSOS)  
+**Author / maintainer:** Shannon A. Fiume (@safiume)  
+**License:** Creative Commons Attribution 4.0 International (CC BY 4.0), 2026  
+**Development note:** ClimateSOS was conceived, researched, directed, architected, and developed by Shannon A. Fiume through an iterative human–AI collaboration. OpenAI’s ChatGPT provided AI-assisted drafting, code-generation, implementation assistance, and systems-design iteration under Shannon’s direction.  
+**Status:** Draft  
 
 ---
 
 ## 1. Purpose
 
-This specification defines how the ClimateSOS Product Pathway Adapter represents and evaluates customer/product pathways.
+This specification defines how the ClimateSOS Product Pathway Adapter represents and evaluates customer/product pathways as components of broader ClimateSOS pathway evaluation.
 
 ClimateSOS must support evaluation of real-world product, company, technology, financial, infrastructure, and customer-decision pathways in addition to generic transition abstractions.
 
