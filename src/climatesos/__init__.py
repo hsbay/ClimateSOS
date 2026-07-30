@@ -4,7 +4,7 @@
 """ClimateSOS v0.7 toy runtime."""
 
 from .evaluator import evaluate_token
-from .models import EvaluationResult, Fabric, IdentityToken, Queue, RemedyBus, ScenarioState
+from .models import RuntimeEvaluationResult, Fabric, IdentityToken, Queue, RemedyBus, ScenarioState
 from .states import (
     FabricStatus,
     GuardrailResolution,
@@ -16,7 +16,7 @@ from .states import (
 
 __all__ = [
     "evaluate_token",
-    "EvaluationResult",
+    "RuntimeEvaluationResult",
     "Fabric",
     "IdentityToken",
     "Queue",

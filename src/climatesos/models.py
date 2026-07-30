@@ -1,7 +1,18 @@
 # Climate State transition model OS
 # Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
 
-"""Data models for the ClimateSOS v0.7 toy evaluator."""
+"""
+Immutable domain models for the ClimateSOS runtime and Product Pathway Adapter.
+
+This module contains the existing ClimateSOS v0.7 toy-runtime models and the
+shared data contracts passed between the Product Pathway Adapter,
+synchronization services, runtime, binding logic, and result evaluation.
+
+Behavior belongs in service modules such as ``evaluator.py`` and
+``product_adapter.py``.
+"""
+
+from __future__ import annotations
 
 from dataclasses import dataclass, field
 
@@ -118,7 +129,7 @@ class ScenarioState:
 
 
 @dataclass(frozen=True)
-class EvaluationResult:
+class RuntimeEvaluationResult:
     """Structured result emitted by the v0.7 evaluator."""
 
     resulting_state: ResultingState
@@ -139,3 +150,166 @@ class EvaluationResult:
             "remedy_bus_status": self.remedy_bus_status.value,
             "explanation_trace": list(self.explanation_trace),
         }
+
+# =====================================================================
+# Product Pathway Adapter models
+# =====================================================================
+
+@dataclass(frozen=True, slots=True)
+class Context:
+    """
+    Evaluation context associated with a product pathway.
+
+    Context records the circumstances in which a pathway is being inspected,
+    including its invocation mode and declared system boundary.
+
+    More detailed objects such as SystemBoundary, StressTest, and
+    PathwayComparison may replace or extend the provisional fields below as
+    those contracts are implemented.
+    """
+
+    # ------------------------------------------------------------------
+    # Identity
+    # ------------------------------------------------------------------
+
+    user_id: str
+    pathway_id: str
+
+    # ------------------------------------------------------------------
+    # Domain data
+    # ------------------------------------------------------------------
+
+    invocation_mode: str = "evaluation"
+    system_boundary: str | None = None
+    synchronization_window: str | None = None
+
+    # ------------------------------------------------------------------
+    # Provenance
+    # ------------------------------------------------------------------
+
+    source_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class Deployment:
+    """
+    Declared deployment setting for a product pathway.
+
+    Deployment describes where, when, and under what operating circumstances
+    a pathway is proposed to exist. It is intentionally open-ended and is not
+    represented by a closed deployment enum.
+    """
+
+    # ------------------------------------------------------------------
+    # Identity
+    # ------------------------------------------------------------------
+
+    user_id: str
+    pathway_id: str
+    deployment_id: str
+
+    # ------------------------------------------------------------------
+    # Domain data
+    # ------------------------------------------------------------------
+
+    name: str
+    geography: str | None = None
+    jurisdiction: str | None = None
+    operating_scope: str | None = None
+    evaluation_start: str | None = None
+    evaluation_end: str | None = None
+
+    # ------------------------------------------------------------------
+    # Provenance
+    # ------------------------------------------------------------------
+
+    source_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class ProductPathway:
+    """
+    Canonical immutable representation of a proposed intervention.
+
+    ProductPathway is the runtime-compatible representation emitted by the
+    ProductAdapter after translating an externally described product,
+    portfolio, pathway, comparison, or stress-test proposal.
+
+    It describes participants, protocols, proposed operators, dependencies,
+    evidence, and claimed state changes. It does not determine whether those
+    claims are valid.
+    """
+
+    # ------------------------------------------------------------------
+    # Identity
+    # ------------------------------------------------------------------
+
+    user_id: str
+    pathway_id: str
+
+    # ------------------------------------------------------------------
+    # Domain data
+    # ------------------------------------------------------------------
+
+    name: str
+    description: str
+
+    context: Context
+    deployments: tuple[Deployment, ...] = ()
+
+    participants: tuple[str, ...] = ()
+    protocols: tuple[str, ...] = ()
+    proposed_operators: tuple[str, ...] = ()
+    dependencies: tuple[str, ...] = ()
+
+    claimed_product_outputs: tuple[str, ...] = ()
+    claimed_system_contributions: tuple[str, ...] = ()
+
+    unresolved_requirements: tuple[str, ...] = ()
+
+    # ------------------------------------------------------------------
+    # Provenance
+    # ------------------------------------------------------------------
+
+    source_text: str | None = None
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class ProductQueueBundle:
+    """
+    Immutable collection of product-pathway queue requirements.
+
+    ProductQueueBundle is the normalized runtime input produced after the
+    adapter translates a ProductPathway into the queues needed for ClimateSOS
+    synchronization evaluation.
+
+    The concrete ProductQueue model is intentionally deferred until queue
+    categories, queue state, provenance, and binding behavior are specified.
+    Until then, queue identifiers preserve the architectural boundary without
+    prematurely fixing the queue ontology.
+    """
+
+    # ------------------------------------------------------------------
+    # Identity
+    # ------------------------------------------------------------------
+
+    user_id: str
+    pathway_id: str
+
+    # ------------------------------------------------------------------
+    # Domain data
+    # ------------------------------------------------------------------
+
+    queue_ids: tuple[str, ...] = ()
+    required_queue_ids: tuple[str, ...] = ()
+    optional_queue_ids: tuple[str, ...] = ()
+    unresolved_queue_ids: tuple[str, ...] = ()
+
+    # ------------------------------------------------------------------
+    # Provenance
+    # ------------------------------------------------------------------
+
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()

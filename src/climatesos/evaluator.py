@@ -3,7 +3,7 @@
 
 """Alignment-switch evaluator for the ClimateSOS v0.7 toy runtime."""
 
-from .models import EvaluationResult, IdentityToken, ScenarioState
+from .models import RuntimeEvaluationResult, IdentityToken, ScenarioState
 from .states import (
     GuardrailResolution,
     QueueStatus,
@@ -19,7 +19,7 @@ _VALID_GUARDRAILS = {
 }
 
 
-def evaluate_token(scenario: ScenarioState, token: IdentityToken) -> EvaluationResult:
+def evaluate_token(scenario: ScenarioState, token: IdentityToken) -> RuntimeEvaluationResult:
     """Evaluate one identity token against the v0.7 data-center semantics."""
 
     trace: list[str] = [f"Evaluating token: {token.name}"]
@@ -167,7 +167,7 @@ def _handle_invalid_guardrail(
     trace: list[str],
     bottlenecks: tuple[str, ...],
     closed_queues: tuple[str, ...],
-) -> EvaluationResult:
+) -> RuntimeEvaluationResult:
     if token.remedy_eligibility == RemedyEligibility.REMEDIABLE:
         trace.append(
             "Guardrail is Invalid under current design; token may enter RemedyBus for corrective action only."
@@ -199,14 +199,14 @@ def _result(
     closed_queues: tuple[str, ...],
     remedy_status: RemedyBusStatus,
     trace: list[str],
-) -> EvaluationResult:
+) -> RuntimeEvaluationResult:
     validity = state in _ACCEPTABLE_STATES and guardrail in _VALID_GUARDRAILS
     if validity:
         trace.append("Validity: true under v0.7 toy runtime rule.")
     else:
         trace.append("Validity: false under v0.7 toy runtime rule.")
 
-    return EvaluationResult(
+    return RuntimeEvaluationResult(
         resulting_state=state,
         guardrail_resolution=guardrail,
         validity=validity,
