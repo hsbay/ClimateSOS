@@ -15,6 +15,7 @@ Behavior belongs in service modules such as ``evaluator.py`` and
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from enum import StrEnum
 
 from .states import (
     FabricStatus,
@@ -276,40 +277,65 @@ class ProductPathway:
     evidence_ids: tuple[str, ...] = ()
 
 
+class ProductQueueDirection(StrEnum):
+    """Direction of a queue relative to its product pathway."""
+
+    INPUT = "input"
+    OUTPUT = "output"
+
+
 @dataclass(frozen=True, slots=True)
-class ProductQueueBundle:
-    """
-    Immutable collection of product-pathway queue requirements.
+class ProductQueue:
+    """A queue derived from a ProductPathway that originated from a customer's
+    product question.
 
-    ProductQueueBundle is the normalized runtime input produced after the
-    adapter translates a ProductPathway into the queues needed for ClimateSOS
-    synchronization evaluation.
+    ProductAdapter creates ProductQueue instances while translating a
+    ProductPathway into its internal queue representation.
 
-    The concrete ProductQueue model is intentionally deferred until queue
-    categories, queue state, provenance, and binding behavior are specified.
-    Until then, queue identifiers preserve the architectural boundary without
-    prematurely fixing the queue ontology.
+    Direction describes whether the queue supplies an input required by the
+    product pathway or carries an output produced by it.
     """
 
-    # ------------------------------------------------------------------
-    # Identity
-    # ------------------------------------------------------------------
-
-    user_id: str
-    pathway_id: str
-
-    # ------------------------------------------------------------------
-    # Domain data
-    # ------------------------------------------------------------------
-
-    queue_ids: tuple[str, ...] = ()
-    required_queue_ids: tuple[str, ...] = ()
-    optional_queue_ids: tuple[str, ...] = ()
-    unresolved_queue_ids: tuple[str, ...] = ()
-
-    # ------------------------------------------------------------------
-    # Provenance
-    # ------------------------------------------------------------------
+    id: str
+    name: str
+    direction: ProductQueueDirection
 
     source_ids: tuple[str, ...] = ()
     evidence_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class ProductQueueBundle:
+    """Collection of queues derived from one product pathway.
+
+    The bundle keeps all queues created for a ProductPathway together so they
+    can be synchronized, bound, compared, and evaluated as one product
+    interface.
+
+    Queue direction is defined by each ProductQueue. The bundle does not assign
+    or alter queue direction.
+    """
+
+    product_pathway_id: str
+    queues: tuple[ProductQueue, ...] = ()
+
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
+
+    @property
+    def input_queues(self) -> tuple[ProductQueue, ...]:
+        """Return queues interpreted as product inputs."""
+        return tuple(
+            queue
+            for queue in self.queues
+            if queue.direction is ProductQueueDirection.INPUT
+        )
+
+    @property
+    def output_queues(self) -> tuple[ProductQueue, ...]:
+        """Return queues interpreted as product outputs."""
+        return tuple(
+            queue
+            for queue in self.queues
+            if queue.direction is ProductQueueDirection.OUTPUT
+        )
