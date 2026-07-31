@@ -20,6 +20,7 @@ from .models import (
     Context,
     Deployment,
     ProductPathway,
+    ProductQueue,
     ProductQueueBundle,
     RuntimeEvaluationResult,
     ScenarioState,
@@ -107,3 +108,33 @@ class ProductAdapter:
     def adapt(self, source: object) -> ProductPathway:
         """Translate one external product submission into a product pathway."""
         raise NotImplementedError
+
+
+class QueueBundler:
+    """Project a ProductPathway graph into its product queue bundle.
+
+    QueueBundler creates queues only from pathway nodes that declare a queue
+    direction. It preserves the pathway graph and does not perform
+    synchronization, binding, or runtime evaluation.
+    """
+
+    def bundle(self, pathway: ProductPathway) -> ProductQueueBundle:
+        """Create the product queue bundle represented by a pathway graph."""
+        queues = tuple(
+            ProductQueue(
+                id=node.id,
+                name=node.name,
+                direction=node.queue_direction,
+                source_ids=node.source_ids,
+                evidence_ids=node.evidence_ids,
+            )
+            for node in pathway.nodes
+            if node.queue_direction is not None
+        )
+
+        return ProductQueueBundle(
+            product_pathway_id=pathway.pathway_id,
+            queues=queues,
+            source_ids=pathway.source_ids,
+            evidence_ids=pathway.evidence_ids,
+        )

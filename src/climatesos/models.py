@@ -317,8 +317,8 @@ class ProductQueue:
     """A queue derived from a ProductPathway that originated from a customer's
     product question.
 
-    ProductAdapter creates ProductQueue instances while translating a
-    ProductPathway into its internal queue representation.
+    QueueBundler creates ProductQueue instances by projecting queue-labelled
+    nodes from a ProductPathway into its queue representation.
 
     Direction describes whether the queue supplies an input required by the
     product pathway or carries an output produced by it.
