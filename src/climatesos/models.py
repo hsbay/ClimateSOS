@@ -258,6 +258,9 @@ class ProductPathway:
     context: Context
     deployments: tuple[Deployment, ...] = ()
 
+    nodes: tuple[PathwayNode, ...] = ()
+    edges: tuple[PathwayEdge, ...] = ()
+
     participants: tuple[str, ...] = ()
     protocols: tuple[str, ...] = ()
     proposed_operators: tuple[str, ...] = ()
@@ -282,6 +285,31 @@ class ProductQueueDirection(StrEnum):
 
     INPUT = "input"
     OUTPUT = "output"
+
+
+@dataclass(frozen=True, slots=True)
+class PathwayNode:
+    """One component in a normalized product-pathway graph."""
+
+    id: str
+    name: str
+    kind: str
+    description: str = ""
+    queue_direction: ProductQueueDirection | None = None
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class PathwayEdge:
+    """A directed relationship between two product-pathway nodes."""
+
+    source_node_id: str
+    target_node_id: str
+    relationship: str
+    description: str = ""
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
