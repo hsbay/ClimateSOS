@@ -1,15 +1,19 @@
 # Climate State transition model OS
 # Github Project Code: https://github.com/hsbay/ClimateSOS, CC-BY 4.0 2026 @safiume
 
-"""Product pathway adapter services.
+"""Product pathway translation and queue bundling services.
 
-This module defines the architectural boundary between externally described
-product pathways and the ClimateSOS runtime.
+The `ProductAdapter` translates externally described product material into a
+normalized `ProductPathway`. `QueueBundler` builds a `ProductQueueBundle` by
+creating `ProductQueue` objects from the queue-labelled nodes of a
+`ProductPathway`.
 
-The adapter layer is responsible for translating, normalizing, synchronizing,
-and binding pathway information into runtime-compatible objects. It does not
-perform market simulation, engineering validation, protocol execution, or
-other runtime evaluation itself.
+Neither service performs synchronization, binding, runtime execution, market
+simulation, engineering validation, or result evaluation.
+
+This module temporarily retains provisional downstream service contracts while
+the synchronization and runtime boundary is refactored. Their presence does
+not make them responsibilities of `ProductAdapter` or `QueueBundler`.
 """
 
 from __future__ import annotations
@@ -29,11 +33,11 @@ from .models import (
 
 @runtime_checkable
 class RuntimePort(Protocol):
-    """Port through which the adapter invokes a ClimateSOS runtime.
+    """Port through which downstream services invoke a ClimateSOS runtime.
 
     Implementations may wrap the current in-process runtime or a future remote,
-    distributed, or versioned runtime. Adapter services should depend on this
-    protocol rather than on a particular runtime implementation.
+    distributed, or versioned runtime. Runtime-facing services should depend
+    on this protocol rather than on a particular runtime implementation.
     """
 
     def evaluate(self, scenario: ScenarioState) -> RuntimeEvaluationResult:
@@ -111,9 +115,9 @@ class ProductAdapter:
 
 
 class QueueBundler:
-    """Project a ProductPathway graph into its product queue bundle.
+    """Build a `ProductQueueBundle` from a `ProductPathway` graph.
 
-    QueueBundler creates queues only from pathway nodes that declare a queue
+    `QueueBundler` creates queues only from pathway nodes that declare a queue
     direction. It preserves the pathway graph and does not perform
     synchronization, binding, or runtime evaluation.
     """
