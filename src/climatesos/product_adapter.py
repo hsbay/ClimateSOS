@@ -96,67 +96,14 @@ class ResultEvaluator:
 
 
 class ProductAdapter:
-    """Coordinate translation between product pathways and the runtime.
+    """Translate external product material into a ProductPathway.
 
-    ProductAdapter is an orchestration boundary, not a second runtime. It
-    delegates synchronization, binding, runtime execution, and result
-    interpretation to their respective services.
+    ProductAdapter is the intake translation boundary. It normalizes and
+    structures externally supplied product material without creating product
+    queues, synchronizing pathways, binding runtime state, or evaluating
+    results.
     """
 
-    def __init__(
-        self,
-        *,
-        synchronization_engine: SynchronizationEngine,
-        binding_handler: BindingHandler,
-        runtime: RuntimePort,
-        result_evaluator: ResultEvaluator,
-    ) -> None:
-        """Create a product adapter from explicit service dependencies."""
-        self._synchronization_engine = synchronization_engine
-        self._binding_handler = binding_handler
-        self._runtime = runtime
-        self._result_evaluator = result_evaluator
-
-    def compile(
-        self,
-        pathway: ProductPathway,
-        context: Context,
-        deployment: Deployment,
-    ) -> ProductQueueBundle:
-        """Compile an external pathway into a synchronized queue bundle."""
-        return self._synchronization_engine.synchronize(
-            pathway=pathway,
-            context=context,
-            deployment=deployment,
-        )
-
-    def evaluate(
-        self,
-        pathway: ProductPathway,
-        context: Context,
-        deployment: Deployment,
-        base_state: ScenarioState,
-    ) -> RuntimeEvaluationResult:
-        """Compile, bind, and submit a product pathway for evaluation.
-
-        The return type intentionally remains RuntimeEvaluationResult until the
-        adapter-level EvaluationResult model is introduced.
-        """
-        bundle = self.compile(
-            pathway=pathway,
-            context=context,
-            deployment=deployment,
-        )
-
-        scenario = self._binding_handler.bind(
-            bundle=bundle,
-            base_state=base_state,
-        )
-
-        runtime_result = self._runtime.evaluate(scenario)
-
-        return self._result_evaluator.evaluate(
-            pathway=pathway,
-            bundle=bundle,
-            runtime_result=runtime_result,
-        )
+    def adapt(self, source: object) -> ProductPathway:
+        """Translate one external product submission into a product pathway."""
+        raise NotImplementedError
