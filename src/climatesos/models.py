@@ -367,3 +367,23 @@ class ProductQueueBundle:
             for queue in self.queues
             if queue.direction is ProductQueueDirection.OUTPUT
         )
+
+
+@dataclass(frozen=True, slots=True)
+class SynchronizationComparison:
+    """Immutable findings produced by product-pathway synchronization.
+
+    The comparison preserves the exact product queue bundle evaluated by the
+    synchronization process together with its findings and unresolved
+    requirements. It does not resolve a bound state or construct the final
+    evaluation result.
+    """
+
+    product_pathway_id: str
+    queue_bundle: ProductQueueBundle
+
+    findings: tuple[str, ...] = ()
+    unresolved_requirements: tuple[str, ...] = ()
+
+    source_ids: tuple[str, ...] = ()
+    evidence_ids: tuple[str, ...] = ()
