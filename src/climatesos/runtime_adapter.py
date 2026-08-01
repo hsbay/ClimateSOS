@@ -18,6 +18,7 @@ from .models import (
     ProductQueueBundle,
     RuntimeEvaluationResult,
     ScenarioState,
+    SynchronizationComparison,
 )
 
 
@@ -36,9 +37,9 @@ class RuntimePort(Protocol):
 
 
 class SynchronizationEngine:
-    """Synchronize a product pathway with its operating context.
+    """Synchronize a product queue bundle with its operating context.
 
-    Synchronization identifies how pathway queues relate to contextual,
+    Synchronization analyzes how a product queue bundle relates to contextual,
     deployment, sequencing, and timing constraints.
 
     This initial service contains no synchronization policy. Its contract will
@@ -47,11 +48,11 @@ class SynchronizationEngine:
 
     def synchronize(
         self,
-        pathway: ProductPathway,
+        bundle: ProductQueueBundle,
         context: Context,
         deployment: Deployment,
-    ) -> ProductQueueBundle:
-        """Produce a synchronized queue bundle for the pathway."""
+    ) -> SynchronizationComparison:
+        """Return synchronization findings for a product queue bundle."""
         raise NotImplementedError
 
 
