@@ -894,7 +894,7 @@ Queue-bundle boundaries are determined by evaluable function and represented rel
 
 `QueueBundler` uses the relationships represented in the `ProductPathway` to determine which queue elements belong together. It preserves relevant ordering, dependency, timing, identity, and provenance relationships carried by those elements.
 
-`QueueBundler` does not create a queue condition absent from the `ProductPathway`, infer an unstated dependency, or determine whether a represented queue is clear, blocked, starved, expired, closed, delayed, stale, or otherwise successful or unsuccessful. Those determinations belong to downstream evaluation.
+`QueueBundler` does not create a queue element or pathway fact absent from the `ProductPathway`, infer an unstated dependency, or determine whether a represented queue is clear, blocked, starved, expired, closed, delayed, stale, or otherwise successful or unsuccessful. Those determinations belong to downstream evaluation.
 
 Each completed queue grouping is returned as an immutable `ProductQueueBundle`.
 
