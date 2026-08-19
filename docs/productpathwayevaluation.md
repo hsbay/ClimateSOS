@@ -37,7 +37,7 @@ that weaken that transition.
 This specification defines how proposed pathways are translated, represented,
 assembled, evaluated, compared with the validated global net-zero transition,
 and resolved into traceable results. Depending on the pathway, the
-evaluation may use identity records, queues, fabrics, and buses. It
+evaluation may use identity records, queues, and fabrics. It
 incorporates Charter evaluations, evidence assessments, pathway comparisons,
 system-contribution diagnostics, scale diagnostics, and transition-risk
 assessments.
@@ -165,7 +165,7 @@ The principal stages are:
 * creation of an immutable `ProductIntakeBundle`;
 * adaptation into a `ProductAdapterResult` containing the normalized `ProductPathway` and a reference to its associated `ProductIntakeBundle`;
 * initial Charter evaluation;
-* assembly of pathway objects into `ProductQueueBundle`, `ProductFabricBundle`, and `ProductBusFleet` groupings, as applicable;
+* assembly of pathway objects into `ProductQueueBundle`, and `ProductFabricBundle` groupings, as applicable;
 * comparison of the pathway with the global `TransitionPathway`;
 * pathway, documentation, contribution, scale, and system-risk evaluation;
 * final Charter evaluation;
@@ -289,9 +289,6 @@ ProductAssembly
     ├── FabricStitcher, where applicable
     │       └── ProductFabricBundle(s)
     │
-    └── BusAggregator, where applicable
-            └── ProductBusFleet
-    │
     ▼
 PathwayEvaluationEngine
     │
@@ -308,9 +305,6 @@ PathwayEvaluationEngine
     │
     ├── FabricEvaluator, where applicable
     │       └── evaluates ProductFabricBundle(s)
-    │
-    ├── BusEvaluator, where applicable
-    │       └── evaluates ProductBusFleet
     │
     └── DocumentationEvaluator
             └── evaluates evidence, provenance, uncertainty,
@@ -599,7 +593,7 @@ The `ProductAdapter` translates a completed ClimateSOS intake representation int
 
 The `ProductPathway` is the internal map or graph of the proposed product, project, technology, policy, financial mechanism, customer decision, or other transition pathway. It preserves the operational elements, relationships, dependencies, claims, evidence references, identity references, and provenance needed by later evaluation stages.
 
-The `ProductAdapter` is a translation and structural-mapping component. It may inspect and evaluate submitted pathway information as necessary to identify operational elements, queues, relationships, dependencies, fabrics, buses, and other structures represented in the graph. It does not determine the pathway’s Charter status, net overall system contribution, scale, global-system risk, bound state, or final validity.
+The `ProductAdapter` is a translation and structural-mapping component. It may inspect and evaluate submitted pathway information as necessary to identify operational elements, queues, relationships, dependencies, fabrics, and other structures represented in the graph. It does not determine the pathway’s Charter status, net overall system contribution, scale, global-system risk, bound state, or final validity.
 
 ### 5.1 Input and Output
 
@@ -666,7 +660,7 @@ The `ProductAdapter` does not:
 * evaluate assembled queue bundles, fabric bundles, or bus fleets; or
 * compare the completed pathway with the athoritative `TransitionPathway`.
 
-The `ProductAdapter` may identify, inspect, and relate individual queues, fabric elements, bus elements, and their interactions where required to construct the normalized `ProductPathway` graph.
+The `ProductAdapter` may identify, inspect, and relate individual queues, fabric elements, and their interactions where required to construct the normalized `ProductPathway` graph.
 
 This structural work ends with the completed `ProductAdapterResult`. The result contains the completed `ProductPathway` and preserves its association with the immutable `ProductIntakeBundle`.
 
