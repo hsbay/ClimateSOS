@@ -828,17 +828,159 @@ When execution cannot proceed, ClimateSOS preserves the available pathway identi
 
 ## 7. Product Assembly
 
+`ProductAssembly` constructs the pathway-derived objects that are later consumed by downstream evaluators. It coordinates the assembly functions that group represented pathway structures into queue bundles and fabrics while preserving the identity, relationships, provenance, and traceability established by the `ProductAdapter`.
+
+Assembly begins only after the Initial Charter Evaluation has completed successfully and produced a valid immutable `InitialCharterResult`. `ProductAssembly` follows the result's reference to the evaluated `ProductAdapterResult`, which identifies the immutable `ProductPathway` and its associated `ProductIntakeBundle`. Assembly operates on the `ProductPathway`; the intake-bundle association remains available for traceability.
+
+`ProductAssembly` creates `ProductQueueBundle` and, where applicable, `ProductFabric` objects by executing `QueueBundler` and subsequently `FabricAssembler`. `ProductFabric` objects are constructed only from applicable `ProductQueueBundle` objects. The constructed queue bundles and fabrics are passed to downstream evaluators.
+
+```text
+ProductAdapterResult
+    ├── ProductPathway
+    └── ProductIntakeBundle reference
+            │
+            ▼
+InitialCharterResult
+            │
+            │ valid completion permits progression
+            ▼
+ProductAssembly
+    │
+    ▼
+QueueBundler
+    │
+    └── ProductQueueBundle(s)
+                │
+                ▼
+         FabricAssembler
+                │
+                └── ProductFabric(s)
+```
+
 ### 7.1 Assembly Responsibilities and Boundary
+
+`ProductAssembly` orchestrates pathway assembly.
+
+It receives a valid completed `InitialCharterResult` and follows its reference to the evaluated `ProductAdapterResult` and associated immutable `ProductPathway`.
+
+`ProductAssembly`:
+
+* consumes a reference to the immutable `ProductPathway`;
+* identifies the represented queue structures applicable to downstream evaluation;
+* delegates queue grouping to `QueueBundler`;
+* provides the resulting immutable `ProductQueueBundle` objects to `FabricAssembler` where fabric assembly is applicable;
+* collects the immutable `ProductQueueBundle` and `ProductFabric` objects produced by those components; and
+* makes the completed assembly products available to the `PathwayEvaluationEngine`.
+
+`ProductAssembly` uses only structures already represented in the `ProductPathway`. It does not modify the pathway, add missing pathway facts, create new source evidence, or reinterpret unsupported claims as represented pathway structure.
+
+It does not perform Charter evaluation, compare the pathway with the authoritative `TransitionPathway`, evaluate queue or fabric state, determine system contribution or scale, construct a candidate `TransitionPathway`, evaluate global-system risk, assign a bound state, or construct the final `EvaluationResult`.
+
+Assembly omits creating a product grouping where the corresponding substructure is not present in the pathway. The absence of a `ProductFabric` is not an error when the pathway does not require applicable `ProductQueueBundle` objects to be grouped into a fabric.
 
 ### 7.2 QueueBundler
 
+`QueueBundler` groups applicable queue elements represented in the `ProductPathway` and constructs one or more `ProductQueueBundle` objects.
+
+A `ProductPathway` may contain multiple queue elements representing distinct inputs, outputs, dependencies, constraints, access requirements, or execution conditions. `QueueBundler` groups related queue elements into one or more `ProductQueueBundle` objects according to their evaluable function and represented relationships.
+
+Queue-bundle boundaries are determined by evaluable function and represented relationships, not merely by pathway direction. A pathway may therefore contain separate bundles for input access, output delivery, finance, permitting, workforce, documentation, or other applicable queue functions.
+
+`QueueBundler` uses the relationships represented in the `ProductPathway` to determine which queue elements belong together. It preserves relevant ordering, dependency, timing, identity, and provenance relationships carried by those elements.
+
+`QueueBundler` does not create a queue condition absent from the `ProductPathway`, infer an unstated dependency, or determine whether a represented queue is clear, blocked, starved, expired, closed, delayed, stale, or otherwise successful or unsuccessful. Those determinations belong to downstream evaluation.
+
+Each completed queue grouping is returned as an immutable `ProductQueueBundle`.
+
 ### 7.3 ProductQueueBundle
 
-### 7.4 FabricStitcher and ProductFabricBundle
+A `ProductQueueBundle` is an immutable construct containing related queue elements from one `ProductPathway` that are grouped for evaluation according to a common evaluable function and their represented relationships.
 
-### 7.5 BusAggregator and ProductBusFleet
+A `ProductQueueBundle` contains:
+
+* references to the queue elements included in the bundle;
+* the `user_id` and `pathway_id` attribution preserved by those represented elements' references;
+* the queue relationships and dependencies required for evaluation;
+* relevant timing or ordering relationships represented by the pathway;
+* source, evidence, and provenance references needed to trace the represented queue conditions; and
+* assembly metadata required to preserve the structure of the grouping.
+
+A `ProductQueueBundle` represents an assembled evaluation unit. It does not contain the result of evaluating that queue grouping.
+
+The same represented queue element may participate in more than one downstream relationship where the `ProductPathway` explicitly represents those relationships. As the `ProductPathway` is immutable, assembly must not silently duplicate, merge, or reassign an element in a way that changes the pathway structure.
+
+A completed `ProductQueueBundle` is immutable and is later consumed by `QueueEvaluator` and, where applicable, referenced by one or more `ProductFabric` objects.
+
+### 7.4 FabricAssembler
+
+`FabricAssembler` constructs operational coordination fabrics from applicable immutable `ProductQueueBundle` objects.
+
+A fabric groups related queue bundles whose combined state must be evaluated for coordinated operation. Technical fabrics may represent functions such as deliverability, fossil constraint, procurement synchronization, institutional capacity, finance, or another pathway-specific coordination function.
+
+`FabricAssembler` determines fabric membership from the functions and relationships preserved by the applicable `ProductQueueBundle` objects and their referenced queue elements. It constructs fabrics only where those represented relationships require multiple queue bundles to be evaluated together.
+
+`FabricAssembler`:
+
+* consumes applicable immutable `ProductQueueBundle` objects;
+* identifies queue bundles whose represented functions and relationships require coordinated evaluation;
+* groups those queue bundles into the applicable coordination fabric;
+* preserves the relationships among those bundles required for fabric evaluation;
+* preserves timing, identity, source, evidence, and provenance references;
+* preserves the association between each fabric and the `ProductPathway` from which its queue bundles were derived; and
+* returns each completed coordination layer as an immutable `ProductFabric`.
+
+A `ProductQueueBundle` may be referenced by more than one `ProductFabric` where its represented functions and relationships require participation in multiple coordination fabrics. Fabric membership does not transfer `ProductPathway` ownership of the queue bundle or remove it from another fabric.
+
+FabricAssembler does not create missing queue bundles or infer unsupported fabric membership. It does not evaluate queue state or determine fabric readiness; queue-state and fabric-readiness evaluation belong to FabricEvaluator.
+
+### 7.5 ProductFabric
+
+A `ProductFabric` is an immutable operational coordination layer composed of references to related `ProductQueueBundle` objects and the represented relationships required to evaluate their coordinated state.
+
+A `ProductFabric` contains:
+
+* the fabric's coordination function;
+* references to the applicable `ProductQueueBundle` objects;
+* relationships among those queue bundles required for evaluation;
+* timing or synchronization relationships preserved through the referenced queue bundles;
+* identity and pathway attribution preserved through the referenced queue bundles;
+* source, evidence, and provenance references required for traceability; and
+* assembly metadata required to preserve the fabric structure.
+
+A `ProductFabric` is a coordination surface. It does not contain the result of fabric evaluation. A completed `ProductFabric` is immutable and is consumed by `FabricEvaluator`. 
+
+When the pathway does not require a technical fabric structure, `FabricAssembler` is not executed and therefore cannot produce a `ProductFabric`.
+
+Biosphere-related fabrics may incorporate buses, cycles, BioNPUs, or other domain-specific structures maintained by ClimateSOS system modeling. Those structures are not constructed by `ProductAssembly` or directly derived from a submitted `ProductPathway`. A submitted pathway may interact with those structures, but their definition and behavior remain part of the ClimateSOS system model. See the system-modeling architecture for the definition, ownership, and evaluation of biosphere and other Earth-system structures.
 
 ### 7.6 Assembly Integrity Requirements
+
+Product assembly preserves the structure and attribution established by the `ProductAdapter`.
+
+Assembly must satisfy the following requirements:
+
+* assembled products retain `user_id` and `pathway_id` attribution through their contained objects or references;
+* objects from separate pathway intakes must not be silently combined;
+* the `ProductPathway` remains immutable throughout assembly;
+* assembly products contain or retain references sufficient to trace represented elements back through the `ProductPathway`, `ProductAdapterResult`, and associated `ProductIntakeBundle`;
+* source evidence and provenance remain traceable;
+* assembly does not supply missing facts or relationships;
+* assembly does not convert unsupported claims into represented pathway structure;
+* queue bundles are grouped according to represented evaluable functions and relationships;
+* a queue bundle may participate in more than one fabric so long as doing so does not duplicate, reassign, or transfer the queue bundle between fabrics;
+* fabric membership is derived only from functions and relationships preserved by the applicable queue bundles and their referenced elements;
+* only applicable assembly products are constructed;
+* absence of a fabric where none applies is not an error;
+* completed assembly products are immutable; and
+* later evaluators produce separate evaluation results rather than writing evaluation state back into the assembly products.
+
+An assembly operation fails when a required represented structure cannot be grouped without losing identity, attribution, provenance, or a relationship required for downstream evaluation.
+
+An assembly failure is an execution failure of the current pathway evaluation. It must not be represented as a pathway evaluation finding or outcome.
+
+When assembly completes successfully, the resulting `ProductQueueBundle` objects and, where applicable, `ProductFabric` objects are passed to the `PathwayEvaluationEngine` for evaluation.
+
+---
 
 ## 8. Product Queue Categories
 
