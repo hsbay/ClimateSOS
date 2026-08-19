@@ -174,7 +174,19 @@ The principal stages are:
 
 Models hold state and results. Adapters, assemblers, comparators, evaluators, validators, and handlers perform work.
 
-### 4.3 Progressive Charter Evaluation
+### 4.3 Immutable State and Result Objects
+
+Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale, risk, binding, and result objects are immutable.
+
+Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
+
+This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluationResult`.
+
+Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
+
+Work-performing components such as adapters, assemblers, evaluators, validators, and handlers are not subject to this object-immutability rule merely because they produce immutable outputs.
+
+### 4.4 Progressive Charter Evaluation
 
 The ClimateSOS Foundational Charter is evaluated at three stages:
 
@@ -188,7 +200,7 @@ Required Charter checks that are absent, null, malformed, overwritten, or unexec
 
 Detailed Charter check statuses, blocking behavior, evaluator-integrity requirements, remedy eligibility, and re-evaluation rules are defined in a separate Charter Evaluation Flow document.
 
-### 4.4 Global and User-Submitted Pathway Outcomes
+### 4.5 Global and User-Submitted Pathway Outcomes
 
 The two flows share the same architecture until their final outcomes diverge.
 
