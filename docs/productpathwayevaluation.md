@@ -165,7 +165,7 @@ The principal stages are:
 * creation of an immutable `ProductIntakeBundle`;
 * adaptation into a `ProductAdapterResult` containing the normalized `ProductPathway` and a reference to its associated `ProductIntakeBundle`;
 * initial Charter evaluation;
-* assembly of pathway objects into `ProductQueueBundle`, and `ProductFabricBundle` groupings, as applicable;
+* assembly of pathway objects into `ProductQueueBundle` and `ProductFabric` groupings, as applicable;
 * comparison of the pathway with the global `TransitionPathway`;
 * pathway, documentation, contribution, scale, and system-risk evaluation;
 * final Charter evaluation;
@@ -286,8 +286,8 @@ ProductAssembly
     ├── QueueBundler
     │       └── ProductQueueBundle(s)
     │
-    ├── FabricStitcher, where applicable
-    │       └── ProductFabricBundle(s)
+    ├── FabricAssembler, where applicable
+    │       └── ProductFabric(s)
     │
     ▼
 PathwayEvaluationEngine
@@ -304,7 +304,7 @@ PathwayEvaluationEngine
     │       └── evaluates ProductQueueBundle(s)
     │
     ├── FabricEvaluator, where applicable
-    │       └── evaluates ProductFabricBundle(s)
+    │       └── evaluates ProductFabric(s)
     │
     └── DocumentationEvaluator
             └── evaluates evidence, provenance, uncertainty,
@@ -655,7 +655,7 @@ The `ProductAdapter` does not:
 * determine guardrail status;
 * create Charter results;
 * assemble represented queues into `ProductQueueBundle` structures;
-* assemble represented fabric elements into `ProductFabricBundle` structures;
+* assemble represented fabric elements into `ProductFabric` structures;
 * assemble represented system-side bus elements into a bus fleet structure;
 * evaluate assembled queue bundles, fabric bundles, or system-side bus fleets; or
 * compare the completed pathway with the athoritative `TransitionPathway`.
