@@ -656,8 +656,8 @@ The `ProductAdapter` does not:
 * create Charter results;
 * assemble represented queues into `ProductQueueBundle` structures;
 * assemble represented fabric elements into `ProductFabricBundle` structures;
-* assemble represented bus elements into a `ProductBusFleet`;
-* evaluate assembled queue bundles, fabric bundles, or bus fleets; or
+* assemble represented system-side bus elements into a bus fleet structure;
+* evaluate assembled queue bundles, fabric bundles, or system-side bus fleets; or
 * compare the completed pathway with the athoritative `TransitionPathway`.
 
 The `ProductAdapter` may identify, inspect, and relate individual queues, fabric elements, and their interactions where required to construct the normalized `ProductPathway` graph.
