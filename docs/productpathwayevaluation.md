@@ -990,27 +990,297 @@ When assembly completes successfully, the resulting `ProductQueueBundle` objects
 
 ## 8. Product Queue Categories
 
+A queue element represents a pathway function or requirement whose access, capacity, timing, availability, or throughput may affect how the pathway executes as represented. Queue elements are identified by the `ProductAdapter` from information supported by the `ProductIntakeBundle` and represented in the immutable `ProductPathway`.
+
+Product queue categories classify functionality via the principal types of access, capacity, timing, throughput, and execution represented by those queue elements. They provide a common functional vocabulary for identifying what role a queue performs and for organizing related pathway structures for downstream evaluation.
+
+Facts carried by a queue element describe the pathway's stated capacity, access, timing, throughput, availability, dependencies, and other applicable characteristics used downstream to identify constraints or bottlenecks. These facts originate in the submitted pathway material and remain attributable to their source, evidence, provenance, `user_id`, and `pathway_id`.
+
+Accurate queue-category identification is required for correct downstream assembly and evaluation. A pathway therefore uses only the canonical queue categories applicable to its represented functions. A pathway may contain multiple queue elements within the same category. Where a valid queue element does not fit the current canonical taxonomy, it is preserved as `UNCLASSIFIED` rather than discarded or forced into an inapplicable category.
+
+Queue classification does not determine operational state. Whether a queue is clear, constrained, blocked, expired, closed, delayed, stale, or otherwise successful or unsuccessful is determined later by `QueueEvaluator`.
+
+Where available from the pathway material, a represented queue element preserves information needed to identify:
+
+* the function or requirement represented by the queue;
+* the applicable canonical queue category, or `UNCLASSIFIED` if none of the existing category types apply;
+* the input, output, access, capacity, or execution function or requirement involved;
+* relevant quantity, capacity, or bandwidth information;
+* applicable timing, sequencing, throughput, latency, or availability information;
+* geographic or other system scope;
+* dependencies and relationships with other pathway elements;
+* assumptions and uncertainties;
+* source, documentation, evidence, and provenance references; and
+* `user_id` and `pathway_id` attribution.
+
+A queue category identifies the function represented by a queue element. It does not determine the queue's evaluated state or `ProductQueueBundle` membership.
+
 ### 8.1 Feedstock and Input Access
 
-### 8.2 Product Output and Delivery Access
+The Feedstock and Input Access category represents access to physical, energy, material, service, or other operational inputs that are consumed, altered, or transformed as part of the pathway’s execution.
 
-### 8.3 Bankability and Revenue Certainty
+Applicable queue elements may represent product pathway requirements such as:
 
-### 8.4 Project Finance
+* fuel or process feedstocks;
+* electricity or other energy inputs;
+* clean-power access;
+* raw or processed materials;
+* critical minerals or manufactured components;
+* water or other required process inputs;
+* biological feedstocks;
+* equipment or specialized services; or
+* another material or operational input required for construction, conversion, deployment, or operation.
 
-### 8.5 Non-Dilutive Capital and Public Support
+A represented input requirement should preserve applicable quantity, quality, location, timing, sourcing, and dependency information where supplied.
 
-### 8.6 Permitting and Authorization
+Representation of an input does not establish that sufficient supply exists. Availability, competing demand, throughput, timing, and other constraints are evaluated downstream.
 
-### 8.7 Workforce and Execution
+### 8.2 Production, Conversion, and Execution Capacity
 
-### 8.8 MRV, Documentation, and Evidence
+The Production, Conversion, and Execution Capacity category represents the physical or operational capacity required to transform pathway inputs into the pathway's represented outputs or completed activities.
+
+Applicable queue elements may include:
+
+* manufacturing capacity;
+* processing capacity;
+* conversion capacity;
+* generation capacity;
+* construction or deployment capacity;
+* facility throughput;
+* equipment availability;
+* operating capacity;
+* commissioning capacity;
+* process yield or utilization characteristics;
+* ramp-up or expansion capacity; or
+* another physical or operational capacity characteristic affecting production, conversion, construction, deployment, or operation.
+
+This category represents the pathway's ability to perform the change or activity itself. It is distinct from access to the inputs required by that activity, access to infrastructure used to deliver its outputs, and access to the workforce required to execute it.
+
+Where the pathway represents multiple construction, commissioning, operation, conversion, or production steps, including sequential or parallel steps, the relationships among them are preserved.
+
+Representation of production or execution capacity does not establish that the pathway can operate at the required scale or within the required synchronization window. Those conditions are evaluated downstream.
+
+### 8.3 Product Output and Delivery Access
+
+The Product Output and Delivery Access category represents the infrastructure, network access, storage, market access, offtake, or delivery conditions required for a pathway's declared output to reach its intended destination or function.
+
+Applicable queue elements may include:
+
+* grid interconnection;
+* transmission or distribution access;
+* pipeline access;
+* transport or logistics capacity;
+* storage or terminal access;
+* export or import infrastructure;
+* customer connection;
+* product offtake;
+* injection or sequestration access; or
+* another delivery pathway required to move, store, connect, transfer, or use the declared output.
+
+Where infrastructure supports both product pathway inputs and outputs, materially distinct operational conditions may be represented as separate queue elements. Where the same infrastructure serves both directions under materially similar operational conditions, it may be represented as a single shared infrastructure queue. In all cases, the `ProductPathway` preserves the direction and relationships of every represented flow.
+
+The queue represents access required for handling or delivery. It does not establish the climate or system value of the output, the validity of an offtake claim, or whether delivering the output produces a net overall system contribution.
+
+### 8.4 Finance and Revenue
+
+Finance and revenue queue categories represent distinct functions associated with establishing a pathway's revenue basis, obtaining debt, equity, or other private capital required for execution, and accessing applicable public or non-dilutive support. These functions remain separately classified because a pathway may satisfy one while remaining constrained by another.
+
+### 8.4.1 Bankability and Revenue Certainty
+
+The Bankability and Revenue Certainty category represents conditions required for a pathway to establish sufficiently durable expected revenue or economic support for execution.
+
+Applicable queue elements may include:
+
+* contracted offtake;
+* long-term purchase commitments;
+* regulated or contracted revenue;
+* tariffs or other revenue-setting mechanisms;
+* market arrangements that materially determine revenue certainty;
+* price-support mechanisms;
+* creditworthy counterparties;
+* revenue guarantees;
+* customer commitments; or
+* other represented conditions affecting revenue certainty.
+
+This category is distinct from Project Finance. Bankability and revenue certainty concern the conditions supporting expected cash flow or economic viability. Project Finance concerns access to the capital required to finance execution.
+
+The presence of a represented revenue mechanism does not establish commercial validity or investment worthiness.
+
+### 8.4.2 Project Finance
+
+The Project Finance category represents access to capital required to construct, deploy, convert, expand, operate, refinance, or otherwise execute the represented pathway.
+
+Applicable queue elements may include:
+
+* debt;
+* equity;
+* project-finance capacity;
+* construction finance;
+* working capital;
+* refinancing;
+* guarantees or credit enhancement;
+* risk allocation required for financing close;
+* applicable cost-of-capital characteristics; or
+* other financing conditions represented by the pathway.
+
+Debt, equity, and other private-capital structures may be preserved as subtypes or properties of the represented finance requirement rather than requiring separate top-level queue categories.
+
+Where financing depends on another pathway condition, such as permitting, contracted revenue, infrastructure availability, or public support, that dependency remains represented rather than being collapsed into the finance queue.
+
+Project Finance does not determine whether a financing structure is appropriate, investable, or commercially advisable.
+
+### 8.4.3 Non-Dilutive Capital and Public Support
+
+The Non-Dilutive Capital and Public Support category represents grants, incentives, public programs, concessional support, or other non-dilutive mechanisms on which the represented pathway depends.
+
+Applicable queue elements may include:
+
+* grants;
+* tax credits or rebates;
+* public loan support;
+* guarantees;
+* contracts for difference;
+* production or deployment incentives;
+* public procurement support;
+* demonstration or commercialization funding;
+* sovereign or development-finance support; or
+* other represented public or non-dilutive support.
+
+The queue preserves dependencies on eligibility, authorization, availability, timing, appropriation, award, or disbursement where those conditions are represented.
+
+Public support is represented as a pathway dependency when applicable. ClimateSOS does not assume that a proposed or available program will necessarily provide the required support.
+
+### 8.5 Permitting and Authorization
+
+The Permitting and Authorization category represents legal, regulatory, institutional, or other formal authorization required for pathway execution.
+
+Applicable queue elements may include:
+
+* construction or operating permits;
+* environmental approvals;
+* siting or land-use approvals;
+* licenses;
+* interconnection authorization;
+* import or export authorization;
+* required inspections, certifications, or authority signoffs;
+* regulatory approval;
+* public-agency authorization; or
+* other legally required permissions.
+
+A pathway may contain multiple Permitting and Authorization queue elements where distinct approvals apply at different execution stages. For example, an initial construction or installation permit, a post-construction inspection, and a final operating authorization may be represented as separate queue elements when they constitute materially distinct requirements.
+
+Where the pathway identifies sequencing or timing relationships among authorizations, inspections, production or construction activity, commissioning, or operation, those relationships are preserved. Distinct Permitting and Authorization queue elements may therefore occur before, between, or after queue elements in other categories.
+
+Permitting and authorization do not subsume Charter requirements concerning justice, rights, equitable durability, Indigenous Peoples' rights, community safeguards, or other normative constraints. Those conditions remain subject to the applicable Charter evaluation.
+
+### 8.6 Workforce and Execution
+
+The Workforce and Execution category represents human, organizational, contractor, and specialist capacity required to construct, deploy, operate, maintain, convert, retire, or close the represented pathway.
+
+Applicable queue elements may include:
+
+* skilled labor;
+* specialized trades;
+* engineering capacity;
+* construction labor;
+* installation personnel;
+* operations and maintenance personnel;
+* contractor or supplier execution capacity;
+* training or retraining;
+* workforce redeployment;
+* fossil workforce transition, retraining, or redeployment requirements;
+* fossil workforce capacity required for decommissioning, remediation, or closure;
+* project-management capacity; or
+* other human or organizational capability required by the pathway.
+
+This category concerns the people and organizations required to execute the represented activity. Physical production, conversion, facility, or deployment throughput remains represented under Production, Conversion, and Execution Capacity.
+
+Where workforce requirements depend on timing, geography, certification, training lead time, or competition with other transition activities, those relationships are preserved when represented by the pathway.
+
+### 8.7 MRV
+
+The MRV category represents measurement, reporting, and verification requirements necessary to support a represented pathway claim, transaction, authorization, accounting treatment, or operational function.
+
+Applicable queue elements may include:
+
+* measurement systems;
+* monitoring requirements;
+* reporting infrastructure;
+* verification processes;
+* audit or review processes required as part of an MRV regime;
+* lifecycle, emissions, durability, storage, or performance monitoring; or
+* other ongoing measurement, reporting, or verification functions required by the pathway.
+
+An MRV queue represents the operational capability required to measure, monitor, report, or verify the applicable pathway condition over time. Representation of an MRV requirement does not establish that the resulting evidence is sufficient or that the associated claim is valid. Evidence quality, provenance, methodology, uncertainty, and unresolved claims are evaluated downstream.
+
+### 8.8 Documentation and Evidence
+
+The Documentation and Evidence category represents documentation, records, certifications, provenance, or other evidentiary material required to support a represented pathway claim, transaction, authorization, accounting treatment, or operational function.
+
+Applicable queue elements may include:
+
+* lifecycle or emissions documentation;
+* chain-of-custody records;
+* certifications;
+* registry records;
+* audit records;
+* durability or storage evidence;
+* test or inspection records;
+* methodology documentation;
+* provenance records;
+* source documentation supporting material pathway claims; or
+* other documentation or evidence required for the pathway to execute or substantiate a material claim.
+
+Representation of documentation or evidence does not establish that it is sufficient, valid, complete, or applicable to the associated claim. `DocumentationEvaluator` evaluates the evidence, provenance, methodology, uncertainty, and unresolved claims downstream.
 
 ### 8.9 Fossil-Exit Finance and Persistence Closure
 
-### 8.10 Other Pathway-Specific Queues
+The Fossil-Exit Finance and Persistence Closure category represents requirements necessary to ensure that one or more transition activities result in durable fossil retirement, closure, or prevention of continued fossil dependence, including financial, institutional, governance, or other mechanisms that materially enable fossil phaseout.
 
-The archive treated these as “required queue categories,” but its underlying text already acknowledged that a pathway may require only some of them. I would therefore use **Product Queue Categories**, not **Required Queue Categories**. 
+Applicable queue elements may include:
+
+* financing required for fossil-asset retirement;
+* refinancing or debt restructuring associated with retirement;
+* contractual termination or retirement mechanisms;
+* compensation or liability arrangements required for closure;
+* decommissioning finance;
+* environmental-remediation funding;
+* long-term closure or monitoring obligations;
+* financial assurance for residual liabilities;
+* infrastructure retirement or conversion requirements;
+* mechanisms preventing retired capacity from returning to service; or
+* other represented conditions required to close a fossil persistence pathway.
+
+Where fossil retirement or closure depends on workforce transition, retraining, redeployment, decommissioning labor, or related execution capacity, those requirements are represented under Workforce and Execution and linked to the applicable fossil-exit queue elements.
+
+This category is distinct from ordinary Project Finance. It represents requirements specifically associated with durable fossil exit, retirement, closure, or prevention of continued fossil fallback.
+
+Operational cessation alone does not establish completion of fossil-exit obligations where the represented pathway also requires decommissioning, remediation, residual-emissions control, financial assurance, monitoring, or another durable closure condition.
+
+### 8.10 Unclassified Queue Elements
+
+A pathway may contain a valid queue function or requirement involving throughput, access, capacity, timing, or execution that is supported by the intake material but does not fit the current canonical queue taxonomy.
+
+Such a queue element must not be discarded, forced into an inapplicable category, or converted into a different pathway fact solely to satisfy the taxonomy.
+
+Where the `ProductAdapter` can establish that the represented condition functions as a queue but cannot assign an applicable canonical category, it preserves the queue element with the category `UNCLASSIFIED`.
+
+An `UNCLASSIFIED` queue preserves the same information available for any other represented queue element, including:
+
+* its represented operational function;
+* applicable capacity, throughput, access, timing, or execution information;
+* relationships and dependencies;
+* assumptions and uncertainty;
+* source, evidence, and provenance references; and
+* `user_id` and `pathway_id` attribution.
+
+`UNCLASSIFIED` indicates a taxonomy gap, not an absence of information and not an evaluator failure. The queue remains available to `QueueBundler`, `QueueEvaluator`, and other applicable downstream stages using the operational information and relationships that are represented.
+
+Downstream evaluation must not treat an `UNCLASSIFIED` queue as clear, satisfied, or immaterial merely because a canonical category was not assigned.
+
+Recurring unclassified queue functions should be reviewed for possible addition to the canonical taxonomy rather than being permanently accumulated under `UNCLASSIFIED`. Where review identifies a valid ClimateSOS functional gap, an implementation update may be submitted through the standard ClimateSOS open-source contribution and review process.
+
+The queue taxonomy provides a common functional vocabulary without requiring the taxonomy to be complete before a represented pathway can proceed. Queue classification identifies the applicable functional category, or `UNCLASSIFIED` where no canonical category applies; it does not determine queue state, `ProductQueueBundle` membership, or pathway validity.
 
 ## 9. Pathway Evaluation Engine
 
