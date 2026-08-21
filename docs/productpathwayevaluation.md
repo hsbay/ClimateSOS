@@ -1282,27 +1282,550 @@ Recurring unclassified queue functions should be reviewed for possible addition 
 
 The queue taxonomy provides a common functional vocabulary without requiring the taxonomy to be complete before a represented pathway can proceed. Queue classification identifies the applicable functional category, or `UNCLASSIFIED` where no canonical category applies; it does not determine queue state, `ProductQueueBundle` membership, or pathway validity.
 
+---
+
 ## 9. Pathway Evaluation Engine
+
+The `PathwayEvaluationEngine` orchestrates several subevaluators that evaluate the represented pathway and its assembled queue and fabric structures against the current authoritative `TransitionPathway`.
+
+Evaluation begins after `ProductAssembly` completes successfully. The engine receives the immutable pathway and assembly products created by earlier stages. After all required subevaluators complete successfully, the engine produces a consolidated immutable `PathwayAssessment`.
+
+The evaluation engine determines how the represented pathway operates within the transition context. It identifies direct relationships with the reference transition, substitution or combination effects, downstream propagation, queue conditions, fabric coordination conditions, and the sufficiency and traceability of supporting documentation and evidence.
+
+Evaluation does not modify the `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `ProductIntakeBundle`, or authoritative `TransitionPathway`. Evaluators produce separate immutable results or findings that preserve references to the objects and evidence from which they were derived.
+
+```text
+ProductAdapterResult
+      │
+      ├── ProductPathway
+      ├── ProductIntakeBundle reference
+      │
+      ▼
+CharterEvaluator
+      │
+      ▼
+InitialCharterResult
+      │
+      │
+ProductAssembly
+      │
+      ├── ProductQueueBundle(s)
+      ├── ProductFabric(s), where applicable
+      │
+      ▼
+PathwayEvaluationEngine
+      │
+      ├── PathwayComparator
+      │      ├── Direct Pathway Comparison
+      │      ├── Substitution and Combination Evaluation
+      │      └── Downstream Propagation
+      │
+      ├── QueueEvaluator
+      │      └── evaluates ProductQueueBundle(s)
+      │             ├── QueueProgressRecord(s), where produced
+      │             └── QueueEvaluatorResult(s)
+      │
+      ├── FabricEvaluator, where applicable
+      │      └── evaluates ProductFabric(s)
+      │             └── FabricEvaluatorResult(s)
+      │
+      └── DocumentationEvaluator
+             └── evaluates documentation, evidence, provenance,
+                 methodology, uncertainty, and unresolved claims
+      │
+      ▼
+PathwayAssessment
+```
 
 ### 9.1 Evaluation Responsibilities and Boundary
 
+The `PathwayEvaluationEngine` coordinates the evaluation functions required to determine how the represented pathway interacts with the current transition context.
+
+It receives:
+
+* the immutable `ProductAdapterResult` and its associated immutable `ProductPathway`;
+* the completed `InitialCharterResult`;
+* the immutable `ProductQueueBundle` objects produced by `ProductAssembly`;
+* applicable immutable `ProductFabric` objects;
+* the current authoritative `TransitionPathway`;
+* references to the associated `ProductIntakeBundle` where documentation, evidence, or provenance is required; and
+* the runtime configuration, evaluator versions, and applicable system-model resources required for evaluation.
+
+The `PathwayEvaluationEngine`:
+
+* compares the represented pathway with the authoritative `TransitionPathway`;
+* identifies direct overlaps, dependencies, additions, replacements, and conflicts;
+* evaluates represented substitution and combination relationships;
+* evaluates downstream propagation from represented pathway changes;
+* evaluates queue operational status, lifecycle state, ordering, synchronization, and other applicable findings from represented queue facts, relationships, and transition and system context;
+* evaluates coordinated fabric conditions where a `ProductFabric` is present;
+* evaluates documentation, evidence, provenance, methodology, uncertainty, and unresolved claims;
+* preserves relationships among results and findings produced by the individual evaluators; and
+* produces one consolidated immutable `PathwayAssessment`.
+
+The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `EvaluationResult`.
+
+An adverse, constrained, blocked, unresolved, or otherwise unsuccessful pathway finding produced by valid evaluator execution remains a valid evaluation finding. An evaluator execution failure occurs when a required evaluation cannot execute or cannot produce a valid required result.
+
 ### 9.2 PathwayComparator
 
-### 9.3 Direct Pathway Comparison
+`PathwayComparator` evaluates the relationship between the represented `ProductPathway` and the current authoritative `TransitionPathway`.
 
-### 9.4 Substitution and Combination Evaluation
+The comparator evaluates the pathway as represented. It does not silently rewrite the submitted pathway to make it consistent with the reference transition and does not modify the authoritative `TransitionPathway`.
 
-### 9.5 Downstream Propagation
+`PathwayComparator` identifies applicable relationships between the `ProductPathway` and the authoritative `TransitionPathway`, including:
 
-### 9.6 QueueEvaluator
+* overlap with functions already represented in the authoritative transition;
+* addition of new functions introduced by the product pathway;
+* replacement, reduction, expansion, retirement, or other alteration of existing transition functions;
+* dependency on existing transition functions or infrastructure;
+* competition or mutual exclusivity between functions;
+* complementarity between functions;
+* timing or sequencing interactions;
+* geographic or system-scope interactions; and
+* represented assumptions or uncertainties that materially affect those relationships.
 
-### 9.7 FabricEvaluator
+Comparison findings preserve the pathway elements, transition elements, relationships, and supporting information used to produce the finding.
 
-### 9.8 BusEvaluator
+`PathwayComparator` coordinates Direct Pathway Comparison, Substitution and Combination Evaluation, and Downstream Propagation.
 
-### 9.9 DocumentationEvaluator
+#### 9.2.1 Direct Pathway Comparison
 
-### 9.10 PathwayAssessment
+Direct Pathway Comparison examines relationships that can be established directly between represented elements of the `ProductPathway` and the authoritative `TransitionPathway`.
+
+Direct Pathway Comparison may identify:
+
+* equivalent or overlapping functions;
+* direct additions to an existing transition function;
+* direct replacement or retirement relationships;
+* direct dependencies;
+* direct interaction with applicable ClimateSOS system-model functions or structures, including biosphere-related structures where applicable and represented;
+* incompatible requirements;
+* competing claims on represented capacity, infrastructure, inputs, finance, workforce, authorization, or other transition resources;
+* differences in timing, scale, geography, or operational scope; and
+* material gaps between the pathway as represented and the corresponding transition function.
+
+A direct comparison finding preserves the objects and relationships on both sides of the comparison.
+
+Similarity alone does not establish substitution, equivalence, or contribution. Those determinations require the applicable downstream evaluation.
+
+Where no direct relationship exists, Direct Pathway Comparison records no direct relationship rather than creating one from unsupported similarity.
+
+#### 9.2.2 Substitution and Combination Evaluation
+
+Substitution and Combination Evaluation determines whether represented pathway functions may replace, combine with, depend on, complement, or operate alongside functions in the authoritative `TransitionPathway`.
+
+A substitution relationship exists only where the represented pathway and transition context support displacement or replacement of an existing function. The presence of a cleaner, newer, or additional activity does not by itself establish that another activity is displaced.
+
+Combination evaluation examines pathways whose effect depends on coordinated operation with one or more existing transition functions rather than direct replacement.
+
+Evaluation may identify substitution or displacement relationships such as:
+
+* full substitution;
+* partial substitution;
+* conditional substitution dependent on another pathway function;
+* replacement that becomes effective only after another requirement is satisfied; or
+* claimed substitution where the represented pathway instead operates in parallel without material displacement.
+
+Evaluation may identify combination or additive relationships such as:
+
+* complementary operation;
+* required coexistence;
+* coordinated operation with an existing transition function; or
+* a proposed combination whose required relationship is unsupported or unresolved.
+
+Evaluation may also determine that no material substitution, displacement, or combination relationship exists.
+
+Where substitution or combination depends on timing, capacity, authorization, infrastructure, finance, workforce, queue condition, or another represented relationship, the evaluation preserves that dependency.
+
+Substitution and combination findings describe the evaluated relationship. They do not themselves establish net overall system contribution or modify the authoritative `TransitionPathway`.
+
+#### 9.2.3 Downstream Propagation
+
+Downstream Propagation evaluates how a represented pathway change affects functions and dependencies connected to the directly affected pathway or transition elements.
+
+Propagation begins from relationships established by the pathway comparison. It follows represented and system-supported dependencies far enough to identify material consequences required for pathway evaluation.
+
+Applicable propagated effects may include changes to:
+
+* input demand;
+* production or conversion requirements;
+* infrastructure use;
+* delivery requirements;
+* finance or revenue dependencies;
+* permitting or authorization requirements;
+* workforce requirements;
+* MRV requirements;
+* documentation or evidence requirements;
+* fossil-retirement or persistence-closure requirements;
+* timing and synchronization dependencies;
+* preconditions required for downstream functions, cascades, or state changes to occur;
+* cascade effects produced when a change propagates through multiple connected dependencies or functions;
+* interactions that may reinforce, weaken, or alter an applicable system attractor or transition trajectory;
+* interactions with applicable biosphere functions, cycles, buses, fabrics, or other system-model structures;
+* propagated effects that alter biosphere integrity, resilience, restoration capacity, or other applicable planetary-boundary conditions; and
+* other transition functions materially connected to the represented change.
+
+Propagation preserves the distinction between a submitted pathway fact and a condition derived through ClimateSOS system-side evaluation. Where queue evaluation identifies a material interaction or propagated effect requiring additional system-side evaluation, `QueueEvaluator` returns that interaction to `PathwayEvaluationEngine` for routing to the applicable system-side function. Resulting system-side findings may be consumed by a subsequent evaluation pass of the affected queue within the same evaluation run.
+
+A propagated effect must remain traceable to the relationships and system-model basis from which it was derived. The evaluator does not convert an unsupported possible effect into an established pathway condition.
+
+Downstream Propagation does not recursively expand without an evaluation-relevant boundary. Propagation stops when the next relationship or effect is not relevant to the current pathway assessment or authoritative `TransitionPathway`, or is unsupported by the represented pathway or applicable system model.
+
+### 9.3 QueueEvaluator
+
+`QueueEvaluator` evaluates the queue family associated with one `ProductPathway`. Within this section, the *queue family* comprises the immutable `ProductQueueBundle` objects produced by `ProductAssembly` and any applicable unbundled queue elements remaining in that `ProductPathway`. 
+
+`QueueEvaluator` evaluates every member of the queue family associated with one `ProductPathway` at least once during each evaluation run. A queue-family member may complete after a single evaluation pass or may be re-evaluated within the same run when a material dependency, system-side condition, propagated effect, timing relationship, or other evaluation context changes. During that lifecycle, queue conditions emerge from represented queue facts and relationships together with the applicable pathway, reference transition, and system-side context.
+
+Queue evaluation establishes and updates the evaluated queue's operational status, lifecycle state, and, where applicable, its ordering and synchronization status. These dimensions describe different aspects of queue execution and may change independently during the evaluation lifecycle.
+
+Each queue-evaluation attempt performed by `QueueEvaluator` has an execution status separate from the queue's operational status and lifecycle state. A successfully completed evaluation attempt may still return an unresolved queue determination such as `NODETERMINATION`. If `QueueEvaluator` cannot successfully complete the required evaluation, the attempt is recorded with an execution status of `EVALUATION_FAILED`.
+
+#### Queue Operational Status
+
+Operational status describes the queue's current ability to perform its represented function. Applicable statuses may include:
+
+* `CLEAR`;
+* `CONSTRAINED`;
+* `BLOCKED`;
+* `DELAYED`; or
+* another operational status defined by the applicable queue-evaluation rules.
+
+`CLEAR` means that the represented queue function can proceed as intended under the currently evaluated conditions. It does not mean that the queue has completed or that its lifecycle is closed.
+
+`CONSTRAINED` indicates that the queue can proceed, but a material condition limits its capacity, throughput, timing, availability, access, or another required operating characteristic.
+
+`BLOCKED` indicates that a material dependency or condition prevents the represented queue function from proceeding.
+
+`DELAYED` indicates that the represented queue function can or may proceed, but not within the required or expected timing under the currently evaluated conditions.
+
+A change in operational status does not by itself change the queue's lifecycle state.
+
+#### Queue Lifecycle State
+
+Lifecycle state describes how the represented queue progresses from an active and current condition through closure or loss of current validity within the evaluation context. Applicable lifecycle states may include:
+
+* `OPEN`;
+* `CLOSED`;
+* `EXPIRED`;
+* `STALE`; or
+* another lifecycle state defined by the applicable queue-evaluation rules.
+
+The evaluated lifecycle begins when `QueueEvaluator` first evaluates the queue. A queue ordinarily enters evaluation as `OPEN` unless the applicable evidence, temporal context, or queue rules establish that it is already stale, expired, completed, or otherwise no longer active.
+
+An `OPEN` queue represents a function or requirement whose evaluated lifecycle remains active because it is executing, waiting, progressing, recurring, or pending resolution. `QueueEvaluator` evaluates the queue at the applicable evaluation time and may revisit it within the same evaluation run when a material condition changes. Its operational status may change multiple times while its lifecycle state remains `OPEN`.
+
+For example:
+
+```text
+OPEN + BLOCKED
+        ↓
+OPEN + CONSTRAINED
+        ↓
+OPEN + CLEAR
+        ↓
+CLOSED + CLEAR
+```
+
+The queue remains `OPEN` while a blocking dependency is unresolved, while execution is constrained, and after the constraint clears if the represented function still has work remaining. It becomes `CLOSED` when the represented function has completed, its requirement has been satisfied, or the applicable queue rules establish that continued queue execution is no longer required.
+
+Some queues represent continuously operating or persistent real-world conditions rather than short execution steps. Such a queue remains `OPEN` while the represented requirement persists. For example, a queue representing methane control at an emitting well may remain `OPEN` while emissions continue and required control or closure has not been completed. Its operational status may change as control capacity, permits, equipment, workforce, or other dependencies become available. Closure occurs only when the represented requirement is satisfied under the applicable evaluation rules.
+
+`STALE` indicates that the information or evaluated context required to rely on the queue condition is no longer sufficiently current. `EXPIRED` indicates that the time period applicable to the queue condition has ended. Neither state means that the underlying real-world requirement has necessarily completed.
+
+TTL is temporal evaluation information rather than an operational status or lifecycle state. TTL, expiration time, age, last-verification time, and similar information are preserved as result context and may cause the evaluated lifecycle state to become `STALE` or `EXPIRED`.
+
+#### Queue Ordering and Synchronization
+
+Queue ordering and synchronization are evaluated independently of operational status and lifecycle state where applicable.
+
+Ordering status may be:
+
+* `ORDERED`;
+* `MISORDERED`; or
+* `NOT_APPLICABLE`.
+
+`ORDERED` means that required sequencing relationships are satisfied. `MISORDERED` means that a required sequence exists but the represented or evaluated execution order is incorrect. `NOT_APPLICABLE` means that the queue does not have any material ordering requirements.
+
+Synchronization status may be:
+
+* `SYNCHRONIZED`;
+* `UNSYNCHRONIZED`; or
+* `NOT_REQUIRED`.
+
+`SYNCHRONIZED` means that required timing or coordination relationships are satisfied. `UNSYNCHRONIZED` means that required coordination exists but the participating functions are not aligned within the applicable timing or operating conditions. `NOT_REQUIRED` means that coordinated timing is not required for the evaluated queue.
+
+Evaluator execution, integrity error or failure is not represented as an ordinary ordering, synchronization, operational, or lifecycle status.
+
+#### Queue Evaluation Process
+
+`QueueEvaluator` applies the applicable evaluation logic to each queue in the `ProductPathway` queue family, determines how the queue operates and changes under the pathway, transition, and relevant system context, and records the resulting changes to its operational status, lifecycle state, dependencies, timing, ordering, synchronization, and other relevant conditions over its evaluated lifecycle.
+
+Evaluation may examine:
+
+* the queue functions represented by the queue elements;
+* access, capacity, throughput, bandwidth, and availability;
+* timing, sequencing, latency, ordering, and synchronization relationships;
+* dependencies internal to the queue;
+* dependencies on other queues, pathway functions, or applicable system-side structures;
+* geographic and system scope;
+* competing demand or resource use;
+* relevant pathway-comparison and downstream-propagation findings;
+* applicable transition and system-side conditions;
+* represented assumptions and uncertainties; and
+* supporting source, evidence, and provenance references.
+
+Where an evaluated queue participates in one or more `ProductFabric` objects, `QueueEvaluator` preserves the applicable fabric references and evaluates queue-level conditions that depend on that membership. Fabric coordination among queues participating in a `ProductFabric` remains the responsibility of `FabricEvaluator`.
+
+Queue evaluation is not limited to conditions internal to the `ProductPathway`. Where a represented queue function depends on an applicable ClimateSOS system-side structure or function, `QueueEvaluator` identifies the required system-side evaluation context. `PathwayEvaluationEngine` coordinates access to the applicable system-side evaluation and provides the resulting state or findings to the `QueueEvaluator` for use in determining the queue condition.
+
+These interactions may include dependencies on, or effects associated with, infrastructure systems, system attractors, biosphere functions, cycles, buses, fabrics, BioNPUs, or other applicable ClimateSOS system-model structures.
+
+`QueueEvaluator` does not take ownership of or directly modify those system-side structures. The applicable system-side evaluation function determines their state. `QueueEvaluator` consumes the resulting state or findings as evaluation context and determines their effect on the represented queue.
+
+A material system-side change may therefore change the state of an `OPEN` queue during the same evaluation lifecycle. For example, a queue that is initially `BLOCKED` because required system capacity is unavailable may become `CONSTRAINED` or `CLEAR` when the applicable system-side evaluation establishes that sufficient capacity has become available.
+
+Likewise, operation of the represented queue may produce a material effect that propagates into the system model. Where that effect results in new system-side findings relevant to the queue, those findings may be consumed by subsequent queue evaluation within the same evaluation lifecycle. Such feedback remains traceable to the queue relationship, propagated effect, and system-model basis from which it was derived.
+
+#### Queue Progress Through the Lifecycle
+
+A queue may pass through multiple evaluated conditions before its lifecycle completes. Material changes in operational status, lifecycle state, dependency state, timing, ordering, synchronization, or applicable system-side context are preserved as immutable `QueueProgressRecord` objects.
+
+A new `QueueProgressRecord` is produced when a material change is required to explain the queue's progression or its downstream effects. The evaluator does not overwrite an earlier record.
+
+A queue may therefore produce a progression such as:
+
+```text
+QueueProgressRecord 1
+    lifecycle_state: OPEN
+    operational_status: BLOCKED
+
+QueueProgressRecord 2
+    lifecycle_state: OPEN
+    operational_status: CONSTRAINED
+
+QueueProgressRecord 3
+    lifecycle_state: OPEN
+    operational_status: CLEAR
+
+QueueProgressRecord 4
+    lifecycle_state: CLOSED
+    operational_status: CLEAR
+```
+
+The final queue condition does not erase earlier material conditions. A queue that eventually becomes `CLEAR` and `CLOSED` may still have produced delay, propagation, synchronization, capacity, or other consequences while it was blocked or constrained.
+
+Where the available information does not support a required queue determination, `QueueEvaluator` records `NODETERMINATION`. This represents a successfully completed evaluation whose queue condition could not be resolved from the available information; it is distinct from `EVALUATION_FAILED`.
+
+An `UNCLASSIFIED` queue remains evaluable from its represented operational facts and relationships.
+
+Where multiple queue elements, queue bundles, or system relationships interact to produce a material condition that is not present in any one element by itself, `QueueEvaluator` preserves the relationships responsible for that finding.
+
+#### Completion of Queue Evaluation
+
+A completed queue lifecycle represents the evaluation history of the queue for one evaluation run. It consists of the queue, any material `QueueExecutionRecord` objects recording work performed by the represented queue function, any `QueueProgressRecord` objects recording material changes in its evaluated condition, and the final immutable `QueueEvaluatorResult`.
+
+A lifecycle may complete with the queue `CLOSED`, where the represented function has completed or the applicable requirement has been satisfied. It may also complete for the purposes of the current evaluation while preserving an `OPEN`, `STALE`, `EXPIRED`, `BLOCKED`, `CONSTRAINED`, `DELAYED`, or `NODETERMINATION` condition where that is the valid outcome of the evaluation run.
+
+Completion of `QueueEvaluator` therefore does not require successful completion of the represented real-world queue function. It requires that the evaluator has completed the applicable queue evaluation and can produce valid immutable results representing the queue's condition and evaluation history.
+
+For each evaluated queue, `QueueEvaluator` produces one immutable `QueueEvaluatorResult` for that evaluation run.
+
+#### 9.3.1 QueueProgressRecord
+
+A `QueueProgressRecord` is an immutable record of a material intermediate queue condition observed during one queue-evaluation run.
+
+A progress record is produced when preserving an intermediate state or change is necessary to explain queue progression, delay, re-execution, resumption, completion, or a downstream effect. Routine transient implementation state that has no material evaluation significance does not require a preserved progress record.
+
+A `QueueProgressRecord` contains or references, as applicable:
+
+* the evaluated queue;
+* the applicable evaluation-run identity;
+* the operational status at that point in the evaluation;
+* the lifecycle state at that point in the evaluation;
+* ordering or synchronization status, where applicable;
+* applicable capacity, throughput, access, timing, or availability conditions;
+* the event, dependency change, system-side change, or other material change responsible for the record, with supporting references only where not already preserved elsewhere;
+* the evaluation time or ordering position of the record; and
+* `user_id` and `pathway_id` attribution.
+
+Multiple `QueueProgressRecord` objects may therefore represent the progression of the same queue during one evaluation run.
+
+For example, a queue may progress from `BLOCKED` and `OPEN`, to `DELAYED` and `OPEN`, and later to `CLEAR` and `CLOSED`. The final queue condition does not erase the earlier material conditions or their downstream consequences.
+
+A `QueueProgressRecord` does not replace the final `QueueEvaluatorResult`. It preserves material intermediate progression that may be required to explain the final queue result or downstream pathway effects.
+
+Completed progress records are immutable. A later state change produces a new `QueueProgressRecord` rather than modifying an earlier record.
+
+#### 9.3.2 QueueEvaluatorResult
+
+A `QueueEvaluatorResult` records the evaluator's completed conclusion for one `ProductQueueBundle` during one evaluation run. A completed `QueueEvaluatorResult` is immutable. 
+
+The result contains the final evaluated queue condition together with the material findings, progress history, temporal and evaluation context, and references to supporting documentation, evidence, and provenance.
+
+A `QueueEvaluatorResult` contains or references, as applicable:
+
+**Core evaluated state:**
+
+* the evaluated `ProductQueueBundle`;
+* the final operational status;
+* the final lifecycle state; and
+* ordering or synchronization status, where applicable.
+
+**Evaluated findings:**
+
+* identified constraints or bottlenecks;
+* material delays;
+* applicable capacity, throughput, access, availability, or timing findings;
+* material dependency findings;
+* propagated effects that materially alter queue execution;
+* tipping findings, where applicable;
+* other material conditions derived during queue evaluation; and
+* references to applicable `QueueProgressRecord` objects.
+
+Where tipping is material to the queue evaluation, the finding preserves the applicable threshold, whether the threshold was crossed, the crossing time or evaluation position where known, and the basis for the determination. *Tipping* is an evaluated finding and does not replace the queue's operational status or lifecycle state.
+
+**Result context and integrity:**
+
+* whether the required queue determination was resolved or remains unresolved;
+* material assumptions;
+* material uncertainties;
+* the applicable methodology and queue-evaluation rules;
+* source, evidence, and provenance references;
+* evaluation time;
+* applicable TTL, expiry, age, or last-verification information;
+* the authoritative `TransitionPathway` and applicable system context used for evaluation;
+* evaluator and rule-set versions;
+* the evaluation-run identity; and
+* `user_id` and `pathway_id` attribution.
+
+A `QueueEvaluatorResult` is not merely a copy of the final `QueueProgressRecord`. The result summarizes the completed queue evaluation and preserves material intermediate history where that history affects interpretation or downstream evaluation.
+
+A queue that ultimately evaluates as CLEAR may therefore retain findings showing that it was previously BLOCKED or DELAYED and that the earlier condition produced a material timing or synchronization consequence.
+
+Where the same `ProductQueueBundle` is evaluated again in new evaluation run or against a different authoritative transition or system context, this new execution produces a new immutable `QueueEvaluatorResult`. Earlier results remain preserved and distinguishable by their evaluation-run and context references.
+
+### 9.4 FabricEvaluator
+
+`FabricEvaluator` evaluates each applicable immutable `ProductFabric` produced by `FabricAssembler`.
+
+Fabric evaluation examines the participating queue results and their relationships to determine whether the queues can operate together in the required coordination, timing, and dependency structure, and whether the represented fabric function can operate as required.
+
+`FabricEvaluator` consumes:
+
+* the immutable `ProductFabric`;
+* the `ProductQueueBundle` objects referenced by the fabric;
+* the applicable `QueueEvaluatorResult` objects;
+* relevant pathway-comparison and downstream-propagation findings; and
+* the transition and system context required for the fabric's coordination function.
+
+Where a queue result indicates that material progression history affects fabric coordination, `FabricEvaluator` may follow references to the relevant `QueueProgressRecord` objects.
+
+Fabric evaluation examines:
+
+* the final operational and lifecycle conditions of participating queue bundles;
+* material queue progression that affects coordinated execution;
+* dependencies among participating queue bundles;
+* required timing and synchronization;
+* shared capacity or access relationships;
+* coordination dependencies;
+* propagation of queue conditions across the fabric; and
+* whether the represented coordination function can operate as required.
+
+A fabric may contain individually clear queues while remaining unable to coordinate because of timing, sequencing, dependency, or synchronization failure. Conversely, the presence of a constrained queue does not by itself determine the complete fabric condition; the effect of that constraint is evaluated in the context of the fabric's coordination function.
+
+For each evaluated `ProductFabric`, `FabricEvaluator` produces one immutable `FabricEvaluatorResult`.
+
+Biosphere buses, cycles, BioNPUs, and other ClimateSOS system-model structures are not evaluated by the `FabricEvaluator`. Their state and behavior are evaluated by the applicable ClimateSOS system-model functions.
+
+#### 9.4.1 FabricEvaluatorResult
+
+A `FabricEvaluatorResult` records the evaluated coordination condition of one `ProductFabric` without modifying the fabric or its referenced `ProductQueueBundle` objects.
+
+A `FabricEvaluatorResult` contains or references, as applicable:
+
+* the evaluated `ProductFabric`;
+* the participating `ProductQueueBundle` objects;
+* the applicable `QueueEvaluatorResult` objects;
+* the evaluated fabric coordination condition;
+* timing, sequencing, synchronization, dependency, or shared-capacity conditions material to the result;
+* queue conditions or progress histories that materially affect coordinated operation;
+* coordination failures, constraints, or unresolved relationships identified during evaluation;
+* relevant pathway-comparison and downstream-propagation findings;
+* assumptions and uncertainties affecting the evaluation;
+* source, evidence, and provenance references;
+* the evaluator and applicable rule-set version;
+* the evaluation-run identity; and
+* `user_id` and `pathway_id` attribution.
+
+Where a fabric condition emerges from relationships among individually viable queue bundles, the `FabricEvaluatorResult` preserves the coordination relationships responsible for that result.
+
+A completed `FabricEvaluatorResult` is immutable. It remains traceable to the evaluated `ProductFabric`, its referenced queue bundles, applicable `QueueEvaluatorResult` objects, relevant queue-progress history, transition and system context, and supporting evidence.
+
+`FabricEvaluatorResult` records the result of fabric evaluation. It does not modify the `ProductFabric`, participating queue bundles, queue-progress records, or queue-evaluation results.
+
+### 9.5 DocumentationEvaluator
+
+`DocumentationEvaluator` evaluates the documentation, evidence, provenance, methodology, and unresolved claims required to support material pathway facts and evaluation findings.
+
+It follows references from the `ProductPathway`, queue elements, assembly products, comparison findings, evaluator results, and other applicable evaluation structures to the associated `ProductIntakeBundle` and preserved source material.
+
+`DocumentationEvaluator` evaluates, where applicable:
+
+* whether referenced documentation or evidence is present and traceable;
+* whether the evidence supports the fact or claim to which it is attached;
+* provenance and source attribution;
+* methodology and stated assumptions;
+* material uncertainty;
+* consistency among related evidence;
+* certification, registry, audit, inspection, or test records;
+* lifecycle, emissions, durability, storage, or other supporting records;
+* unresolved or conflicting claims; and
+* limitations that materially affect interpretation of the represented pathway.
+
+The evaluator distinguishes the existence of documentation from the sufficiency of that documentation.
+
+`DocumentationEvaluator` does not treat the existence of an MRV system as proof that the measurements or evidence produced by that system are valid. Operational MRV capability is represented and evaluated through the applicable MRV queue; documentation and evidence produced by or supporting that capability are evaluated here.
+
+Where evidence is missing, incomplete, conflicting, uncertain, or insufficient for a required determination, that condition is preserved in the documentation findings and made available to the consolidated pathway assessment.
+
+`DocumentationEvaluator` does not modify source records, pathway facts, progress records, or prior evaluator results or findings.
+
+### 9.6 PathwayAssessment
+
+The `PathwayEvaluationEngine` produces one immutable `PathwayAssessment` after all required pathway-evaluation functions have completed successfully.
+
+The `PathwayAssessment` consolidates the results and findings produced during pathway evaluation while preserving their separate provenance and evaluator ownership.
+
+The assessment contains or references, as applicable:
+
+* the evaluated `ProductPathway`;
+* the authoritative `TransitionPathway` used for comparison;
+* the completed `InitialCharterResult`;
+* direct pathway-comparison findings;
+* substitution and combination findings;
+* downstream-propagation findings;
+* all applicable `QueueEvaluatorResult` objects;
+* all applicable `FabricEvaluatorResult` objects;
+* documentation and evidence findings;
+* material assumptions and uncertainties;
+* unresolved evaluation conditions;
+* evaluator and rule-set versions;
+* evidence and provenance references; and
+* `user_id` and `pathway_id` attribution.
+
+Applicable `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayAssessment` does not duplicate the queue-progress history.
+
+The `PathwayAssessment` records the evaluated relationships and operational findings needed by later stages. It does not overwrite the objects, results, progress records, or findings from which it was constructed.
+
+The assessment does not itself determine the final validity of the pathway, its net overall system contribution, required scale, global-system risk, bound state, or final evaluation result. Those determinations occur in subsequent stages.
+
+A pathway evaluation completes only when every required evaluator has completed its applicable work for the represented pathway, including any required re-evaluation, and the engine can produce a valid immutable `PathwayAssessment`.
+
+An evaluator or result-integrity failure prevents completion of the current `PathwayAssessment`. A valid adverse, constrained, blocked, delayed, unresolved, or otherwise unsuccessful pathway result or finding does not by itself constitute an execution failure and remains part of the completed assessment.
+
+---
 
 ## 10. Integrated Charter Evaluation
 
