@@ -658,7 +658,7 @@ The `ProductAdapter` does not:
 * assemble represented fabric elements into `ProductFabric` structures;
 * assemble represented system-side bus elements into a bus fleet structure;
 * evaluate assembled queue bundles, fabric bundles, or system-side bus fleets; or
-* compare the completed pathway with the athoritative `TransitionPathway`.
+* compare the completed pathway with the authoritative `TransitionPathway`.
 
 The `ProductAdapter` may identify, inspect, and relate individual queues, fabric elements, and their interactions where required to construct the normalized `ProductPathway` graph.
 
@@ -1321,9 +1321,11 @@ PathwayEvaluationEngine
       │      └── Downstream Propagation
       │
       ├── QueueEvaluator
-      │      └── evaluates ProductQueueBundle(s)
-      │             ├── QueueProgressRecord(s), where produced
-      │             └── QueueEvaluatorResult(s)
+      │      ├── evaluates the ProductPathway queue family
+      │      │      ├── ProductQueueBundle(s)
+      │      │      └── applicable unbundled queue element(s)
+      │      ├── QueueProgressRecord(s), where produced
+      │      └── QueueEvaluatorResult(s)
       │
       ├── FabricEvaluator, where applicable
       │      └── evaluates ProductFabric(s)
@@ -1474,7 +1476,7 @@ Downstream Propagation does not recursively expand without an evaluation-relevan
 
 ### 9.3 QueueEvaluator
 
-`QueueEvaluator` evaluates the queue family associated with one `ProductPathway`. Within this section, the *queue family* comprises the immutable `ProductQueueBundle` objects produced by `ProductAssembly` and any applicable unbundled queue elements remaining in that `ProductPathway`. 
+`QueueEvaluator` evaluates the queue family associated with one `ProductPathway`. Within this section, the *queue family* comprises the immutable `ProductQueueBundle` objects produced by `ProductAssembly` and any applicable unbundled queue elements remaining in that `ProductPathway`.
 
 `QueueEvaluator` evaluates every member of the queue family associated with one `ProductPathway` at least once during each evaluation run. A queue-family member may complete after a single evaluation pass or may be re-evaluated within the same run when a material dependency, system-side condition, propagated effect, timing relationship, or other evaluation context changes. During that lifecycle, queue conditions emerge from represented queue facts and relationships together with the applicable pathway, reference transition, and system-side context.
 
@@ -1556,7 +1558,7 @@ Synchronization status may be:
 
 `SYNCHRONIZED` means that required timing or coordination relationships are satisfied. `UNSYNCHRONIZED` means that required coordination exists but the participating functions are not aligned within the applicable timing or operating conditions. `NOT_REQUIRED` means that coordinated timing is not required for the evaluated queue.
 
-Evaluator execution, integrity error or failure is not represented as an ordinary ordering, synchronization, operational, or lifecycle status.
+Evaluator execution, integrity errors, or failures are not represented as ordinary ordering, synchronization, operational, or lifecycle statuses.
 
 #### Queue Evaluation Process
 
@@ -1578,7 +1580,7 @@ Evaluation may examine:
 
 Where an evaluated queue participates in one or more `ProductFabric` objects, `QueueEvaluator` preserves the applicable fabric references and evaluates queue-level conditions that depend on that membership. Fabric coordination among queues participating in a `ProductFabric` remains the responsibility of `FabricEvaluator`.
 
-Queue evaluation is not limited to conditions internal to the `ProductPathway`. Where a represented queue function depends on an applicable ClimateSOS system-side structure or function, `QueueEvaluator` identifies the required system-side evaluation context. `PathwayEvaluationEngine` coordinates access to the applicable system-side evaluation and provides the resulting state or findings to the `QueueEvaluator` for use in determining the queue condition.
+Queue evaluation is not limited to conditions internal to the `ProductPathway`. Where a represented queue function depends on an applicable ClimateSOS system-side structure or function, `QueueEvaluator` identifies the required system-side evaluation context. `PathwayEvaluationEngine` coordinates access to the applicable system-side evaluation and provides the resulting state or findings to `QueueEvaluator` for use in determining the queue condition.
 
 These interactions may include dependencies on, or effects associated with, infrastructure systems, system attractors, biosphere functions, cycles, buses, fabrics, BioNPUs, or other applicable ClimateSOS system-model structures.
 
@@ -1660,7 +1662,7 @@ Completed progress records are immutable. A later state change produces a new `Q
 
 #### 9.3.2 QueueEvaluatorResult
 
-A `QueueEvaluatorResult` records the evaluator's completed conclusion for one `ProductQueueBundle` during one evaluation run. A completed `QueueEvaluatorResult` is immutable. 
+A `QueueEvaluatorResult` records the evaluator's completed conclusion for one queue-family member during one evaluation run. A completed `QueueEvaluatorResult` is immutable. 
 
 The result contains the final evaluated queue condition together with the material findings, progress history, temporal and evaluation context, and references to supporting documentation, evidence, and provenance.
 
@@ -1668,7 +1670,7 @@ A `QueueEvaluatorResult` contains or references, as applicable:
 
 **Core evaluated state:**
 
-* the evaluated `ProductQueueBundle`;
+* the evaluated queue;
 * the final operational status;
 * the final lifecycle state; and
 * ordering or synchronization status, where applicable.
@@ -1702,9 +1704,9 @@ Where tipping is material to the queue evaluation, the finding preserves the app
 
 A `QueueEvaluatorResult` is not merely a copy of the final `QueueProgressRecord`. The result summarizes the completed queue evaluation and preserves material intermediate history where that history affects interpretation or downstream evaluation.
 
-A queue that ultimately evaluates as CLEAR may therefore retain findings showing that it was previously BLOCKED or DELAYED and that the earlier condition produced a material timing or synchronization consequence.
+A queue that ultimately evaluates as `CLEAR` may therefore retain findings showing that it was previously `BLOCKED` or `DELAYED` and that the earlier condition produced a material timing or synchronization consequence.
 
-Where the same `ProductQueueBundle` is evaluated again in new evaluation run or against a different authoritative transition or system context, this new execution produces a new immutable `QueueEvaluatorResult`. Earlier results remain preserved and distinguishable by their evaluation-run and context references.
+Where the same queue is evaluated again in a new evaluation run or against a different authoritative transition or system context, the new execution produces a new immutable `QueueEvaluatorResult`. Earlier results remain preserved and distinguishable by their evaluation-run and context references.
 
 ### 9.4 FabricEvaluator
 
@@ -1889,7 +1891,6 @@ The archive’s `ScaleUpTippingState`, `ScaleUpBottleneck`, `SmallNodePersistenc
 ### 14.4 Charter Authority and Non-Supersession
 ### 14.5 Conditions Preventing Ordinary Binding
 
-## 15. Net Overall System Risk Evaluation
 ## 15. Net Overall System Risk Evaluation
 
 The `NetOverallSystemRiskEvaluator` evaluates how a candidate or prospective candidate `TransitionPathway` changes the overall risk profile of the accelerated net-zero transition.
