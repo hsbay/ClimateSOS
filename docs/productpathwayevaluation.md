@@ -231,8 +231,8 @@ Together, these principles and the Product Pathway Evaluation Flow support the c
 External pathway material
     │
     ▼
-Identity Gateway  => Identity Layer
-    IdentityToken <=      -|
+Identity Gateway  ⥬  Identity Layer
+    IdentityToken ⥫        ↲ 
     │
     │  Identity Layer Establishes and issues the canonical IdentityToken.
     │
@@ -938,7 +938,7 @@ A fabric groups related queue bundles whose combined state must be evaluated for
 
 A `ProductQueueBundle` may be referenced by more than one `ProductFabric` where its represented functions and relationships require participation in multiple coordination fabrics. Fabric membership does not transfer `ProductPathway` ownership of the queue bundle or remove it from another fabric.
 
-FabricAssembler does not create missing queue bundles or infer unsupported fabric membership. It does not evaluate queue state or determine fabric readiness; queue-state and fabric-readiness evaluation belong to FabricEvaluator.
+`FabricAssembler` does not create missing queue bundles or infer unsupported fabric membership. It does not evaluate the state of participating queues or determine fabric readiness; queue-level conditions are evaluated by `QueueEvaluator`, while fabric-level coordination and readiness are evaluated by `FabricEvaluator`.
 
 ### 7.5 ProductFabric
 
