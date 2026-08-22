@@ -259,13 +259,12 @@ ProductAdapter
     │
     ▼
 ProductAdapterResult
-    │
     ├── ProductPathway
     │       Normalized pathway represented as an internal map or graph.
     │
-    └── ProductIntakeBundle reference
-            Preserves the pathway's association with its immutable
-            intake materials and IdentityToken.
+    ├── ProductIntakeBundle reference
+    │       Preserves the pathway's association with its immutable
+    │       intake materials and IdentityToken.
     │
     ▼
 CharterEvaluator
@@ -293,15 +292,21 @@ ProductAssembly
 PathwayEvaluationEngine
     │
     ├── PathwayComparator
-    │       └── compares the ProductPathway with the current
-    │           authoritative TransitionPathway
-    │      ├── synchronization
-    │      ├── substitutions
-    │      ├── downstream propagation
-    │      └── transition interactions   
+    │       ├── Direct Pathway Comparison
+    │       │       └── identifies direct overlaps, dependencies, additions,
+    │       │           replacements, and conflicts with the authoritative TransitionPathway
+    │       ├── Substitution and Combination Evaluation
+    │       │       └── evaluates displacement, coexistence, and coordinated operation
+    │       └── Downstream Propagation
+    │               └── evaluates material effects through connected transition
+    │                   and system relationships
     │
     ├── QueueEvaluator
-    │       └── evaluates ProductQueueBundle(s)
+    │       ├── evaluates the ProductPathway queue family
+    │       │       ├── ProductQueueBundle(s)
+    │       │       └── applicable unbundled queue element(s)
+    │       ├── QueueProgressRecord(s), where produced
+    │       └── QueueEvaluatorResult(s)
     │
     ├── FabricEvaluator, where applicable
     │       └── evaluates ProductFabric(s)
@@ -341,8 +346,8 @@ ScaleDiagnosticResult
     ▼
 Construct Candidate or Prospective Candidate TransitionPathway
     │     Candidate here refers to the user-submitted candidate
-    |     Prospective Candidate TransitionPathway refers to a
-    |     possible future reference TransitionPathway.
+    │     Prospective Candidate TransitionPathway refers to a
+    │     possible future reference TransitionPathway.
     ▼
 NetOverallSystemRiskEvaluator
     │
@@ -413,24 +418,20 @@ minor change
     │
     Privileged Global Update Interface
       or authorized boot/update API
-    |      ↓
+    │      ↓
 Run the Shared Product Pathway Evaluation Flow
-    |  Identity Gateway   =>   IdentityLayer
-    |      IdentityToken  <=        -|
-    |      ↓
+    │  Identity Gateway   =>   IdentityLayer
+    │      IdentityToken  <=        -|
+    │      ↓
     │  Global Intake Layer
-    |      ↓
-    |  ProductIntakeBundle
+    │      ↓
+    │  ProductIntakeBundle
     │      ↓
     │  ProductAdapter
     │      ↓
     │  ProductAdapterResult
-    |      ↓
-    |  ProductAdapter
-    |      ↓
-    |  ProductAdapterResult
-    |    ├── ProductPathway
-    |    └── ProductIntakeBundle reference
+    │    ├── ProductPathway
+    │    └── ProductIntakeBundle reference
     │      ↓
     │  InitialCharterResult
     │      ↓
@@ -450,9 +451,9 @@ Run the Shared Product Pathway Evaluation Flow
 Construct Candidate Global TransitionPathway
     │
     │  Create new integrated Candidate global transition after applying 
-    |  the candidate delta, but before validation and atomic commitment.
+    │  the candidate delta, but before validation and atomic commitment.
     │  This Candidate is separate from the global and current reference
-    |  TransitionPathway.
+    │  TransitionPathway.
     │
     ▼
 NetOverallSystemRiskEvaluator
@@ -508,11 +509,11 @@ Current validated global TransitionPathway
     │  Immutable throughout user-submitted evaluation.
     │
 User UI or public API gateway
-    |
-Run Shared Product Pathway Evalaution
+    │
+Run Shared Product Pathway Evaluation
     Identity Gateway => IdentityLayer
-    | IdentityToken  <=      -|
-    |    
+    │ IdentityToken  <=      -|
+    │    
     ▼
 User submits one or more separate pathway intakes
 Continue with Shared Product Pathway for each submission
@@ -1920,8 +1921,6 @@ The evaluator produces documentation in the form of one immutable `NetOverallSys
 ### 15.7 Charter-Style Risk Checks
 ### 15.8 Relationship to the Final Charter Result
 ### 15.9 NetOverallSystemRiskResult
-
-## 16. Binding and Bound States
 
 ## 16. Binding and Bound States
 
