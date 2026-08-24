@@ -381,7 +381,7 @@ Global context                                         User-submitted context
 TransitionPathwayValidator                              ResultEvaluator
     │                                                             │
     ▼                                                             ▼
-Atomic immutable commitment                             EvaluationResult
+Atomic immutable commitment                             EvaluatedPathway
 ```
 
 ## Global Boot and TransitionPathway Update Flow
@@ -1997,9 +1997,9 @@ The evaluator produces documentation in the form of one immutable `NetOverallSys
 
 ### 18.5 Combined Pathways as Separate Intakes
 
-## 19. EvaluationResult and State Preservation
+## 19. EvaluatedPathway and State Preservation
 
-### 19.1 EvaluationResult
+### 19.1 EvaluatedPathway
 
 ### 19.2 Required Result Contents
 
@@ -2056,7 +2056,7 @@ QueueProgressRecord
 QueueExecutionResult
 QueueEvaluatorResult
 FabricEvaluatorResult
-EvaluationResult
+EvaluatedPathway
 InitialCharterResult
 PathwayAssessment
 IntegratedCharterResult
