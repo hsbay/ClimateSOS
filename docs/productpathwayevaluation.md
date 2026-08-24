@@ -180,7 +180,7 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
-This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluationResult`.
+This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluationResult`.
 
 Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
 
@@ -305,7 +305,8 @@ PathwayEvaluationEngine
     │       ├── evaluates the ProductPathway queue family
     │       │       ├── ProductQueueBundle(s)
     │       │       └── applicable unbundled queue element(s)
-    │       ├── QueueProgressRecord(s), where produced
+    │       ├── QueueProgressRecord(s)
+    │       ├── QueueExecutionResult(s)
     │       └── QueueEvaluatorResult(s)
     │
     ├── FabricEvaluator, where applicable
@@ -1627,7 +1628,7 @@ Where multiple queue elements, queue bundles, or system relationships interact t
 
 #### Completion of Queue Evaluation
 
-A completed queue lifecycle represents the evaluation history of the queue for one evaluation run. It consists of the queue, any material `QueueExecutionResult` objects recording work performed by the represented queue function, any `QueueProgressRecord` objects recording material changes in its evaluated condition, and the final immutable `QueueEvaluatorResult`.
+A completed queue lifecycle represents the evaluation history of the queue for one evaluation run. It consists of the evaluated queue, one or more `QueueProgressRecord` objects preserving its material progression, exactly one `QueueExecutionResult` preserving its completed execution, and the final immutable `QueueEvaluatorResult`.
 
 A lifecycle may complete with the queue `CLOSED`, where the represented function has completed or the applicable requirement has been satisfied. It may also complete for the purposes of the current evaluation while preserving an `OPEN`, `STALE`, `EXPIRED`, `BLOCKED`, `CONSTRAINED`, `DELAYED`, or `NODETERMINATION` condition where that is the valid outcome of the evaluation run.
 
@@ -1712,7 +1713,8 @@ A `QueueEvaluatorResult` contains or references, as applicable:
 * material dependency findings;
 * propagated effects that materially alter queue execution;
 * tipping findings, where applicable;
-* other material conditions derived during queue evaluation; and
+* other material conditions derived during queue evaluation;
+* a reference to the associated `QueueExecutionResult`; and
 * references to applicable `QueueProgressRecord` objects.
 
 Where tipping is material to the queue evaluation, the finding preserves the applicable threshold, whether the threshold was crossed, the crossing time or evaluation position where known, and the basis for the determination. *Tipping* is an evaluated finding and does not replace the queue's operational status or lifecycle state.
@@ -1731,7 +1733,7 @@ Where tipping is material to the queue evaluation, the finding preserves the app
 * the evaluation-run identity; and
 * `user_id` and `pathway_id` attribution.
 
-A `QueueEvaluatorResult` is not merely a copy of the final `QueueProgressRecord`. The result summarizes the completed queue evaluation and preserves material intermediate history where that history affects interpretation or downstream evaluation.
+A `QueueEvaluatorResult` is not a copy of the `QueueExecutionResult` or final `QueueProgressRecord`. It records the evaluator's completed conclusion from the queue's execution, final evaluated condition, material progression history, and applicable pathway, transition, and system context.
 
 A queue that ultimately evaluates as `CLEAR` may therefore retain findings showing that it was previously `BLOCKED` or `DELAYED` and that the earlier condition produced a material timing or synchronization consequence.
 
@@ -1748,10 +1750,12 @@ Fabric evaluation examines the participating queue results and their relationshi
 * the immutable `ProductFabric`;
 * the `ProductQueueBundle` objects referenced by the fabric;
 * the applicable `QueueEvaluatorResult` objects;
+* the associated `QueueExecutionResult` objects where completed queue execution is material to fabric coordination;
+* the applicable `QueueProgressRecord` objects where material queue progression affects coordinated execution;
 * relevant pathway-comparison and downstream-propagation findings; and
 * the transition and system context required for the fabric's coordination function.
 
-Where a queue result indicates that material progression history affects fabric coordination, `FabricEvaluator` may follow references to the relevant `QueueProgressRecord` objects.
+Where completed queue execution or material progression history affects fabric coordination, `FabricEvaluator` follows the applicable `QueueExecutionResult` and `QueueProgressRecord` references preserved by the associated `QueueEvaluatorResult`.
 
 Fabric evaluation examines:
 
@@ -1781,7 +1785,7 @@ A `FabricEvaluatorResult` contains or references, as applicable:
 * the applicable `QueueEvaluatorResult` objects;
 * the evaluated fabric coordination condition;
 * timing, sequencing, synchronization, dependency, or shared-capacity conditions material to the result;
-* queue conditions or progress histories that materially affect coordinated operation;
+* queue execution results, conditions, or progress histories that materially affect coordinated operation;
 * coordination failures, constraints, or unresolved relationships identified during evaluation;
 * relevant pathway-comparison and downstream-propagation findings;
 * assumptions and uncertainties affecting the evaluation;
@@ -1792,7 +1796,7 @@ A `FabricEvaluatorResult` contains or references, as applicable:
 
 Where a fabric condition emerges from relationships among individually viable queue bundles, the `FabricEvaluatorResult` preserves the coordination relationships responsible for that result.
 
-A completed `FabricEvaluatorResult` is immutable. It remains traceable to the evaluated `ProductFabric`, its referenced queue bundles, applicable `QueueEvaluatorResult` objects, relevant queue-progress history, transition and system context, and supporting evidence.
+A completed `FabricEvaluatorResult` is immutable. It remains traceable to the evaluated `ProductFabric`, its referenced queue bundles, applicable `QueueEvaluatorResult` and `QueueExecutionResult` objects, relevant queue-progress history, transition and system context, and supporting evidence.
 
 `FabricEvaluatorResult` records the result of fabric evaluation. It does not modify the `ProductFabric`, participating queue bundles, queue-progress records, or queue-evaluation results.
 
@@ -1846,7 +1850,7 @@ The assessment contains or references, as applicable:
 * evidence and provenance references; and
 * `user_id` and `pathway_id` attribution.
 
-Applicable `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayAssessment` does not duplicate the queue-progress history.
+Applicable `QueueExecutionResult` and `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayAssessment` does not duplicate queue execution results or queue-progress history.
 
 The `PathwayAssessment` records the evaluated relationships and operational findings needed by later stages. It does not overwrite the objects, results, progress records, or findings from which it was constructed.
 
