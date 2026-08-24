@@ -718,7 +718,7 @@ The Initial Charter Evaluation is the first substantive evaluation performed on 
 
 It evaluates the pathway against the ClimateSOS Foundational Charter before downstream assembly and pathway evaluation. The evaluator follows references to the associated `ProductIntakeBundle` when a check requires source documentation, evidence, or provenance.
 
-Every Initial Charter check defined for this evaluation stage is required. Each check executes independently, and a prior finding does not short-circuit or remove any remaining check.
+All Charter checks are required. The Initial Charter Evaluation executes every Charter check using the information available at the Initial Charter stage. Each check executes independently, and a prior finding does not short-circuit or remove any remaining check.
 
 The Initial Charter Evaluation distinguishes pathway findings from evaluator execution failures. A successfully executed check may return a failed, adverse, unresolved, not-applicable, or other valid Charter finding. Those findings remain part of the pathway evaluation record and may affect later evaluation and binding. They do not by themselves indicate that the ClimateSOS runtime failed.
 
