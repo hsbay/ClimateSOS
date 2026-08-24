@@ -1627,7 +1627,7 @@ Where multiple queue elements, queue bundles, or system relationships interact t
 
 #### Completion of Queue Evaluation
 
-A completed queue lifecycle represents the evaluation history of the queue for one evaluation run. It consists of the queue, any material `QueueExecutionRecord` objects recording work performed by the represented queue function, any `QueueProgressRecord` objects recording material changes in its evaluated condition, and the final immutable `QueueEvaluatorResult`.
+A completed queue lifecycle represents the evaluation history of the queue for one evaluation run. It consists of the queue, any material `QueueExecutionResult` objects recording work performed by the represented queue function, any `QueueProgressRecord` objects recording material changes in its evaluated condition, and the final immutable `QueueEvaluatorResult`.
 
 A lifecycle may complete with the queue `CLOSED`, where the represented function has completed or the applicable requirement has been satisfied. It may also complete for the purposes of the current evaluation while preserving an `OPEN`, `STALE`, `EXPIRED`, `BLOCKED`, `CONSTRAINED`, `DELAYED`, or `NODETERMINATION` condition where that is the valid outcome of the evaluation run.
 
@@ -1661,7 +1661,35 @@ A `QueueProgressRecord` does not replace the final `QueueEvaluatorResult`. It pr
 
 Completed progress records are immutable. A later state change produces a new `QueueProgressRecord` rather than modifying an earlier record.
 
-#### 9.3.2 QueueEvaluatorResult
+#### 9.3.2 QueueExecutionResult
+
+A `QueueExecutionResult` is an immutable completion record of the represented queue function for one queue-evaluation run.
+
+The result preserves the material work performed while the queue was active and the execution state at closure. It references applicable `QueueProgressRecord` objects where recorded intermediate changes are necessary to explain that final execution state.
+
+A `QueueExecutionResult` is distinct from a `QueueProgressRecord`, which preserves a material intermediate change in the queue's evaluated condition, and from a `QueueEvaluatorResult`, which records the evaluator's completed conclusion about the queue under the applicable pathway, transition, and system context.
+
+Every evaluated queue produces at least one `QueueProgressRecord` and exactly one `QueueExecutionResult` for the evaluation run. Intermediate changes in queue condition are preserved through `QueueProgressRecord` objects.
+
+The `QueueExecutionResult` preserves the material execution outcome needed to evaluate throughput, timing, ordering, synchronization, completion, propagation, fabric coordination, or another material pathway effect.
+
+A `QueueExecutionResult` contains or references, as applicable:
+
+* the evaluated queue;
+* the applicable evaluation-run identity;
+* the execution state reached by the represented queue function;
+* the material work completed during execution;
+* applicable timing, sequencing, duration, or completion information;
+* represented input, output, quantity, capacity, throughput, or other execution information required by the applicable queue rules;
+* dependencies or conditions materially affecting execution;
+* references to applicable `QueueProgressRecord` objects;
+* applicable source, evidence, and provenance references;
+* the authoritative `TransitionPathway` or system context where required to interpret the execution result; and
+* `user_id` and `pathway_id` attribution.
+
+A `QueueExecutionResult` records the queue's completed execution but does not determine its final operational status, lifecycle state, or evaluation outcome. Those determinations remain the responsibility of `QueueEvaluator` and are recorded in the final `QueueEvaluatorResult`.
+
+#### 9.3.3 QueueEvaluatorResult
 
 A `QueueEvaluatorResult` records the evaluator's completed conclusion for one queue-family member during one evaluation run. A completed `QueueEvaluatorResult` is immutable. 
 
