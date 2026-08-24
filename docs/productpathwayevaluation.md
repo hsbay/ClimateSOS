@@ -180,7 +180,7 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
-This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluationResult`.
+This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluatedPathway`.
 
 Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
 
@@ -208,9 +208,9 @@ The global context is used strictly to update the reference `TransitionPathway`.
 
 After pathway evaluation, contribution analysis, scale diagnosis, global-system-risk evaluation, final Charter evaluation, and binding, the candidate must pass `TransitionPathwayValidator` before it can be atomically committed as the validated global `TransitionPathway`. Once committed, the newly validated global `TransitionPathway` replaces the previous reference pathway. It is preserved for use at the next startup and serves as the current reference pathway if the user proceeds with evaluation of a user-submitted `ProductPathway`.
 
-In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `EvaluationResult`.
+In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `EvaluatedPathway`.
 
-After global-system-risk evaluation, final Charter evaluation, and binding, each user-submitted pathway proceeds to construction of an `EvaluationResult`.
+After global-system-risk evaluation, final Charter evaluation, and binding, each user-submitted pathway proceeds to construction of an `EvaluatedPathway`.
 
 Completion of intake, adaptation, assembly, or an intermediate evaluation does not by itself establish pathway validity.
 
@@ -563,7 +563,7 @@ Applicable ExampleBound State A                    Applicable ExampleBound State
 ResultEvaluator                                          ResultEvaluator
     │                                                             │
     ▼                                                             ▼
-EvaluationResult A                                      EvaluationResult B
+EvaluatedPathway A                                      EvaluatedPathway B
 
 ===============================================================================
 
@@ -580,7 +580,7 @@ User-submitted evaluation invariants:
 • A user-submitted candidate does not modify or replace the validated global
   TransitionPathway.
 
-• Each `EvaluationResult` preserves that candidate pathway's findings, Charter results, contribution, scale, global-system risk, bound state, evidence, provenance, and state history, together with references sufficient to trace the evaluation back through the `ProductAdapterResult`, `ProductIntakeBundle`, and `IdentityToken`.
+• Each `EvaluatedPathway` preserves that candidate pathway's findings, Charter results, contribution, scale, global-system risk, bound state, evidence, provenance, and state history, together with references sufficient to trace the evaluation back through the `ProductAdapterResult`, `ProductIntakeBundle`, and `IdentityToken`.
 
 • Multiple user-submitted pathways may be evaluated during the same session,
   but they do not become one combined candidate unless a separate intake
@@ -882,7 +882,7 @@ It receives a valid completed `InitialCharterResult` and follows its reference t
 
 `ProductAssembly` uses only structures already represented in the `ProductPathway`. It does not modify the pathway, add missing pathway facts, create new source evidence, or reinterpret unsupported claims as represented pathway structure.
 
-It does not perform Charter evaluation, compare the pathway with the authoritative `TransitionPathway`, evaluate queue or fabric state, determine system contribution or scale, construct a candidate `TransitionPathway`, evaluate global-system risk, assign a bound state, or construct the final `EvaluationResult`.
+It does not perform Charter evaluation, compare the pathway with the authoritative `TransitionPathway`, evaluate queue or fabric state, determine system contribution or scale, construct a candidate `TransitionPathway`, evaluate global-system risk, assign a bound state, or construct the final `EvaluatedPathway`.
 
 Assembly omits creating a product grouping where the corresponding substructure is not present in the pathway. The absence of a `ProductFabric` is not an error when the pathway does not require applicable `ProductQueueBundle` objects to be grouped into a fabric.
 
@@ -1370,7 +1370,7 @@ The `PathwayEvaluationEngine`:
 * preserves relationships among results and findings produced by the individual evaluators; and
 * produces one consolidated immutable `PathwayAssessment`.
 
-The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `EvaluationResult`.
+The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `EvaluatedPathway`.
 
 An adverse, constrained, blocked, unresolved, or otherwise unsuccessful pathway finding produced by valid evaluator execution remains a valid evaluation finding. An evaluator execution failure occurs when a required evaluation cannot execute or cannot produce a valid required result.
 
@@ -2050,10 +2050,42 @@ IdentityToken
 ProductIntakeBundle
 ProductPathway
 ProductAdapterResult
+ProductQueueBundle
+ProductFabric
+QueueProgressRecord
+QueueExecutionResult
+QueueEvaluatorResult
+FabricEvaluatorResult
+EvaluationResult
+InitialCharterResult
+PathwayAssessment
+IntegratedCharterResult
+ScaleDiagnosticResult
+FinalCharterResult
+NetOverallSystemRiskResult
+NetOverallSystemContribution
+TransitionPathway
+EvaluatedPathway
 ```
 
-### 22.2 Required Evaluators and Services
+### 22.2 Required Evaluators, Assemblers and Services
 
+```
+ProductAdapter
+ProductAssembly
+QueueBundler
+FabricAssembler
+PathwayEvaluationEngine
+QueueEvaluator
+FabricEvaluator
+DocumentationEvaluator
+PathwayComparator
+NetOverallSystemRiskEvaluator
+TransitionPathwayValidator
+CharterEvaluator
+ScaleDiagnosticEvaluator
+BindingHandler
+```
 ### 22.3 Immutability and State-Integrity Requirements
 
 ### 22.4 Identity and Attribution Requirements
