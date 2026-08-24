@@ -836,7 +836,7 @@ When execution cannot proceed, ClimateSOS preserves the available pathway identi
 
 ## 7. Product Assembly
 
-`ProductAssembly` constructs the pathway-derived objects that are later consumed by downstream evaluators. It coordinates the assembly functions that group represented pathway structures into queue bundles and fabrics while preserving the identity, relationships, provenance, and traceability established by the `ProductAdapter`.
+`ProductAssembly` constructs the pathway-derived objects that are later consumed by downstream evaluators. It coordinates the assembly functions that group represented pathway structures into queue bundles and fabrics where grouping is applicable, while preserving unbundled queue elements that remain independently evaluable and the identity, relationships, provenance, and traceability established by the `ProductAdapter`.
 
 Assembly begins only after the Initial Charter Evaluation has completed successfully and produced a valid immutable `InitialCharterResult`. `ProductAssembly` follows the result's reference to the evaluated `ProductAdapterResult`, which identifies the immutable `ProductPathway` and its associated `ProductIntakeBundle`. Assembly operates on the `ProductPathway`; the intake-bundle association remains available for traceability.
 
@@ -888,17 +888,18 @@ Assembly omits creating a product grouping where the corresponding substructure 
 
 ### 7.2 QueueBundler
 
-`QueueBundler` groups applicable queue elements represented in the `ProductPathway` and constructs one or more `ProductQueueBundle` objects.
+`QueueBundler` groups queue elements represented in the `ProductPathway` where their evaluable function and represented relationships require bundled execution and evaluation.
 
-A `ProductPathway` may contain multiple queue elements representing distinct inputs, outputs, dependencies, constraints, access requirements, or execution conditions. `QueueBundler` groups related queue elements into one or more `ProductQueueBundle` objects according to their evaluable function and represented relationships.
+A `ProductPathway` may contain multiple queue elements representing distinct inputs, outputs, dependencies, constraints, access requirements, or execution conditions. Related queue elements may be grouped into one or more `ProductQueueBundle` objects according to their evaluable function and represented relationships. Queue elements that do not require grouping remain unbundled in the immutable `ProductPathway` and are evaluated directly by `QueueEvaluator`.
 
-Queue-bundle boundaries are determined by evaluable function and represented relationships, not merely by pathway direction. A pathway may therefore contain separate bundles for input access, output delivery, finance, permitting, workforce, documentation, or other applicable queue functions.
+Queue-bundle boundaries are determined by evaluable function and represented relationships, and are irrespective of queue direction. A pathway may therefore contain separate bundles for input access, output delivery, finance, permitting, workforce, documentation, or other applicable queue functions, together with independently evaluable unbundled queue elements.
 
 `QueueBundler` uses the relationships represented in the `ProductPathway` to determine which queue elements belong together. It preserves relevant ordering, dependency, timing, identity, and provenance relationships carried by those elements.
 
 `QueueBundler` does not create a queue element or pathway fact absent from the `ProductPathway`, infer an unstated dependency, or determine whether a represented queue is clear, blocked, starved, expired, closed, delayed, stale, or otherwise successful or unsuccessful. Those determinations belong to downstream evaluation.
 
-Each completed queue grouping is returned as an immutable `ProductQueueBundle`.
+Each completed queue grouping is returned as an immutable `ProductQueueBundle`. Queue elements that remain unbundled retain their existing immutable representation in the `ProductPathway`.
+
 
 ### 7.3 ProductQueueBundle
 
@@ -974,7 +975,8 @@ Assembly must satisfy the following requirements:
 * source evidence and provenance remain traceable;
 * assembly does not supply missing facts or relationships;
 * assembly does not convert unsupported claims into represented pathway structure;
-* queue bundles are grouped according to represented evaluable functions and relationships;
+* queue elements are grouped into `ProductQueueBundle` objects only where their represented evaluable functions and relationships require grouping;
+* applicable queue elements that do not require grouping remain independently evaluable from the `ProductPathway`;
 * a queue bundle may participate in more than one fabric so long as doing so does not duplicate, reassign, or transfer the queue bundle between fabrics;
 * fabric membership is derived only from functions and relationships preserved by the applicable queue bundles and their referenced elements;
 * only applicable assembly products are constructed;
