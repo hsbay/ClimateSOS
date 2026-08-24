@@ -1645,7 +1645,7 @@ A `QueueProgressRecord` is an immutable record of a material queue condition obs
 
 Every evaluated queue produces at least one `QueueProgressRecord`. Additional progress records are produced when a material change in operational status, lifecycle state, dependency state, timing, ordering, synchronization, or other applicable condition occurs during execution.
 
-A progress record is produced when preserving an intermediate state or change is necessary to explain queue progression, delay, re-execution, resumption, completion, or a downstream effect. Routine transient implementation state that has no material evaluation significance does not require a preserved progress record.
+Additional progress records are produced when preserving a material state change is necessary to explain queue progression, delay, re-execution, resumption, completion, or a downstream effect. Routine transient implementation state that has no material evaluation significance does not require an additional progress record.
 
 A `QueueProgressRecord` contains or references, as applicable:
 
