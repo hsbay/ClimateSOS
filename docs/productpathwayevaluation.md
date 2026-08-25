@@ -180,7 +180,7 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
-This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `EvaluatedPathway`.
+This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `PathwayAssessment`.
 
 Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
 
@@ -208,9 +208,9 @@ The global context is used strictly to update the reference `TransitionPathway`.
 
 After pathway evaluation, contribution analysis, scale diagnosis, global-system-risk evaluation, final Charter evaluation, and binding, the candidate must pass `TransitionPathwayValidator` before it can be atomically committed as the validated global `TransitionPathway`. Once committed, the newly validated global `TransitionPathway` replaces the previous reference pathway. It is preserved for use at the next startup and serves as the current reference pathway if the user proceeds with evaluation of a user-submitted `ProductPathway`.
 
-In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `EvaluatedPathway`.
+In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `PathwayAssessment`.
 
-After global-system-risk evaluation, final Charter evaluation, and binding, each user-submitted pathway proceeds to construction of an `EvaluatedPathway`.
+After global-system-risk evaluation, final Charter evaluation, and binding, each user-submitted pathway proceeds to construction of a `PathwayAssessment`.
 
 Completion of intake, adaptation, assembly, or an intermediate evaluation does not by itself establish pathway validity.
 
@@ -317,7 +317,7 @@ PathwayEvaluationEngine
                 methodology, and unresolved claims
     │
     ▼
-PathwayAssessment
+PathwayEngineResult
     │
     │  Consolidated immutable pathway-evaluation findings.
     │
@@ -346,9 +346,10 @@ ScaleDiagnosticResult
     │
     ▼
 Construct Candidate or Prospective Candidate TransitionPathway
-    │     Candidate here refers to the user-submitted candidate
-    │     Prospective Candidate TransitionPathway refers to a
-    │     possible future reference TransitionPathway.
+    │
+    │  Global context: Candidate TransitionPathway
+    │  User-submitted context: Prospective Candidate TransitionPathway
+    │
     ▼
 NetOverallSystemRiskEvaluator
     │
@@ -356,32 +357,46 @@ NetOverallSystemRiskEvaluator
 NetOverallSystemRiskResult
     │
     ▼
-CharterEvaluator
-    │
-    │  FINAL CHARTER PASS
+FinalPathwayAssembly
     │
     ▼
-FinalCharterResult
-    │
-    │  Separate immutable record that references but does not
-    │  overwrite the earlier Charter results.
-    │
-    ▼
-BindingHandler
-    │
-    ▼
-Applicable ExampleBound State
-    │
-    ├─────────────────────────────────────────────────────────────┐
-    │                                                             │
-    ▼                                                             ▼
-Global context                                         User-submitted context
-    │                                                             │
-    ▼                                                             ▼
-TransitionPathwayValidator                              ResultEvaluator
-    │                                                             │
-    ▼                                                             ▼
-Atomic immutable commitment                             EvaluatedPathway
+FinalPathwayResult ───────────────────────────────────────┐
+    │                                                     │
+    ▼                                                     │
+CharterEvaluator                                          │
+    │                                                     │
+    │  FINAL CHARTER PASS                                 │
+    ▼                                                     │
+FinalCharterResult                                        │
+    │                                                     │
+    │  Separate immutable record that references but      │
+    │  does not overwrite the earlier Charter results.    │
+    ▼                                                     │
+System bound-state determination                          │
+    │                                                     │
+    ▼                                                     │
+Applicable [foo]Bound ────────────────────────────────────┤
+                                                          ▼
+                                                  BindingHandler
+                                                          │
+                                                          ▼
+                                                 PathwayAssessment
+                                                          │
+                              ┌───────────────────────────┴───────────────────────────┐
+                              │                                                       │
+                              ▼                                                       ▼
+                       Global context                                        User-submitted context
+                              │                                                       │
+                              ▼                                                       ▼
+                   TransitionPathwayValidator                                      return
+                              │
+                              │  privileged global-context operation
+                              ▼
+                   Atomic immutable commitment
+                              │
+                              ▼
+                      TransitionPathway
+
 ```
 
 ## Global Boot and TransitionPathway Update Flow
@@ -440,7 +455,7 @@ Run the Shared Product Pathway Evaluation Flow
     │      ↓
     │  PathwayEvaluationEngine
     │      ↓
-    │  PathwayAssessment
+    │  PathwayEngineResult
     │      ↓
     │  IntegratedCharterResult
     │      ↓
@@ -451,7 +466,7 @@ Run the Shared Product Pathway Evaluation Flow
     ▼
 Construct Candidate Global TransitionPathway
     │
-    │  Create new integrated Candidate global transition after applying 
+    │  Create new integrated Candidate global transition after applying
     │  the candidate delta, but before validation and atomic commitment.
     │  This Candidate is separate from the global and current reference
     │  TransitionPathway.
@@ -463,13 +478,29 @@ NetOverallSystemRiskEvaluator
 NetOverallSystemRiskResult
     │
     ▼
+FinalPathwayAssembly
+    │
+    ▼
+FinalPathwayResult
+    │
+    ▼
+CharterEvaluator
+    │  FINAL CHARTER PASS
+    │
+    ▼
 FinalCharterResult
+    │
+    ▼
+System bound-state determination
+    │
+    ▼
+Applicable ExampleBound State
     │
     ▼
 BindingHandler
     │
     ▼
-Applicable ExampleBound State
+PathwayAssessment
     │
     ▼
 TransitionPathwayValidator
@@ -532,7 +563,7 @@ ProductIntakeBundle A                                    ProductIntakeBundle B
 Compare separately with the same current validated global TransitionPathway
     │                                                             │
     ▼                                                             ▼
-PathwayAssessment A                                      PathwayAssessment B
+PathwayEngineResult A                                     PathwayEngineResult B
     │                                                             │
     ▼                                                             ▼
 IntegratedCharterResult A                              IntegratedCharterResult B
@@ -551,19 +582,22 @@ TransitionPathway A                                    TransitionPathway B
 NetOverallSystemRiskResult A                        NetOverallSystemRiskResult B
     │                                                             │
     ▼                                                             ▼
+FinalPathwayResult A                                    FinalPathwayResult B
+    │                                                             │
+    ▼                                                             ▼
 FinalCharterResult A                                    FinalCharterResult B
+    │                                                             │
+    ▼                                                             ▼
+System bound-state determination A               System bound-state determination B
+    │                                                             │
+    ▼                                                             ▼
+Applicable ExampleBound State A                     Applicable ExampleBound State B
     │                                                             │
     ▼                                                             ▼
 BindingHandler                                           BindingHandler
     │                                                             │
     ▼                                                             ▼
-Applicable ExampleBound State A                    Applicable ExampleBound State B
-    │                                                             │
-    ▼                                                             ▼
-ResultEvaluator                                          ResultEvaluator
-    │                                                             │
-    ▼                                                             ▼
-EvaluatedPathway A                                      EvaluatedPathway B
+PathwayAssessment A                                    PathwayAssessment B
 
 ===============================================================================
 
@@ -580,7 +614,7 @@ User-submitted evaluation invariants:
 • A user-submitted candidate does not modify or replace the validated global
   TransitionPathway.
 
-• Each `EvaluatedPathway` preserves that candidate pathway's findings, Charter results, contribution, scale, global-system risk, bound state, evidence, provenance, and state history, together with references sufficient to trace the evaluation back through the `ProductAdapterResult`, `ProductIntakeBundle`, and `IdentityToken`.
+• Each `PathwayAssessment` preserves that candidate pathway's findings, Charter results, contribution, scale, global-system risk, bound state, evidence, provenance, and state history, together with references sufficient to trace the evaluation back through the `ProductAdapterResult`, `ProductIntakeBundle`, and `IdentityToken`.
 
 • Multiple user-submitted pathways may be evaluated during the same session,
   but they do not become one combined candidate unless a separate intake
@@ -882,7 +916,7 @@ It receives a valid completed `InitialCharterResult` and follows its reference t
 
 `ProductAssembly` uses only structures already represented in the `ProductPathway`. It does not modify the pathway, add missing pathway facts, create new source evidence, or reinterpret unsupported claims as represented pathway structure.
 
-It does not perform Charter evaluation, compare the pathway with the authoritative `TransitionPathway`, evaluate queue or fabric state, determine system contribution or scale, construct a candidate `TransitionPathway`, evaluate global-system risk, assign a bound state, or construct the final `EvaluatedPathway`.
+It does not perform Charter evaluation, compare the pathway with the authoritative `TransitionPathway`, evaluate queue or fabric state, determine system contribution or scale, construct a candidate `TransitionPathway`, evaluate global-system risk, assign a bound state, or construct the final `PathwayAssessment`.
 
 Assembly omits creating a product grouping where the corresponding substructure is not present in the pathway. The absence of a `ProductFabric` is not an error when the pathway does not require applicable `ProductQueueBundle` objects to be grouped into a fabric.
 
@@ -1292,7 +1326,7 @@ The queue taxonomy provides a common functional vocabulary without requiring the
 
 The `PathwayEvaluationEngine` orchestrates several subevaluators that evaluate the represented pathway and its assembled queue and fabric structures against the current authoritative `TransitionPathway`.
 
-Evaluation begins after `ProductAssembly` completes successfully. The engine receives the immutable pathway and assembly products created by earlier stages. After all required subevaluators complete successfully, the engine produces a consolidated immutable `PathwayAssessment`.
+Evaluation begins after `ProductAssembly` completes successfully. The engine receives the immutable pathway and assembly products created by earlier stages. After all required subevaluators complete successfully, the engine produces a consolidated immutable `PathwayEngineResult`.
 
 The evaluation engine determines how the represented pathway operates within the transition context. It identifies direct relationships with the reference transition, substitution or combination effects, downstream propagation, queue conditions, fabric coordination conditions, and the sufficiency and traceability of supporting documentation and evidence.
 
@@ -1341,7 +1375,7 @@ PathwayEvaluationEngine
                  methodology, uncertainty, and unresolved claims
       │
       ▼
-PathwayAssessment
+PathwayEngineResult
 ```
 
 ### 9.1 Evaluation Responsibilities and Boundary
@@ -1368,9 +1402,9 @@ The `PathwayEvaluationEngine`:
 * evaluates coordinated fabric conditions where a `ProductFabric` is present;
 * evaluates documentation, evidence, provenance, methodology, uncertainty, and unresolved claims;
 * preserves relationships among results and findings produced by the individual evaluators; and
-* produces one consolidated immutable `PathwayAssessment`.
+* produces one consolidated immutable `PathwayEngineResult`.
 
-The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `EvaluatedPathway`.
+The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `PathwayAssessment`.
 
 An adverse, constrained, blocked, unresolved, or otherwise unsuccessful pathway finding produced by valid evaluator execution remains a valid evaluation finding. An evaluator execution failure occurs when a required evaluation cannot execute or cannot produce a valid required result.
 
@@ -1832,13 +1866,13 @@ Where evidence is missing, incomplete, conflicting, uncertain, or insufficient f
 
 `DocumentationEvaluator` does not modify source records, pathway facts, progress records, or prior evaluator results or findings.
 
-### 9.6 PathwayAssessment
+### 9.6 PathwayEngineResult
 
-The `PathwayEvaluationEngine` produces one immutable `PathwayAssessment` after all required pathway-evaluation functions have completed successfully.
+The `PathwayEvaluationEngine` produces one immutable `PathwayEngineResult` after all required pathway-evaluation functions have completed successfully.
 
-The `PathwayAssessment` consolidates the results and findings produced during pathway evaluation while preserving their separate provenance and evaluator ownership.
+The `PathwayEngineResult` consolidates the results and findings produced during pathway evaluation while preserving their separate provenance and evaluator ownership.
 
-The assessment contains or references, as applicable:
+The `PathwayEngineResult` contains or references, as applicable:
 
 * the evaluated `ProductPathway`;
 * the authoritative `TransitionPathway` used for comparison;
@@ -1855,15 +1889,15 @@ The assessment contains or references, as applicable:
 * evidence and provenance references; and
 * `user_id` and `pathway_id` attribution.
 
-Applicable `QueueExecutionResult` and `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayAssessment` does not duplicate queue execution results or queue-progress history.
+Applicable `QueueExecutionResult` and `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayEngineResult` does not duplicate queue execution results or queue-progress history.
 
-The `PathwayAssessment` records the evaluated relationships and operational findings needed by later stages. It does not overwrite the objects, results, progress records, or findings from which it was constructed.
+The `PathwayEngineResult` records the evaluated relationships and operational findings needed by later stages. It does not overwrite the objects, results, progress records, or findings from which it was constructed.
 
-The assessment does not itself determine the final validity of the pathway, its net overall system contribution, required scale, global-system risk, bound state, or final evaluation result. Those determinations occur in subsequent stages.
+The `PathwayEngineResult` does not itself determine the final validity of the pathway, its net overall system contribution, required scale, global-system risk, bound state, or final evaluation result. Those determinations occur in subsequent stages.
 
-A pathway evaluation completes only when every required evaluator has completed its applicable work for the represented pathway, including any required re-evaluation, and the engine can produce a valid immutable `PathwayAssessment`.
+A pathway evaluation completes only when every required evaluator has completed its applicable work for the represented pathway, including any required re-evaluation, and the engine can produce a valid immutable `PathwayEngineResult`.
 
-An evaluator or result-integrity failure prevents completion of the current `PathwayAssessment`. A valid adverse, constrained, blocked, delayed, unresolved, or otherwise unsuccessful pathway result or finding does not by itself constitute an execution failure and remains part of the completed assessment.
+An evaluator or result-integrity failure prevents completion of the current `PathwayEngineResult`. A valid adverse, constrained, blocked, delayed, unresolved, or otherwise unsuccessful pathway result or finding does not by itself constitute an execution failure and remains part of the completed assessment.
 
 ---
 
@@ -1871,16 +1905,16 @@ An evaluator or result-integrity failure prevents completion of the current `Pat
 
 The `CharterEvaluator` performs the Integrated Charter Evaluation after pathway assembly and pathway evaluation have completed.
 
-At this stage, the completed `PathwayAssessment` contains operational, relational, transition, and system-context findings that were not available during the Initial Charter Evaluation. These findings may reveal emergent behavior, propagated effects, dependencies, interactions, or other conditions that change the Charter evaluation of the pathway.
+At this stage, the completed `PathwayEngineResult` contains operational, relational, transition, and system-context findings that were not available during the Initial Charter Evaluation. These findings may reveal emergent behavior, propagated effects, dependencies, interactions, or other conditions that change the Charter evaluation of the pathway.
 
-As all Charter checks are required, the `CharterEvaluator` reruns every Charter check using the information available at the Integrated Charter stage. Each check executes independently, and a finding from the Initial Charter Evaluation does not short-circuit, satisfy, or any remaining check.
+As all Charter checks are required, the `CharterEvaluator` reruns every Charter check using the information available at the Integrated Charter stage. Each check executes independently, and a finding from the Initial Charter Evaluation does not short-circuit, satisfy, or remove any remaining check.
 
 The `CharterEvaluator` distinguishes Charter findings from evaluator execution failures. A successfully executed check may return a failed, adverse, unresolved, not-applicable, or other valid Charter finding. Those findings remain part of the pathway evaluation record and may affect later evaluation and binding.
 
 The Integrated Charter Evaluation completes only when every Charter check has executed and the `CharterEvaluator` has produced a valid immutable `IntegratedCharterResult`. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
 
 ```text
-PathwayAssessment
+PathwayEngineResult
     ├── InitialCharterResult reference
     ├── pathway-comparison findings
     ├── queue and fabric evaluation results
@@ -1899,11 +1933,11 @@ PathwayAssessment
 
 ### 10.1 Integrated Charter Inputs
 
-The `CharterEvaluator` receives the completed immutable `PathwayAssessment` and the Charter resources required to perform the Integrated Charter Evaluation.
+The `CharterEvaluator` receives the completed immutable `PathwayEngineResult` and the Charter resources required to perform the Integrated Charter Evaluation.
 
 Its inputs include:
 
-* the immutable `PathwayAssessment`;
+* the immutable `PathwayEngineResult`;
   * the evaluated `ProductPathway`;
   * the authoritative `TransitionPathway` used during pathway evaluation;
   * the completed `InitialCharterResult`;
@@ -1922,19 +1956,19 @@ Its inputs include:
 * the evaluator version and Charter rule-set version; and
 * any runtime configuration required to perform the Integrated Charter Evaluation.
 
-The `CharterEvaluator` follows references preserved by the `PathwayAssessment` when a Charter check requires the underlying pathway structure, evaluation result, source documentation, evidence, provenance, or system-side finding.
+The `CharterEvaluator` follows references preserved by the `PathwayEngineResult` when a Charter check requires the underlying pathway structure, evaluation result, source documentation, evidence, provenance, or system-side finding.
 
-The `CharterEvaluator` evaluates the pathway against the Foundational Charter by running every Charter check against the completed `PathwayAssessment` and its referenced evaluation results. It does not add missing pathway facts, convert unresolved conditions into established facts, or treat an unsupported possible effect as an established pathway condition.
+The `CharterEvaluator` evaluates the pathway against the Foundational Charter by running every Charter check against the completed `PathwayEngineResult` and its referenced evaluation results. It does not add missing pathway facts, convert unresolved conditions into established facts, or treat an unsupported possible effect as an established pathway condition.
 
 ### 10.2 Integrated Charter Result
 
 The `CharterEvaluator` produces one immutable `IntegratedCharterResult`.
 
-The `IntegratedCharterResult` records the complete outcome of the Integrated Charter Evaluation using the pathway, transition, and system information available after completion of the `PathwayAssessment`.
+The `IntegratedCharterResult` records the complete outcome of the Integrated Charter Evaluation using the pathway, transition, and system information available after completion of the `PathwayEngineResult`.
 
 The `IntegratedCharterResult` contains:
 
-* a reference to the evaluated `PathwayAssessment`;
+* a reference to the evaluated `PathwayEngineResult`;
 * a reference to the associated `InitialCharterResult`;
 * the result of every Charter check;
 * findings, evidence references, and supporting provenance associated with each check;
@@ -1970,7 +2004,7 @@ Pathway evaluation may reveal findings arising from:
 * applicable system-side evaluation;
 * documentation or evidence findings;
 * newly exposed assumptions, uncertainties, or unresolved dependencies; or
-* another material condition established during construction of the `PathwayAssessment`.
+* another material condition established during construction of the `PathwayEngineResult`.
 
 These findings may change the result of a Charter check that was previously clear, adverse, unresolved, not applicable, or otherwise valid at the Initial Charter stage. They may also expose a Charter-relevant pathway finding that could not previously be evaluated from the information available at that earlier stage.
 
@@ -1980,7 +2014,7 @@ Where an Integrated Charter finding differs from the corresponding Initial Chart
 
 The `InitialCharterResult` and `IntegratedCharterResult` are separate immutable records produced by the `CharterEvaluator` at different points in the Product Pathway Evaluation Flow.
 
-The `InitialCharterResult` records the complete Charter evaluation performed before `ProductAssembly` and downstream pathway evaluation. The `IntegratedCharterResult` records the complete Charter evaluation performed after those stages have produced the `PathwayAssessment`.
+The `InitialCharterResult` records the complete Charter evaluation performed before `ProductAssembly` and downstream pathway evaluation. The `IntegratedCharterResult` records the complete Charter evaluation performed after those stages have produced the `PathwayEngineResult`.
 
 The `CharterEvaluator` reruns every Charter check during the Integrated Charter Evaluation. It does not update the `InitialCharterResult`, reuse its individual check results as current results, or treat successful completion of the Initial Charter Evaluation as satisfaction of a later Charter check.
 
@@ -2108,9 +2142,9 @@ The evaluator produces documentation in the form of one immutable `NetOverallSys
 
 ### 18.5 Combined Pathways as Separate Intakes
 
-## 19. EvaluatedPathway and State Preservation
+## 19. PathwayAssessment and State Preservation
 
-### 19.1 EvaluatedPathway
+### 19.1 PathwayAssessment
 
 ### 19.2 Required Result Contents
 
@@ -2167,16 +2201,16 @@ QueueProgressRecord
 QueueExecutionResult
 QueueEvaluatorResult
 FabricEvaluatorResult
-EvaluatedPathway
 InitialCharterResult
-PathwayAssessment
+PathwayEngineResult
 IntegratedCharterResult
 ScaleDiagnosticResult
+FinalPathwayResult
 FinalCharterResult
 NetOverallSystemRiskResult
 NetOverallSystemContribution
+PathwayAssessment
 TransitionPathway
-EvaluatedPathway
 ```
 
 ### 22.2 Required Evaluators, Assemblers and Services
@@ -2191,12 +2225,15 @@ QueueEvaluator
 FabricEvaluator
 DocumentationEvaluator
 PathwayComparator
-NetOverallSystemRiskEvaluator
-TransitionPathwayValidator
-CharterEvaluator
+NetOverallSystemContributionEvaluator
 ScaleDiagnosticEvaluator
+NetOverallSystemRiskEvaluator
+FinalPathwayAssembly
+CharterEvaluator
 BindingHandler
+TransitionPathwayValidator
 ```
+
 ### 22.3 Immutability and State-Integrity Requirements
 
 ### 22.4 Identity and Attribution Requirements
