@@ -196,7 +196,7 @@ The ClimateSOS Foundational Charter is evaluated at three stages:
 
 Each stage produces a separate immutable result. A later Charter result may reference, but must not overwrite, an earlier result.
 
-Required Charter checks that are absent, null, malformed, overwritten, or unexecuted are recorded as `MISSING`. A required `MISSING` check forces the enclosing Charter result to `ERROR` and prevents normal progression.
+Required Charter checks that are absent, null, malformed, overwritten, or unexecuted are recorded as `MISSING`. A `MISSING` check forces the enclosing Charter result to `ERROR` and prevents normal progression.
 
 Detailed Charter check statuses, blocking behavior, evaluator-integrity requirements, remedy eligibility, and re-evaluation rules are defined in a separate Charter Evaluation Flow document.
 
@@ -818,9 +818,9 @@ The product pathway evaluation does not proceed to `ProductAssembly` when the In
 
 ### 6.4.1 Missing, Unresolved, and Error Handling
 
-`MISSING` indicates that a required Charter check did not produce a valid result. This occurs when the required check did not execute, timed out, executed without recording a result state, or produced a result that is absent, null, malformed, overwritten, or otherwise unavailable as a valid check result.
+`MISSING` indicates that a Charter check did not produce a valid result. This occurs when the required check did not execute, timed out, executed without recording a result state, or produced a result that is absent, null, malformed, overwritten, or otherwise unavailable as a valid check result.
 
-A required `MISSING` check is an evaluator-integrity failure. The enclosing `InitialCharterResult` is recorded as `ERROR`, and the current pathway evaluation does not proceed until the execution error is resolved.
+A `MISSING` check is an evaluator-integrity failure. The enclosing `InitialCharterResult` is recorded as `ERROR`, and the current pathway evaluation does not proceed until the execution error is resolved.
 
 `UNRESOLVED` is distinct from `MISSING`. An `UNRESOLVED` result means that the required check executed successfully but the available pathway information or evidence was insufficient to resolve the Charter question. The unresolved finding and its supporting information are preserved in the `InitialCharterResult` and carried forward.
 
