@@ -1867,15 +1867,126 @@ An evaluator or result-integrity failure prevents completion of the current `Pat
 
 ---
 
-## 10. Integrated Charter Evaluation
+## 10. CharterEvaluator — Integrated Charter Evaluation
 
-### 10.1 Integrated Evaluation Inputs
+The `CharterEvaluator` performs the Integrated Charter Evaluation after pathway assembly and pathway evaluation have completed.
+
+At this stage, the completed `PathwayAssessment` contains operational, relational, transition, and system-context findings that were not available during the Initial Charter Evaluation. These findings may reveal emergent behavior, propagated effects, dependencies, interactions, or other conditions that change the Charter evaluation of the pathway.
+
+As all Charter checks are required, the `CharterEvaluator` reruns every Charter check using the information available at the Integrated Charter stage. Each check executes independently, and a finding from the Initial Charter Evaluation does not short-circuit, satisfy, or any remaining check.
+
+The `CharterEvaluator` distinguishes Charter findings from evaluator execution failures. A successfully executed check may return a failed, adverse, unresolved, not-applicable, or other valid Charter finding. Those findings remain part of the pathway evaluation record and may affect later evaluation and binding.
+
+The Integrated Charter Evaluation completes only when every Charter check has executed and the `CharterEvaluator` has produced a valid immutable `IntegratedCharterResult`. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
+
+```text
+PathwayAssessment
+    ├── InitialCharterResult reference
+    ├── pathway-comparison findings
+    ├── queue and fabric evaluation results
+    ├── downstream-propagation findings
+    ├── documentation and evidence findings
+    ├── assumptions and uncertainties
+    └── applicable transition and system context
+            │
+            ▼
+      CharterEvaluator
+ Integrated Charter Evaluation
+            │
+            ▼
+   IntegratedCharterResult
+```
+
+### 10.1 Integrated Charter Inputs
+
+The `CharterEvaluator` receives the completed immutable `PathwayAssessment` and the Charter resources required to perform the Integrated Charter Evaluation.
+
+Its inputs include:
+
+* the immutable `PathwayAssessment`;
+  * the evaluated `ProductPathway`;
+  * the authoritative `TransitionPathway` used during pathway evaluation;
+  * the completed `InitialCharterResult`;
+  * direct pathway-comparison findings;
+  * substitution and combination findings;
+  * downstream-propagation findings;
+  * applicable `QueueEvaluatorResult` objects;
+  * applicable `FabricEvaluatorResult` objects;
+  * documentation and evidence findings;
+  * material assumptions and uncertainties;
+  * unresolved evaluation conditions;
+  * applicable transition and system-side findings; and
+  * supporting evidence and provenance references;
+* the ClimateSOS Foundational Charter distributed with the ClimateSOS runtime;
+* the complete set of Charter checks;
+* the evaluator version and Charter rule-set version; and
+* any runtime configuration required to perform the Integrated Charter Evaluation.
+
+The `CharterEvaluator` follows references preserved by the `PathwayAssessment` when a Charter check requires the underlying pathway structure, evaluation result, source documentation, evidence, provenance, or system-side finding.
+
+The `CharterEvaluator` evaluates the pathway against the Foundational Charter by running every Charter check against the completed `PathwayAssessment` and its referenced evaluation results. It does not add missing pathway facts, convert unresolved conditions into established facts, or treat an unsupported possible effect as an established pathway condition.
 
 ### 10.2 Integrated Charter Result
 
-### 10.3 Newly Revealed Charter Conditions
+The `CharterEvaluator` produces one immutable `IntegratedCharterResult`.
+
+The `IntegratedCharterResult` records the complete outcome of the Integrated Charter Evaluation using the pathway, transition, and system information available after completion of the `PathwayAssessment`.
+
+The `IntegratedCharterResult` contains:
+
+* a reference to the evaluated `PathwayAssessment`;
+* a reference to the associated `InitialCharterResult`;
+* the result of every Charter check;
+* findings, evidence references, and supporting provenance associated with each check;
+* applicable pathway-evaluation or system-side findings supporting each check;
+* unresolved or not-applicable conditions returned by completed checks, where applicable;
+* any execution error associated with an individual check or with the Integrated Charter Evaluation;
+* the evaluator version;
+* the Charter rule-set version; and
+* the resulting Integrated Charter status.
+
+Each Charter check records its result at the Integrated Charter stage.
+
+If a Charter check does not execute, does not complete, times out, produces no valid result, or produces a result that is absent, null, malformed, overwritten, or otherwise unavailable, the check is `MISSING`.
+
+A `MISSING` check is an evaluator-integrity failure. The `IntegratedCharterResult` is recorded as `ERROR`, and the current pathway evaluation does not proceed until the execution error is resolved.
+
+`UNRESOLVED` and `NOT_APPLICABLE` remain distinct from `MISSING`. A successfully executed check may return either state where permitted by the applicable Charter rule.
+
+The completed `IntegratedCharterResult` is immutable. Later stages may reference it and carry its findings forward, but they do not overwrite or replace it.
+
+### 10.3 Newly Revealed Charter Findings
+
+The Integrated Charter Evaluation may identify pathway findings relevant to Charter evaluation that were not observable during the Initial Charter Evaluation.
+
+Pathway evaluation may reveal findings arising from:
+
+* interactions among represented pathway elements, including emergent behavior not apparent from any one element in isolation;
+* queue execution, dependency, timing, ordering, or synchronization behavior;
+* coordination among applicable `ProductFabric` objects;
+* comparison with the authoritative `TransitionPathway`;
+* substitution or combination effects;
+* downstream propagation through connected transition or system relationships;
+* applicable system-side evaluation;
+* documentation or evidence findings;
+* newly exposed assumptions, uncertainties, or unresolved dependencies; or
+* another material condition established during construction of the `PathwayAssessment`.
+
+These findings may change the result of a Charter check that was previously clear, adverse, unresolved, not applicable, or otherwise valid at the Initial Charter stage. They may also expose a Charter-relevant pathway finding that could not previously be evaluated from the information available at that earlier stage.
+
+Where an Integrated Charter finding differs from the corresponding Initial Charter finding, the `IntegratedCharterResult` preserves the pathway findings, evidence, system context, or other material information supporting the changed determination. The evaluation history must remain sufficient to identify what changed between the two Charter evaluations.
 
 ### 10.4 Relationship to the Initial Charter Result
+
+The `InitialCharterResult` and `IntegratedCharterResult` are separate immutable records produced by the `CharterEvaluator` at different points in the Product Pathway Evaluation Flow.
+
+The `InitialCharterResult` records the complete Charter evaluation performed before `ProductAssembly` and downstream pathway evaluation. The `IntegratedCharterResult` records the complete Charter evaluation performed after those stages have produced the `PathwayAssessment`.
+
+The `CharterEvaluator` reruns every Charter check during the Integrated Charter Evaluation. It does not update the `InitialCharterResult`, reuse its individual check results as current results, or treat successful completion of the Initial Charter Evaluation as satisfaction of a later Charter check.
+
+A Charter finding may remain unchanged between the two evaluations or may change because additional information, emergent behavior, propagated effects, or system context has become available. Both results remain part of the pathway evaluation history.
+
+Successful completion of the Integrated Charter Evaluation produces a valid immutable `IntegratedCharterResult` and permits progression to Net Overall System Contribution evaluation. Failed, adverse, unresolved, not-applicable, or other valid Charter findings remain in the evaluation history and continue downstream. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
 
 ## 11. Product Outputs and Net Overall System Contribution
 
