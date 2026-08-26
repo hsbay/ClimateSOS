@@ -5,13 +5,19 @@ from dataclasses import FrozenInstanceError, fields
 import pytest
 
 from climatesos.pathway_evaluation import (
+    CharterCheckResult,
+    CharterEvaluationContext,
+    ComparisonFinding,
+    EvaluationExecutionStatus,
     FabricEvaluatorResult,
     IdentityToken,
     IntakeArtifact,
+    OpaqueReference,
     PathwayObject,
     ProductAdapterResult,
     ProductIntakeBundle,
     ProductPathway,
+    QueueEvaluationFailure,
     QueueEvaluationState,
     QueueEvaluatorResult,
     QueueExecutionResult,
@@ -94,10 +100,11 @@ def test_transition_pathway_remains_an_opaque_reference() -> None:
     assert "relationships" not in field_names
 
 
-def test_queue_execution_does_not_duplicate_transition_context() -> None:
+def test_queue_execution_can_preserve_required_evaluation_context() -> None:
     field_names = {field.name for field in fields(QueueExecutionResult)}
 
-    assert "transition_pathway" not in field_names
+    assert "transition_pathway" in field_names
+    assert "system_context" in field_names
 
 
 def test_fabric_result_preserves_consumed_evaluation_context() -> None:
@@ -108,3 +115,51 @@ def test_fabric_result_preserves_consumed_evaluation_context() -> None:
         "downstream_propagation_findings",
         "transition_pathway",
     } <= field_names
+
+def test_charter_context_preserves_opaque_resources_and_required_ids() -> None:
+    field_names = {field.name for field in fields(CharterEvaluationContext)}
+
+    assert {
+        "foundational_charter",
+        "applicable_check_definitions",
+        "required_check_ids",
+        "evaluator_version",
+        "rule_set_version",
+        "runtime_configuration",
+    } <= field_names
+    assert fields(CharterEvaluationContext)[0].type is OpaqueReference
+
+
+def test_charter_check_preserves_structural_finding_references() -> None:
+    field_names = {field.name for field in fields(CharterCheckResult)}
+
+    assert "supporting_evaluation_findings" in field_names
+    assert "supporting_system_findings" in field_names
+
+
+def test_comparison_finding_preserves_required_traceability() -> None:
+    field_names = {field.name for field in fields(ComparisonFinding)}
+
+    assert {
+        "pathway_object_references",
+        "pathway_relationship_references",
+        "transition_object_references",
+        "transition_relationship_references",
+        "system_model_basis",
+    } <= field_names
+
+
+def test_queue_evaluation_failure_is_not_a_completed_result() -> None:
+    completed_fields = {field.name for field in fields(QueueEvaluatorResult)}
+    failure_fields = {field.name for field in fields(QueueEvaluationFailure)}
+    failure_status = next(
+        field for field in fields(QueueEvaluationFailure)
+        if field.name == "execution_status"
+    )
+
+    assert "execution_status" not in completed_fields
+    assert "execution_result" in completed_fields
+    assert "execution_status" in failure_fields
+    assert "execution_result" not in failure_fields
+    assert "final_operational_status" not in failure_fields
+    assert failure_status.default is EvaluationExecutionStatus.EVALUATION_FAILED

@@ -5,7 +5,7 @@ work-performing interfaces, not to these data objects.
 """
 
 from dataclasses import dataclass
-from typing import TypeAlias
+from typing import Literal, TypeAlias
 
 from .enums import (
     EvaluationExecutionStatus,
@@ -34,6 +34,14 @@ class SourceReference:
 
     reference_id: str
     locator: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class OpaqueReference:
+    """Identity-only reference to a resource whose schema is not specified."""
+
+    reference_id: str
+
 
 
 @dataclass(frozen=True, slots=True)
@@ -138,6 +146,8 @@ class CharterCheckResult:
     check_id: str
     status: str
     findings: tuple[str, ...] = ()
+    supporting_evaluation_findings: tuple[OpaqueReference, ...] = ()
+    supporting_system_findings: tuple[OpaqueReference, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
     provenance: tuple[SourceReference, ...] = ()
     execution_error: str | None = None
@@ -147,6 +157,8 @@ class CharterCheckResult:
 class CharterEvaluationContext:
     """Versioned resources required to run a Charter pass."""
 
+    foundational_charter: OpaqueReference
+    applicable_check_definitions: tuple[OpaqueReference, ...]
     evaluator_version: str
     rule_set_version: str
     required_check_ids: tuple[str, ...]
@@ -229,6 +241,8 @@ class QueueExecutionResult:
     material_work: tuple[str, ...] = ()
     execution_information: tuple[Attribute, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
+    transition_pathway: TransitionPathway | None = None
+    system_context: OpaqueReference | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -237,7 +251,6 @@ class QueueEvaluatorResult:
 
     evaluated_queue: QueueSubject
     evaluation_run_id: str
-    execution_status: EvaluationExecutionStatus
     final_operational_status: QueueOperationalStatus
     final_lifecycle_state: QueueLifecycleState
     ordering_status: QueueOrderingStatus | None
@@ -258,14 +271,30 @@ class QueueEvaluatorResult:
 
 
 @dataclass(frozen=True, slots=True)
+class QueueEvaluationFailure:
+    """Record that a required queue-evaluation attempt did not complete."""
+
+    evaluated_queue: QueueSubject
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    execution_status: Literal[EvaluationExecutionStatus.EVALUATION_FAILED] = (
+        EvaluationExecutionStatus.EVALUATION_FAILED
+    )
+
+
+@dataclass(frozen=True, slots=True)
 class ComparisonFinding:
     """Traceable direct, substitution/combination, or propagation finding."""
 
     finding_id: str
     finding_type: str
     description: str
-    pathway_object_ids: tuple[str, ...] = ()
-    transition_object_ids: tuple[str, ...] = ()
+    pathway_object_references: tuple[OpaqueReference, ...] = ()
+    pathway_relationship_references: tuple[OpaqueReference, ...] = ()
+    transition_object_references: tuple[OpaqueReference, ...] = ()
+    transition_relationship_references: tuple[OpaqueReference, ...] = ()
+    system_model_basis: tuple[OpaqueReference, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
 
 

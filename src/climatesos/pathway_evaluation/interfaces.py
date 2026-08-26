@@ -13,12 +13,14 @@ from .models import (
     FabricEvaluatorResult,
     InitialCharterResult,
     IntegratedCharterResult,
+    OpaqueReference,
     PathwayEngineResult,
     ProductAdapterResult,
     ProductFabric,
     ProductIntakeBundle,
     ProductPathway,
     ProductQueueBundle,
+    QueueEvaluationFailure,
     QueueEvaluatorResult,
     QueueSubject,
     TransitionPathway,
@@ -102,9 +104,12 @@ class QueueEvaluator(Protocol):
         self,
         queue: QueueSubject,
         pathway: ProductPathway,
+        pathway_comparison_findings: tuple[ComparisonFinding, ...],
+        downstream_propagation_findings: tuple[ComparisonFinding, ...],
         transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
         evaluation_run_id: str,
-    ) -> QueueEvaluatorResult: ...
+    ) -> QueueEvaluatorResult | QueueEvaluationFailure: ...
 
 
 class FabricEvaluator(Protocol):
@@ -143,5 +148,6 @@ class PathwayEvaluationEngine(Protocol):
         queue_bundles: tuple[ProductQueueBundle, ...],
         fabrics: tuple[ProductFabric, ...],
         transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
         evaluation_run_id: str,
     ) -> PathwayEngineResult: ...

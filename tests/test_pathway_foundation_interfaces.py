@@ -2,7 +2,7 @@
 
 from dataclasses import is_dataclass
 from inspect import signature
-from typing import get_type_hints
+from typing import get_args, get_type_hints
 
 from climatesos.pathway_evaluation import (
     CharterEvaluator,
@@ -11,6 +11,9 @@ from climatesos.pathway_evaluation import (
     PathwayEvaluationEngine,
     ProductAdapter,
     ProductPathway,
+    QueueEvaluationFailure,
+    QueueEvaluator,
+    QueueEvaluatorResult,
 )
 
 
@@ -36,3 +39,21 @@ def test_fabric_evaluator_receives_required_pathway_findings() -> None:
 
     assert "pathway_comparison_findings" in parameter_names
     assert "downstream_propagation_findings" in parameter_names
+
+def test_queue_evaluator_receives_required_evaluation_context() -> None:
+    parameter_names = signature(QueueEvaluator.evaluate).parameters
+    return_types = set(get_args(get_type_hints(QueueEvaluator.evaluate)["return"]))
+
+    assert {
+        "pathway_comparison_findings",
+        "downstream_propagation_findings",
+        "transition_pathway",
+        "system_context",
+    } <= parameter_names.keys()
+    assert return_types == {QueueEvaluatorResult, QueueEvaluationFailure}
+
+
+def test_pathway_engine_can_route_opaque_system_context() -> None:
+    parameter_names = signature(PathwayEvaluationEngine.evaluate).parameters
+
+    assert "system_context" in parameter_names
