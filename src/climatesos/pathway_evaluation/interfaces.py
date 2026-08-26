@@ -122,6 +122,7 @@ class FabricEvaluator(Protocol):
         pathway_comparison_findings: tuple[ComparisonFinding, ...],
         downstream_propagation_findings: tuple[ComparisonFinding, ...],
         transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
         evaluation_run_id: str,
     ) -> FabricEvaluatorResult: ...
 

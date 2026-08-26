@@ -114,6 +114,7 @@ def test_fabric_result_preserves_consumed_evaluation_context() -> None:
         "pathway_comparison_findings",
         "downstream_propagation_findings",
         "transition_pathway",
+        "system_context",
     } <= field_names
 
 def test_charter_context_preserves_opaque_resources_and_required_ids() -> None:

@@ -4,6 +4,13 @@ from .adapter import (
     AdapterInvariantError,
     PathwayNormalizer,
     ValidatedProductAdapter,
+from .assembly import (
+    AssemblyInvariantError,
+    FabricAssemblyFunction,
+    QueueGroupingFunction,
+    StructuralProductAssembly,
+    ValidatedFabricAssembler,
+    ValidatedQueueBundler,
 )
 from .enums import (
     EvaluationExecutionStatus,
@@ -16,6 +23,11 @@ from .enums import (
 )
 from .identity import IdentityLayer
 from .intake import IntakeLayer
+from .fabric_evaluation import (
+    FabricEvaluationFunction,
+    FabricEvaluationInvariantError,
+    ValidatedFabricEvaluator,
+)
 from .interfaces import (
     CharterEvaluator,
     DocumentationEvaluator,
@@ -56,9 +68,15 @@ from .models import (
     SourceReference,
     TransitionPathway,
 )
+from .queue_evaluation import (
+    QueueEvaluationFunction,
+    QueueEvaluationInvariantError,
+    ValidatedQueueEvaluator,
+)
 
 __all__ = [
     "AdapterInvariantError",
+    "AssemblyInvariantError",
     "Attribute",
     "CharterCheckResult",
     "CharterEvaluationContext",
@@ -68,6 +86,9 @@ __all__ = [
     "DocumentationFinding",
     "EvaluationExecutionStatus",
     "FabricAssembler",
+    "FabricAssemblyFunction",
+    "FabricEvaluationFunction",
+    "FabricEvaluationInvariantError",
     "FabricEvaluator",
     "FabricEvaluatorResult",
     "IdentityLayer",
@@ -94,16 +115,24 @@ __all__ = [
     "QueueCategory",
     "QueueElement",
     "QueueEvaluationFailure",
+    "QueueEvaluationFunction",
+    "QueueEvaluationInvariantError",
     "QueueEvaluationState",
     "QueueEvaluator",
     "QueueEvaluatorResult",
     "QueueExecutionResult",
+    "QueueGroupingFunction",
     "QueueLifecycleState",
     "QueueOperationalStatus",
     "QueueOrderingStatus",
     "QueueProgressRecord",
     "QueueSynchronizationStatus",
     "SourceReference",
+    "StructuralProductAssembly",
     "TransitionPathway",
     "ValidatedProductAdapter",
+    "ValidatedFabricAssembler",
+    "ValidatedFabricEvaluator",
+    "ValidatedQueueBundler",
+    "ValidatedQueueEvaluator",
 ]

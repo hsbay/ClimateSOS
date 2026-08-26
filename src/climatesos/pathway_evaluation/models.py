@@ -43,7 +43,6 @@ class OpaqueReference:
     reference_id: str
 
 
-
 @dataclass(frozen=True, slots=True)
 class IdentityToken:
     """Canonical identity issued upstream by the Identity Layer."""
@@ -324,6 +323,7 @@ class FabricEvaluatorResult:
     evaluation_run_id: str
     user_id: str
     pathway_id: str
+    system_context: OpaqueReference | None = None
     findings: tuple[str, ...] = ()
     assumptions: tuple[str, ...] = ()
     uncertainties: tuple[str, ...] = ()

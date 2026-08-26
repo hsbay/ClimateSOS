@@ -39,6 +39,7 @@ def test_fabric_evaluator_receives_required_pathway_findings() -> None:
 
     assert "pathway_comparison_findings" in parameter_names
     assert "downstream_propagation_findings" in parameter_names
+    assert "system_context" in parameter_names
 
 def test_queue_evaluator_receives_required_evaluation_context() -> None:
     parameter_names = signature(QueueEvaluator.evaluate).parameters
