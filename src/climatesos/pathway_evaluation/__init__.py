@@ -4,6 +4,7 @@ from .adapter import (
     AdapterInvariantError,
     PathwayNormalizer,
     ValidatedProductAdapter,
+)
 from .assembly import (
     AssemblyInvariantError,
     FabricAssemblyFunction,
@@ -21,13 +22,13 @@ from .enums import (
     QueueOrderingStatus,
     QueueSynchronizationStatus,
 )
-from .identity import IdentityLayer
-from .intake import IntakeLayer
 from .fabric_evaluation import (
     FabricEvaluationFunction,
     FabricEvaluationInvariantError,
     ValidatedFabricEvaluator,
 )
+from .identity import IdentityLayer
+from .intake import IntakeLayer
 from .interfaces import (
     CharterEvaluator,
     DocumentationEvaluator,
@@ -130,9 +131,9 @@ __all__ = [
     "SourceReference",
     "StructuralProductAssembly",
     "TransitionPathway",
-    "ValidatedProductAdapter",
     "ValidatedFabricAssembler",
     "ValidatedFabricEvaluator",
+    "ValidatedProductAdapter",
     "ValidatedQueueBundler",
     "ValidatedQueueEvaluator",
 ]
