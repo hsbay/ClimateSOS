@@ -1,5 +1,10 @@
 """Specification-driven foundation for product-pathway evaluation."""
 
+from .adapter import (
+    AdapterInvariantError,
+    PathwayNormalizer,
+    ValidatedProductAdapter,
+)
 from .enums import (
     EvaluationExecutionStatus,
     QueueCategory,
@@ -9,6 +14,8 @@ from .enums import (
     QueueOrderingStatus,
     QueueSynchronizationStatus,
 )
+from .identity import IdentityLayer
+from .intake import IntakeLayer
 from .interfaces import (
     CharterEvaluator,
     DocumentationEvaluator,
@@ -51,6 +58,7 @@ from .models import (
 )
 
 __all__ = [
+    "AdapterInvariantError",
     "Attribute",
     "CharterCheckResult",
     "CharterEvaluationContext",
@@ -62,14 +70,17 @@ __all__ = [
     "FabricAssembler",
     "FabricEvaluator",
     "FabricEvaluatorResult",
+    "IdentityLayer",
     "IdentityToken",
     "InitialCharterResult",
     "IntakeArtifact",
+    "IntakeLayer",
     "IntegratedCharterResult",
     "OpaqueReference",
     "PathwayComparator",
     "PathwayEngineResult",
     "PathwayEvaluationEngine",
+    "PathwayNormalizer",
     "PathwayObject",
     "PathwayRelationship",
     "ProductAdapter",
@@ -94,4 +105,5 @@ __all__ = [
     "QueueSynchronizationStatus",
     "SourceReference",
     "TransitionPathway",
+    "ValidatedProductAdapter",
 ]
