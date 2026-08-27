@@ -13,6 +13,11 @@ from .assembly import (
     ValidatedFabricAssembler,
     ValidatedQueueBundler,
 )
+from .engine import (
+    PathwayEvaluationIncompleteError,
+    PathwayEvaluationInvariantError,
+    StructuralPathwayEvaluationEngine,
+)
 from .enums import (
     EvaluationExecutionStatus,
     QueueCategory,
@@ -102,6 +107,8 @@ __all__ = [
     "PathwayComparator",
     "PathwayEngineResult",
     "PathwayEvaluationEngine",
+    "PathwayEvaluationIncompleteError",
+    "PathwayEvaluationInvariantError",
     "PathwayNormalizer",
     "PathwayObject",
     "PathwayRelationship",
@@ -129,6 +136,7 @@ __all__ = [
     "QueueProgressRecord",
     "QueueSynchronizationStatus",
     "SourceReference",
+    "StructuralPathwayEvaluationEngine",
     "StructuralProductAssembly",
     "TransitionPathway",
     "ValidatedFabricAssembler",

@@ -343,6 +343,8 @@ class PathwayEngineResult:
     queue_results: tuple[QueueEvaluatorResult, ...]
     fabric_results: tuple[FabricEvaluatorResult, ...]
     documentation_findings: tuple[DocumentationFinding, ...]
+    evaluation_run_id: str
+    system_context: OpaqueReference | None
     evaluator_versions: tuple[Attribute, ...]
     rule_set_versions: tuple[Attribute, ...]
     user_id: str
