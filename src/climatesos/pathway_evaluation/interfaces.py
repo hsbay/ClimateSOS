@@ -81,12 +81,14 @@ class PathwayComparator(Protocol):
         self,
         pathway: ProductPathway,
         transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
     ) -> tuple[ComparisonFinding, ...]: ...
 
     def evaluate_substitution_and_combination(
         self,
         pathway: ProductPathway,
         transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
     ) -> tuple[ComparisonFinding, ...]: ...
 
     def propagate_downstream(
@@ -94,6 +96,7 @@ class PathwayComparator(Protocol):
         pathway: ProductPathway,
         transition_pathway: TransitionPathway,
         comparison_findings: tuple[ComparisonFinding, ...],
+        system_context: OpaqueReference | None,
     ) -> tuple[ComparisonFinding, ...]: ...
 
 

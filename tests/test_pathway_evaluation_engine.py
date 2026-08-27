@@ -34,6 +34,17 @@ from climatesos.pathway_evaluation import (
 
 QueueSubjectType: TypeAlias = QueueElement | ProductQueueBundle
 ComparisonFindings: TypeAlias = tuple[ComparisonFinding, ...]
+ComparisonCall: TypeAlias = tuple[
+    ProductPathway,
+    TransitionPathway,
+    OpaqueReference | None,
+]
+PropagationCall: TypeAlias = tuple[
+    ProductPathway,
+    TransitionPathway,
+    ComparisonFindings,
+    OpaqueReference | None,
+]
 QueueCall: TypeAlias = tuple[
     QueueSubjectType,
     ProductPathway,
@@ -126,28 +137,26 @@ class RecordingComparator:
         self.downstream: ComparisonFindings = (
             ComparisonFinding("downstream", "propagation", "downstream"),
         )
-        self.direct_input: tuple[ProductPathway, TransitionPathway] | None = None
-        self.substitution_input: (
-            tuple[ProductPathway, TransitionPathway] | None
-        ) = None
-        self.propagation_input: (
-            tuple[ProductPathway, TransitionPathway, ComparisonFindings] | None
-        ) = None
+        self.direct_input: ComparisonCall | None = None
+        self.substitution_input: ComparisonCall | None = None
+        self.propagation_input: PropagationCall | None = None
 
     def compare_direct(
         self,
         pathway: ProductPathway,
         transition: TransitionPathway,
+        system_context: OpaqueReference | None,
     ) -> ComparisonFindings:
-        self.direct_input = (pathway, transition)
+        self.direct_input = (pathway, transition, system_context)
         return self.direct
 
     def evaluate_substitution_and_combination(
         self,
         pathway: ProductPathway,
         transition: TransitionPathway,
+        system_context: OpaqueReference | None,
     ) -> ComparisonFindings:
-        self.substitution_input = (pathway, transition)
+        self.substitution_input = (pathway, transition, system_context)
         return self.substitution
 
     def propagate_downstream(
@@ -155,8 +164,9 @@ class RecordingComparator:
         pathway: ProductPathway,
         transition: TransitionPathway,
         findings: ComparisonFindings,
+        system_context: OpaqueReference | None,
     ) -> ComparisonFindings:
-        self.propagation_input = (pathway, transition, findings)
+        self.propagation_input = (pathway, transition, findings, system_context)
         return self.downstream
 
 
@@ -334,11 +344,22 @@ def test_engine_routes_context_and_preserves_results_by_reference() -> None:
     assert (result.user_id, result.pathway_id) == ("user-1", "pathway-1")
 
     assert [call[0] for call in queue_evaluator.calls] == list(bundles)
+    assert comparator.direct_input == (
+        adapter.product_pathway,
+        transition,
+        system_context,
+    )
+    assert comparator.substitution_input == (
+        adapter.product_pathway,
+        transition,
+        system_context,
+    )
     pathway_findings = comparator.direct + comparator.substitution
     assert comparator.propagation_input == (
         adapter.product_pathway,
         transition,
         pathway_findings,
+        system_context,
     )
     assert all(call[2] == pathway_findings for call in queue_evaluator.calls)
     assert all(call[3] is comparator.downstream for call in queue_evaluator.calls)

@@ -7,6 +7,7 @@ from typing import get_args, get_type_hints
 from climatesos.pathway_evaluation import (
     CharterEvaluator,
     FabricEvaluator,
+    PathwayComparator,
     PathwayEngineResult,
     PathwayEvaluationEngine,
     ProductAdapter,
@@ -40,6 +41,17 @@ def test_fabric_evaluator_receives_required_pathway_findings() -> None:
     assert "pathway_comparison_findings" in parameter_names
     assert "downstream_propagation_findings" in parameter_names
     assert "system_context" in parameter_names
+
+
+def test_pathway_comparator_receives_system_context() -> None:
+    for method_name in (
+        "compare_direct",
+        "evaluate_substitution_and_combination",
+        "propagate_downstream",
+    ):
+        method = getattr(PathwayComparator, method_name)
+        assert "system_context" in signature(method).parameters
+
 
 def test_queue_evaluator_receives_required_evaluation_context() -> None:
     parameter_names = signature(QueueEvaluator.evaluate).parameters

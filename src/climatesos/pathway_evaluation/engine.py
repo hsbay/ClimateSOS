@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import TypeVar
 
+from .comparison import ComparisonInvariantError, validate_comparison_findings
 from .interfaces import (
     DocumentationEvaluator,
     FabricEvaluator,
@@ -97,27 +98,33 @@ class StructuralPathwayEvaluationEngine:
             queue_bundles,
             fabrics,
         )
-        direct = _require_tuple_of(
-            self.comparator.compare_direct(pathway, transition_pathway),
-            ComparisonFinding,
+        direct = self._validate_comparison_findings(
+            self.comparator.compare_direct(
+                pathway,
+                transition_pathway,
+                system_context,
+            ),
+            pathway,
             "Direct comparison findings",
         )
-        substitution = _require_tuple_of(
+        substitution = self._validate_comparison_findings(
             self.comparator.evaluate_substitution_and_combination(
                 pathway,
                 transition_pathway,
+                system_context,
             ),
-            ComparisonFinding,
+            pathway,
             "Substitution and combination findings",
         )
         pathway_findings = direct + substitution
-        downstream = _require_tuple_of(
+        downstream = self._validate_comparison_findings(
             self.comparator.propagate_downstream(
                 pathway,
                 transition_pathway,
                 pathway_findings,
+                system_context,
             ),
-            ComparisonFinding,
+            pathway,
             "Downstream propagation findings",
         )
 
@@ -234,6 +241,17 @@ class StructuralPathwayEvaluationEngine:
             ),
             provenance=adapter_result.intake_bundle.provenance,
         )
+
+    @staticmethod
+    def _validate_comparison_findings(
+        findings: object,
+        pathway: ProductPathway,
+        description: str,
+    ) -> tuple[ComparisonFinding, ...]:
+        try:
+            return validate_comparison_findings(findings, pathway, description)
+        except ComparisonInvariantError as error:
+            raise PathwayEvaluationInvariantError(str(error)) from error
 
     @staticmethod
     def _validate_inputs(

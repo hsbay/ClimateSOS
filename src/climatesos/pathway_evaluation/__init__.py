@@ -13,6 +13,18 @@ from .assembly import (
     ValidatedFabricAssembler,
     ValidatedQueueBundler,
 )
+from .comparison import (
+    ComparisonInvariantError,
+    DirectComparisonFunction,
+    DownstreamPropagationFunction,
+    SubstitutionCombinationFunction,
+    ValidatedPathwayComparator,
+)
+from .documentation_evaluation import (
+    DocumentationEvaluationFunction,
+    DocumentationEvaluationInvariantError,
+    ValidatedDocumentationEvaluator,
+)
 from .engine import (
     PathwayEvaluationIncompleteError,
     PathwayEvaluationInvariantError,
@@ -88,8 +100,13 @@ __all__ = [
     "CharterEvaluationContext",
     "CharterEvaluator",
     "ComparisonFinding",
+    "ComparisonInvariantError",
+    "DirectComparisonFunction",
+    "DocumentationEvaluationFunction",
+    "DocumentationEvaluationInvariantError",
     "DocumentationEvaluator",
     "DocumentationFinding",
+    "DownstreamPropagationFunction",
     "EvaluationExecutionStatus",
     "FabricAssembler",
     "FabricAssemblyFunction",
@@ -138,9 +155,12 @@ __all__ = [
     "SourceReference",
     "StructuralPathwayEvaluationEngine",
     "StructuralProductAssembly",
+    "SubstitutionCombinationFunction",
     "TransitionPathway",
+    "ValidatedDocumentationEvaluator",
     "ValidatedFabricAssembler",
     "ValidatedFabricEvaluator",
+    "ValidatedPathwayComparator",
     "ValidatedProductAdapter",
     "ValidatedQueueBundler",
     "ValidatedQueueEvaluator",
