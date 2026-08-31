@@ -2311,7 +2311,31 @@ success, and other scale-dependent effects are evaluated separately by the
 
 ### 11.5 Limited or Unresolved Contribution
 
-This retains the archive’s important product-output/system-contribution distinction, but locates the contribution itself in its proper downstream stage rather than in `ProductPathway`.
+A pathway may complete contribution evaluation without demonstrating an
+unconditional or fully resolved contribution.
+
+A completed `NetOverallSystemContribution` may therefore record one or more
+limiting or unresolved conditions, including contribution that is:
+
+* local rather than system-wide;
+* limited in magnitude or scope;
+* indirect;
+* conditional on identified dependencies;
+* time-limited; or
+* unresolved because available evidence or relationships within the broader
+  net-zero transition do not support a stronger conclusion.
+
+A limited or unresolved contribution is not an evaluator-integrity failure.
+
+Where the evaluator has successfully completed its work, the result preserves
+the supported finding and the conditions that limit it. Later stages shall use
+that information when evaluating scale, constructing a candidate or a prospective
+candidate `TransitionPathway`, evaluating net overall system risk, and
+performing the Final Charter Evaluation.
+
+An evaluator-integrity failure is distinct from an unresolved contribution. If
+the evaluator cannot produce a structurally valid contribution result, the
+current evaluation does not proceed.
 
 ## 12. Scale Diagnostic
 
