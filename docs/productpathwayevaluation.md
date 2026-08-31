@@ -2263,6 +2263,52 @@ establish durable fossil displacement.
 
 #### 11.4.2 Reliability, Deliverability, and Transition Timing
 
+A pathway may make a real system contribution, while that contribution may or
+may not be sufficiently reliable, deliverable, or timely for the transition
+function. The contribution may support, replace, render unnecessary, or
+otherwise affect a required system function.
+
+Reliability, deliverability, and timing are evaluated separately because they
+determine whether an identified contribution can actually perform its required
+role within the broader net-zero transition.
+
+A contribution may be technically valid but unavailable at the required time,
+dependent on unresolved infrastructure, unable to satisfy a reliability or
+adequacy requirement, or sequenced incorrectly relative to dependent transition
+activities.
+
+The `NetOverallSystemContributionEvaluator` therefore evaluates whether the
+contribution can perform the required function in the required system context
+and within the required transition window.
+
+The evaluator uses the completed pathway evaluation, established transition
+interactions, and relevant system context to determine whether the evaluated
+contribution is consistent with:
+
+* the reliability or adequacy function being supported, replaced, eliminated,
+  or otherwise rendered unnecessary;
+* required infrastructure and delivery relationships;
+* sequencing with dependent transition activities;
+* permitting, finance, workforce, supply-chain, and execution conditions;
+* the geographic and system scope of the pathway;
+* the pathway's stated time window;
+* the timing represented by the authoritative `TransitionPathway`; and
+* the accelerated operational net-zero transition window.
+
+A technically valid contribution that cannot be delivered within the relevant
+transition window is recorded with its relevant timing constraint rather than
+as a fully available contribution.
+
+Similarly, a pathway that produces useful capacity but depends on an unresolved
+reliability replacement, infrastructure dependency, or synchronization
+condition retains that dependency in its contribution result.
+
+The contribution evaluation records the reliability, deliverability, timing, and
+system conditions attached to the contribution. It does not determine whether
+the pathway can achieve material scale. Scale, scale-up constraints, stale
+success, and other scale-dependent effects are evaluated separately by the
+`ScaleDiagnosticEvaluator` in Section 12.
+
 ### 11.5 Limited or Unresolved Contribution
 
 This retains the archive’s important product-output/system-contribution distinction, but locates the contribution itself in its proper downstream stage rather than in `ProductPathway`.
