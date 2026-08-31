@@ -2173,6 +2173,48 @@ constructs one new immutable `NetOverallSystemContribution`.
 
 ### 11.4 NetOverallSystemContribution
 
+`NetOverallSystemContribution` is the immutable result of the
+`NetOverallSystemContributionEvaluator`.
+
+It records the supported effects of the pathway on the broader net-zero
+transition.
+
+The result contains or references, as applicable:
+
+* the evaluated `ProductPathway`;
+* the `PathwayEngineResult` from which the contribution evaluation was derived;
+* the associated `IntegratedCharterResult`;
+* a reference to the authoritative `TransitionPathway` used during system evaluation;
+* the evaluated system-contribution findings;
+* the pathway outputs associated with those contributions;
+* contribution findings and supporting attribution for effects that materially
+  affect the net-zero transition;
+* contribution findings and supporting attribution for effects that materially
+  affect transition timing;
+* material dependencies and conditions affecting contribution;
+* limited, indirect, conditional, or unresolved contribution findings;
+* material assumptions and uncertainties;
+* supporting comparison, queue, fabric, and documentation findings;
+* evidence and provenance references;
+* evaluator and rule-set versions; and
+* `user_id` and `pathway_id` attribution.
+
+The result preserves the distinction between supported contribution findings
+and contribution claims that remain conditional, unresolved, or unsupported by
+the completed evaluation record. Absence of sufficient evidence for a
+particular contribution does not cause the evaluator to create one from pathway
+intent.
+
+The result may contain more than one contribution when a pathway affects
+multiple transition functions.
+
+`NetOverallSystemContribution` is not a scalar score of pathway goodness and
+does not rank otherwise incomparable forms of contribution onto a single
+numerical axis.
+
+The contribution result does not determine whether the pathway can reach
+material scale. Scale is evaluated separately by the `ScaleDiagnosticEvaluator`.
+
 ### 11.5 Fossil Displacement and Persistence Closure
 
 ### 11.6 Reliability, Deliverability, and Transition Timing
