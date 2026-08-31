@@ -1875,7 +1875,7 @@ The `PathwayEngineResult` consolidates the results and findings produced during 
 The `PathwayEngineResult` contains or references, as applicable:
 
 * the evaluated `ProductPathway`;
-* the authoritative `TransitionPathway` used for comparison;
+* a reference to the authoritative `TransitionPathway` used for comparison;
 * the completed `InitialCharterResult`;
 * direct pathway-comparison findings;
 * substitution and combination findings;
@@ -1885,6 +1885,7 @@ The `PathwayEngineResult` contains or references, as applicable:
 * documentation and evidence findings;
 * material assumptions and uncertainties;
 * unresolved evaluation conditions;
+* applicable transition and system context;
 * evaluator and rule-set versions;
 * evidence and provenance references; and
 * `user_id` and `pathway_id` attribution.
