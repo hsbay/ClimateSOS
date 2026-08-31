@@ -2215,11 +2215,55 @@ numerical axis.
 The contribution result does not determine whether the pathway can reach
 material scale. Scale is evaluated separately by the `ScaleDiagnosticEvaluator`.
 
-### 11.5 Fossil Displacement and Persistence Closure
+#### 11.4.1 Fossil Displacement and Persistence Closure
 
-### 11.6 Reliability, Deliverability, and Transition Timing
+A clean, lower-carbon, or transition-enabling output does not qualify as fossil
+displacement unless the evaluated pathway reduces, substitutes for, retires,
+avoids, or otherwise materially changes a fossil-dependent activity, asset,
+flow, financial pathway, or system function.
 
-### 11.7 Limited or Unresolved Contribution
+The contribution evaluation therefore distinguishes between:
+
+* additional clean activity operating alongside continuing fossil activity;
+* reduction in fossil fuel, feedstock, throughput, or utilization;
+* substitution for a fossil product or process;
+* replacement of a fossil reliability or adequacy function;
+* retirement or avoidance of a fossil asset or capability;
+* closure of refinancing, insurance, contracting, capacity-payment, or other
+  mechanisms that would otherwise extend fossil operation;
+* reduction of credible fossil fallback pathways; and
+* closure of a material fossil-persistence pathway.
+
+Where fossil displacement affects fossil-dependent workers or communities,
+the associated workforce retirement, transition, redeployment, closure, or
+other material transition conditions remain explicit in the contribution
+findings.
+
+Where continued fossil operation is required for the evaluated contribution,
+that dependency remains explicit in the result.
+
+A pathway must not be credited with fossil displacement merely because its
+output could theoretically replace a fossil function. The relevant
+substitution, retirement, or persistence-closure relationship must be supported
+by the pathway evaluation and available evidence. The completed contribution
+is subsequently included in the Final Charter Evaluation, which determines
+whether the resulting pathway state conforms to the Charter safeguards and
+guardrails.
+
+Where displacement is partial, conditional, delayed, indirect, or unresolved,
+the contribution result records that condition rather than representing full
+displacement.
+
+Fossil displacement also requires that any required system function performed
+by the displaced fossil activity be replaced, eliminated, or otherwise rendered
+unnecessary. This applies to reliability, adequacy, feedstock, heat, transport,
+industrial, infrastructure, and other required system functions. Nominal
+retirement while a required function remains unresolved does not by itself
+establish durable fossil displacement.
+
+#### 11.4.2 Reliability, Deliverability, and Transition Timing
+
+### 11.5 Limited or Unresolved Contribution
 
 This retains the archive’s important product-output/system-contribution distinction, but locates the contribution itself in its proper downstream stage rather than in `ProductPathway`.
 
