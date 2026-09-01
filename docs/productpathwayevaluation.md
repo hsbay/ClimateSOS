@@ -345,8 +345,8 @@ ScaleDiagnosticEvaluator
 ScaleDiagnosticResult
     │
     ▼
-Construct Candidate or Prospective Candidate TransitionPathway
-    │
+TransitionPathwayCompiler
+    │  Construct Candidate or Prospective Candidate TransitionPathway
     │  Global context: Candidate TransitionPathway
     │  User-submitted context: Prospective Candidate TransitionPathway
     │
@@ -464,8 +464,8 @@ Run the Shared Product Pathway Evaluation Flow
     │  ScaleDiagnosticResult
     │
     ▼
-Construct Candidate Global TransitionPathway
-    │
+TransitionPathwayCompiler
+    │  Construct Candidate or Prospective Candidate TransitionPathway
     │  Create new integrated Candidate global transition after applying
     │  the candidate delta, but before validation and atomic commitment.
     │  This Candidate is separate from the global and current reference
