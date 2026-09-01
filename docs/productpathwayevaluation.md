@@ -2339,21 +2339,254 @@ current evaluation does not proceed.
 
 ## 12. Scale Diagnostic
 
+Scale diagnosis evaluates whether the pathway's supported contribution can
+expand, replicate, deploy, or otherwise operate at a materially relevant scale
+within the required transition window. It also evaluates whether the conditions
+required for that scale are available, constrained, delayed, unresolved, or
+likely to change the pathway's contribution as scale increases.
+
+The `ScaleDiagnosticEvaluator` consumes the completed
+`NetOverallSystemContribution` together with the pathway and system information
+required to evaluate scale. It produces one immutable `ScaleDiagnosticResult`.
+
+Scale diagnosis is necessary because a pathway may make a supported net overall
+system contribution at its evaluated scope while remaining unable to reach a
+scale sufficient to materially affect the broader net-zero transition.
+
+Scale diagnosis does not replace the contribution evaluation established in
+Section 11.
+
+The scale result is carried forward into construction of the candidate or
+prospective candidate `TransitionPathway`, net overall system risk evaluation,
+Final Charter Evaluation, and subsequent pathway resolution.
+
 ### 12.1 ScaleDiagnosticEvaluator
+
+The `ScaleDiagnosticEvaluator` evaluates the pathway's ability to realize its
+supported contribution at a materially relevant scale.
+
+Its inputs include:
+
+* the completed `NetOverallSystemContribution`;
+* a reference to the evaluated `ProductPathway`;
+* a reference to the authoritative `TransitionPathway`;
+* relevant transition and system context;
+* material assumptions and uncertainties;
+* evidence and provenance required to support the scale evaluation; and
+* `user_id` and `pathway_id` attribution.
+
+The evaluator determines, as supported by the completed `NetOverallSystemContribution`
+record, whether scale depends on conditions such as:
+
+* production, construction, conversion, or deployment capacity;
+* feedstock, energy, material, water, or other input availability;
+* infrastructure, interconnection, transmission, transport, storage, or other
+  delivery capacity;
+* finance, bankability, public support, or capital availability;
+* workforce, organizational, contractor, or specialist capacity;
+* permitting, siting, authorization, or other execution requirements;
+* supply-chain capacity and critical component availability;
+* geographic replication, access, or expansion across regions or jurisdictions;
+* expansion across sectors, system functions, or other relevant operating
+  contexts;
+* customer, market, or offtake adoption where required for pathway execution;
+* learning-curve progression, cumulative deployment, manufacturing expansion,
+  or cost reduction required for further scale;
+* the rate at which capacity, deployment, replication, or adoption can increase;
+* the duration for which the required level of scale can be sustained;
+* operation across differing temporal, geographic, or jurisdictional conditions;
+* dependencies on other transition pathways or system functions;
+* timing and sequencing constraints;
+* competition with other transition requirements for scarce resources;
+* unresolved conditions identified in upstream evaluation; or
+* other material increases in or constraints on expansion, replication, throughput,
+  capacity, coverage, or deployment.
+
+The evaluator preserves the relationship between each scale finding and the
+contribution it affects. Where the available evidence does not establish whether a
+constraint or bottleneck can be resolved within the required transition window,
+that condition remains unresolved and is recorded in the `ScaleDiagnosticResult`.
+
+The evaluator does not assume that a technically feasible pathway can scale
+merely because additional deployment is physically conceivable. Scale findings
+must be supported by the completed `NetOverallSystemContribution`, relevant
+transition relationships and system context, and available evidence.
+
+The evaluator produces one new immutable `ScaleDiagnosticResult`.
 
 ### 12.2 ScaleDiagnosticResult
 
+All scale findings produced by the `ScaleDiagnosticEvaluator` are recorded in the
+immutable `ScaleDiagnosticResult`.
+
+The result contains or references, as applicable:
+
+* the evaluated `ProductPathway`;
+* the `NetOverallSystemContribution` being evaluated for scale;
+* a reference to the authoritative `TransitionPathway`;
+* the material-scale and scaling-condition findings;
+* the transition functions and contributions to which those findings apply;
+* the geographic and system scope of the scale findings;
+* relevant quantity, capacity, throughput, coverage, replication, or deployment
+  findings;
+* scale-rate, duration, learning-curve progression, or other scale-progression findings;
+* timing and sequencing conditions;
+* identified scale constraints and bottlenecks;
+* identified scale increases, unblocks, constraint mitigations, workarounds, or
+  resolution conditions;
+* scale-dependent effects;
+* unresolved scale conditions;
+* material assumptions and uncertainties;
+* supporting evidence and provenance references;
+* evaluator and rule-set versions; and
+* `user_id` and `pathway_id` attribution.
+
+The result preserves the distinction between demonstrated scale, supported
+prospective scale, conditional scale, constrained scale, and unresolved scale,
+together with the conditions associated with each finding.
+
+An evaluator-integrity failure is distinct from an adverse or unresolved scale
+finding. If the evaluator cannot produce a structurally valid
+`ScaleDiagnosticResult`, the current evaluation does not proceed.
+
+`ScaleDiagnosticResult` does not construct the candidate or prospective
+candidate `TransitionPathway`, determine net overall system risk, perform the
+Final Charter Evaluation, assign a bound state, or authorize commitment or
+deployment. Those operations occur in later stages.
+
 ### 12.3 Material Scale Contribution
 
-### 12.4 Scale-Up Bottleneck
+Material scale is the scale at which a pathway's evaluated contribution becomes
+large enough, broad enough, or sufficiently replicated to materially affect the
+transition function or broader net-zero transition.
 
-### 12.5 Limited or Local Contribution
+Material scale is pathway- and function-dependent and is not represented by one
+universal quantity or threshold. For one pathway, material scale may depend
+primarily on deployed physical capacity. For another, it may depend on
+geographic reach, throughput, workforce availability, infrastructure coverage,
+financing capacity, fossil displacement, replication across many actors, or
+another function-specific measure.
 
-### 12.6 Stale Success
+The `ScaleDiagnosticEvaluator` evaluates material scale relative to:
 
-### 12.7 Scale-Dependent Harms and Constraints
+* the contribution recorded in `NetOverallSystemContribution`;
+* the transition function or functions affected by that contribution;
+* the geographic and system scope in which the contribution operates;
+* the quantity, capacity, throughput, coverage, or replication required for the
+  contribution to become materially relevant;
+* the timing required by the authoritative `TransitionPathway`;
+* the accelerated operational net-zero transition window; and
+* the dependencies and conditions required to reach that scale.
 
-The archive’s `ScaleUpTippingState`, `ScaleUpBottleneck`, `SmallNodePersistence`, and `StaleSuccess` material belongs here, although the exact names are subject to change.
+A contribution may be material within a local or bounded system without being
+material to the broader global transition. The scale result preserves that
+scope and does not treat local, regional, sectoral, and global scale as
+interchangeable.
+
+### 12.4 Scale Constraints and Bottlenecks
+
+A supported contribution may encounter one or more constraints as it expands.
+Some constraints may cause bottlenecks to scaling when their limiting effects
+materially change the rate, throughput, timing, geographic reach, or
+achievable scale of the contribution.
+
+Scale constraints may affect:
+
+* the maximum scale that can be reached;
+* the rate at which scale can increase;
+* the locations in which scale can occur;
+* the sequence in which deployment can proceed;
+* the duration for which the contribution can be sustained;
+* the resources required for further expansion;
+* the transition functions that can be served at increased scale;
+* the functional performance or contribution that can be sustained as scale
+  increases; or
+* another material dimension of pathway scale.
+
+A scale constraint may be pathway-specific or may arise from a shared transition
+condition affecting multiple pathways. A shared constraint may therefore create
+a bottleneck across more than one pathway or transition function.
+
+Where a material scale constraint or bottleneck is identified, the
+`ScaleDiagnosticResult` records the underlying constraint, any resulting
+bottleneck or other constrained pathway behavior, its relationship to the
+contribution, the evidence supporting the finding, and any identified
+conditions, mitigations, workarounds, or resolutions that may reduce or remove it.
+
+### 12.5 Scale-Dependent Effects
+
+Scaling a pathway may change the net-zero transition system effects recorded
+at smaller scale.
+
+The `ScaleDiagnosticEvaluator` therefore evaluates whether increasing pathway
+scale materially changes the conditions underlying the
+`NetOverallSystemContribution`.
+
+Scale-dependent effects may include:
+
+* changes in energy, material, water, land, infrastructure, or other resource
+  demand;
+* emergence, reduction, or worsening of infrastructure or supply-chain
+  constraints;
+* changes in reliability, adequacy, or delivery requirements;
+* changes in competition for or availability of resources shared with other
+  transition pathways;
+* changes in fossil displacement, substitution, or fallback behavior;
+* changes in emissions or other material system burdens;
+* changes in biosphere effects or ecological pressures;
+* changes in workforce, permitting, finance, or execution requirements;
+* changes in timing or synchronization with other transition activities; or
+* other effects that become material only at increased scale.
+
+Where scale materially changes the contribution itself, the
+`ScaleDiagnosticResult` records the affected contribution and the scale
+conditions under which that change occurs.
+
+### 12.6 Limited or Local Contribution
+
+A pathway may make a supported contribution that contribution reaching material
+scale beyond its local or otherwise bounded scope
+
+The `ScaleDiagnosticEvaluator` records when the contribution remains limited by
+scope, geography, capacity, replication, duration, transition function, or
+another material scaling dimension. A contribution may therefore be meaningful
+within a local, regional, sectoral, institutional, or otherwise bounded context
+while remaining insufficient to materially affect the broader net-zero
+transition.
+
+A limited or local contribution supported by the available evidence is a valid
+scale finding. The `ScaleDiagnosticResult` preserves:
+
+* the scope within which the contribution is demonstrated or supported;
+* the scale dimensions that remain limited;
+* the transition functions affected within that scope;
+* any conditions required for broader replication or expansion;
+* any constraints or bottlenecks preventing broader scale;
+* any scale-dependent effects associated with expansion beyond the supported
+  scope; and
+* unresolved conditions affecting whether broader scale can be achieved.
+
+Where broader scale remains possible but depends on unresolved conditions, the
+evaluator records the contribution as limited or local together with those
+conditions rather than treating broader scale as established.
+
+### 12.7 Stale Success
+
+A pathway may demonstrate successful deployment, operation, or contribution at
+one point in time while the conditions supporting that success later change.
+
+Scale diagnosis therefore distinguishes demonstrated historical success from
+current or future scale. A scale finding contains stale success when the
+conditions that enabled prior success no longer match the conditions under
+which the pathway must now scale, and those changes materially affect whether
+that success can be reproduced or expanded.
+
+A prior successful deployment does not by itself establish that the pathway can
+be reproduced or expanded at the required scale and time. Relevant inputs,
+infrastructure, finance, workforce, permitting, supply chains, transition
+relationships, or other conditions may have changed.
+
+Historical evidence remains preserved as evidence.
 
 ## 13. Candidate TransitionPathway Construction
 
