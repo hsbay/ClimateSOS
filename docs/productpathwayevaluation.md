@@ -2535,24 +2535,32 @@ Scale-dependent effects may include:
 * changes in emissions or other material system burdens;
 * changes in biosphere effects or ecological pressures;
 * changes in workforce, permitting, finance, or execution requirements;
-* changes in timing or synchronization with other transition activities; or
+* changes in timing or synchronization with other transition activities;
+* threshold conditions at which the pathway's scaling behavior, constraints,
+  or rate of expansion materially changes; or
 * other effects that become material only at increased scale.
+
+Where scaling crosses a material threshold that changes the pathway's subsequent
+ability to expand, the `ScaleDiagnosticResult` records the threshold and the
+resulting change in scaling conditions.
 
 Where scale materially changes the contribution itself, the
 `ScaleDiagnosticResult` records the affected contribution and the scale
-conditions under which that change occurs.
+conditions.
 
 ### 12.6 Limited or Local Contribution
 
 A pathway may make a supported contribution that contribution reaching material
-scale beyond its local or otherwise bounded scope
+scale beyond its local or otherwise bounded scope.
 
 The `ScaleDiagnosticEvaluator` records when the contribution remains limited by
 scope, geography, capacity, replication, duration, transition function, or
 another material scaling dimension. A contribution may therefore be meaningful
 within a local, regional, sectoral, institutional, or otherwise bounded context
 while remaining insufficient to materially affect the broader net-zero
-transition.
+transition. A contribution may also remain intentionally distributed across many
+small or local instances where persistence or replication of those instances is
+itself part of the pathway's material-scale contribution.
 
 A limited or local contribution supported by the available evidence is a valid
 scale finding. The `ScaleDiagnosticResult` preserves:
