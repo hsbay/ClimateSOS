@@ -2596,13 +2596,245 @@ relationships, or other conditions may have changed.
 
 Historical evidence remains preserved as evidence.
 
-## 13. Candidate TransitionPathway Construction
+## 13. Candidate TransitionPathway and Its Construction
 
-### 13.1 Candidate and Prospective Candidate TransitionPathways
-### 13.2 Candidate Construction Inputs
-### 13.3 Global Candidate TransitionPathway
-### 13.4 User-Submitted Prospective Candidate TransitionPathway
-### 13.5 Candidate Immutability, Identity, and Provenance
+After contribution and scale evaluation complete, the evaluated pathway and its
+supported effects are compiled into one of two transition representations. In
+the global context, the result is a complete candidate mapping of the global
+net-zero transition. That candidate may be constructed as an entirely new
+net-zero transition pathway or by applying the evaluated pathway and its
+supported effects to the existing authoritative `TransitionPathway`. In the
+user-submitted context, the result is a prospective mapping of how the
+existing net-zero transition would change if the evaluated pathway's supported
+effects were incorporated. In this section, `net-zero transition` and
+`net-zero transition state` may be abbreviated as `transition` and
+`transition state`.
+
+This intermediate representation allows ClimateSOS to evaluate the combined
+transition state.
+
+These two transition representations are produced by the
+`TransitionPathwayCompiler`:
+
+* a candidate `TransitionPathway` in the global evaluation context; or
+* a prospective candidate `TransitionPathway` in the user-submitted context.
+
+Both transition mappings are constructed from the evaluated pathway, its
+supported contribution and scale findings, and the authoritative
+`TransitionPathway` used as the reference state.
+
+The constructed pathway proceeds to `NetOverallSystemRiskEvaluator`. Candidate
+transition construction does not make the resulting pathway authoritative.
+
+### 13.1 TransitionPathwayCompiler
+
+The `TransitionPathwayCompiler` compiles the evaluated pathway and its supported
+system effects into a candidate transition representation suitable for
+downstream stages including net overall system risk evaluation, final pathway
+assembly, Final Charter Evaluation, and, in the global context, transition
+validation.
+
+The compiler uses the authoritative `TransitionPathway` as the reference state
+and incorporates the supported changes established through pathway,
+contribution, and scale evaluation. These changes may include additions,
+replacements, displacement, retirement, changed dependencies, changed timing or
+sequencing, changed capacity or scale, enabling effects, constrained effects, or
+other represented changes to the broader net-zero transition.
+
+The compiler preserves the distinction between:
+
+* transition state already represented by the authoritative
+  `TransitionPathway`;
+* changes supported by the evaluated pathway;
+* conditions or dependencies attached to those changes;
+* conflicts or incompatibilities between supported changes and existing
+  transition state;
+* limited, constrained, conditional, or unresolved findings;
+* evaluated findings that do not produce a transition-state change; and
+* transition relationships that remain unchanged.
+
+The compiler does not convert an unresolved, conditional, constrained, local,
+or otherwise limited finding into an unconditional transition change. The
+candidate representation preserves those conditions where they materially
+affect the compiled transition state.
+
+The compiler produces a new immutable candidate or prospective candidate
+`TransitionPathway`.
+
+A compiler-integrity failure occurs when the compiler cannot produce a
+structurally valid candidate representation while preserving the required
+identity, transition relationships, evaluated findings, and provenance. The
+current evaluation does not proceed when candidate construction fails.
+
+### 13.2 Candidate and Prospective Candidate TransitionPathways
+
+A candidate or prospective candidate `TransitionPathway` represents the
+transition state produced from the evaluated pathway and its supported
+effects. In the global context, the candidate may represent an entirely new
+global transition pathway or incorporate supported changes into the
+authoritative `TransitionPathway`. In the user-submitted context, the
+prospective candidate represents the effects of the evaluated pathway
+incorporated into the authoritative `TransitionPathway`.
+
+The two forms serve different evaluation contexts.
+
+A **candidate `TransitionPathway`** is produced in the global context. It
+represents a proposed new global transition state that may later become the
+authoritative `TransitionPathway` if it completes all remaining evaluation,
+Charter, binding, validation, and commitment stages.
+
+A **prospective candidate `TransitionPathway`** is produced in the
+user-submitted context. It represents the transition state that would result
+from incorporation of the evaluated user pathway, but it cannot replace,
+modify, or become the authoritative global `TransitionPathway` through the
+user-submitted evaluation flow.
+
+Both forms allow downstream evaluation to examine the consequences of the
+pathway within a combined transition state.
+
+Neither candidate form is authoritative merely because construction completes.
+
+### 13.3 Candidate Construction Inputs
+
+The `TransitionPathwayCompiler` begins from the authoritative
+`TransitionPathway` used during evaluation and the completed evaluation state
+for the pathway being compiled.
+
+Its inputs include:
+
+* the `ProductPathway` under evaluation;
+* the completed `NetOverallSystemContribution`;
+* the completed `ScaleDiagnosticResult`;
+* a reference to the authoritative `TransitionPathway`;
+* applicable transition and system context;
+* conditions, dependencies, assumptions, and uncertainties required to
+  preserve the evaluated findings;
+* evidence and provenance references required to trace the compiled changes;
+  and
+* `user_id` and `pathway_id` attribution.
+
+The compiler uses the completed contribution and scale findings to determine
+which evaluated pathway effects are represented in the candidate transition
+state and the conditions under which those effects apply.
+
+Candidate construction preserves references to the evaluation state from which
+each material transition change was derived.
+
+### 13.4 Global Candidate TransitionPathway
+
+In the global evaluation context, the `TransitionPathwayCompiler` produces a
+candidate `TransitionPathway`.
+
+The compiler uses the authoritative global `TransitionPathway` as the
+reference state and constructs a complete candidate mapping of the global
+net-zero transition. The candidate may represent an entirely new transition
+pathway, a limited change to the existing transition, or a prospective
+replacement of a larger portion of the represented global pathway. The
+authoritative reference `TransitionPathway` remains unchanged during
+construction and subsequent evaluation.
+
+A completed global candidate preserves:
+
+* a reference to the authoritative `TransitionPathway` used as the reference
+  state;
+* the evaluated changes incorporated into the candidate;
+* transition functions, relationships, dependencies, timing, and sequencing
+  affected by those changes;
+* contribution and scale conditions attached to the incorporated effects;
+* unchanged transition state required to preserve the surrounding global
+  pathway;
+* unresolved or constrained conditions that remain material to the candidate;
+* evidence and provenance supporting the incorporated changes; and
+* the identity and version information required to distinguish the candidate
+  from both its source pathway and the authoritative reference state.
+
+The candidate is complete when the compiler can represent the supported pathway
+effects and their material conditions without corrupting or losing the
+transition state required for downstream evaluation.
+
+Candidate construction fails when the compiler cannot produce a structurally
+valid transition representation, cannot preserve required attribution or
+provenance, or cannot maintain the required relationship between the candidate
+and the authoritative reference `TransitionPathway`.
+
+A completed global candidate proceeds to `NetOverallSystemRiskEvaluator`.
+
+It remains non-authoritative until the later global flow permits validation and
+atomic immutable commitment.
+
+### 13.5 User-Submitted Prospective Candidate TransitionPathway
+
+In the user-submitted evaluation context, the `TransitionPathwayCompiler`
+produces a prospective candidate `TransitionPathway`.
+
+The compiler begins with the current authoritative `TransitionPathway` and
+constructs a new prospective transition representation containing the supported
+effects of the evaluated user-submitted pathway.
+
+The prospective candidate allows ClimateSOS to evaluate what the broader
+transition would look like if the pathway's supported effects occurred while
+leaving the authoritative global `TransitionPathway` unchanged.
+
+A completed prospective candidate preserves:
+
+* a reference to the authoritative `TransitionPathway` used as the reference
+  state for construction;
+* the evaluated user-submitted pathway;
+* the supported changes represented in the prospective transition state;
+* transition functions, relationships, dependencies, timing, and sequencing
+  affected by those changes;
+* contribution and scale conditions attached to the represented effects;
+* unchanged transition state required to preserve the surrounding global
+  pathway;
+* unresolved or constrained conditions that remain material to the prospective
+  candidate;
+* evidence and provenance supporting the represented changes; and
+* `user_id` and `pathway_id` attribution.
+
+The prospective candidate is complete when the compiler can represent the
+supported pathway effects and their material conditions without modifying the
+authoritative global transition state.
+
+Construction fails when the compiler cannot produce a structurally valid
+prospective candidate, cannot preserve required attribution or provenance, or
+cannot maintain separation between the prospective candidate and the
+authoritative `TransitionPathway`.
+
+A completed prospective candidate proceeds to
+`NetOverallSystemRiskEvaluator`.
+
+A completed prospective candidate and its subsequent evaluation remain
+user-evaluation artifacts outside the privileged global commitment path.
+
+### 13.6 Candidate Immutability, Identity, and Provenance
+
+Each candidate or prospective candidate `TransitionPathway` is immutable once
+constructed.
+
+The candidate preserves the identity of the evaluated pathway, the
+authoritative `TransitionPathway` used as its reference state, and the
+evaluation results from which its material changes were derived.
+
+Candidate construction must preserve sufficient provenance to determine:
+
+* which transition state existed before compilation;
+* which evaluated pathway introduced each material change;
+* which contribution and scale findings support that change;
+* which conditions, dependencies, assumptions, or uncertainties remain
+  attached to it;
+* which transition relationships were changed and which were preserved;
+* which evidence supports the represented change; and
+* which evaluator, compiler, model, or rule-set versions produced the
+  applicable evaluation and construction state.
+
+A candidate does not overwrite or mutate the authoritative
+`TransitionPathway`. Later evaluation stages create new immutable results that
+reference the candidate rather than modifying it.
+
+For global evaluation, a new authoritative `TransitionPathway` may be
+established only through the privileged validation and atomic commitment path.
+For user-submitted evaluation, the prospective candidate remains separate from
+the authoritative global pathway for the duration of the evaluation.
 
 ## 14. Final Charter Evaluation
 
