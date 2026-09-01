@@ -3129,11 +3129,177 @@ authorize commitment or deployment.
 
 ## 15. Final Pathway Assembly
 
+After net overall system risk evaluation completes, `FinalPathwayAssembly`
+constructs the completed pathway-evaluation artifact, `FinalPathwayResult`,
+used by Final Charter Evaluation and the later binding flow.
+
+The assembly combines the candidate or prospective candidate
+`TransitionPathway` with the completed evaluation state and preserves the
+relationships among the pathway, its primary evaluation results, and its
+evaluation lineage in one immutable `FinalPathwayResult`.
+
+`FinalPathwayAssembly` does not perform substantive evaluation. It assembles
+and verifies the completed evaluation state without revising, resolving, or
+replacing findings produced by their owning evaluators.
+
 ### 15.1 FinalPathwayAssembly
+
+`FinalPathwayAssembly` receives the completed candidate transition and its
+associated evaluation state after `NetOverallSystemRiskEvaluator` completes.
+
+Its responsibility is to construct a coherent final pathway-evaluation
+representation in which the evaluated pathway, reference and candidate
+transition states, completed system-risk result, and upstream evaluation
+lineage remain identifiable and traceable.
+
+The assembler preserves evaluator ownership of each finding. A finding produced
+by an upstream evaluator remains attributable to that evaluator and is not
+reinterpreted as an assembly finding.
+
+The assembler shall verify structural consistency, identity, attribution,
+provenance, and required relationships among its inputs to construct the
+result. Structural verification does not constitute re-evaluation of the
+pathway or its findings.
+
 ### 15.2 Assembly Inputs
-### 15.3 FinalPathwayResult
-### 15.4 Preservation of Prior Evaluation State
-### 15.5 Assembly Integrity and Failure
+
+`FinalPathwayAssembly` uses the completed evaluation state available at the end
+of net overall system risk evaluation.
+
+Its primary assembly inputs include:
+
+* the `ProductPathway` under evaluation;
+* a reference to the authoritative `TransitionPathway` used during evaluation;
+* the candidate or prospective candidate `TransitionPathway`;
+* the completed `NetOverallSystemRiskResult`; and
+* `user_id` and `pathway_id` attribution.
+
+The assembler also receives the completed upstream evaluation artifacts required
+to construct and validate the `evaluation_trace`, including:
+
+* the `InitialCharterResult`;
+* the `PathwayEngineResult`;
+* the `IntegratedCharterResult`;
+* the `NetOverallSystemContribution`; and
+* the `ScaleDiagnosticResult`.
+
+Material conditions, dependencies, assumptions, uncertainties, unresolved
+findings, evidence, and provenance remain associated with the evaluator results
+that produced them. `FinalPathwayAssembly` preserves those relationships rather
+than copying their contents into a new assembly-owned representation.
+
+Assembly does not convert conditional, constrained, adverse, unresolved, or
+limited findings into resolved findings.
+
+### 15.3 Evaluation Trace
+
+The `evaluation_trace` is an internal structure that preserves immutable
+artifact references to completed upstream evaluation results. It contains
+results required for provenance or downstream inspection that are not exposed
+as semantically primary references on `FinalPathwayResult`.
+
+For maintainability and extensibility, `FinalPathwayResult` separates referenced
+state into two levels.
+
+Semantically primary references are exposed directly on `FinalPathwayResult`.
+These include the `ProductPathway`, the authoritative `TransitionPathway`, the
+candidate or prospective candidate `TransitionPathway`, and the completed
+`NetOverallSystemRiskResult`.
+
+Completed upstream evaluation artifacts that remain necessary for provenance,
+inspection, or downstream evaluation are preserved through the
+`evaluation_trace`. These include:
+
+* the `InitialCharterResult`;
+* the `PathwayEngineResult`;
+* the `IntegratedCharterResult`;
+* the `NetOverallSystemContribution`; and
+* the `ScaleDiagnosticResult`.
+
+An artifact is exposed as a semantically primary reference when it forms part of
+the direct identity or immediate downstream contract of `FinalPathwayResult`.
+Other completed upstream evaluation artifacts remain available through the
+`evaluation_trace`.
+
+The `evaluation_trace` does not duplicate referenced artifact contents. Each
+reference preserves sufficient artifact identity, type, version, attribution,
+and provenance to validate the referenced artifact and its relationship to the
+evaluation being assembled.
+
+Future evaluator results may be added to the `evaluation_trace` without
+requiring changes to the primary structural contract of `FinalPathwayResult`
+unless that result becomes semantically primary to the assembled pathway state.
+
+### 15.4 FinalPathwayResult
+
+`FinalPathwayResult` is the preliminary end product of ProductPathway
+evaluation and final pathway assembly. It represents the completed
+pathway-evaluation state available before Final Charter Evaluation.
+
+`FinalPathwayAssembly` produces one immutable `FinalPathwayResult`.
+
+The result exposes semantically primary references to:
+
+* the `ProductPathway` under evaluation;
+* the authoritative `TransitionPathway` used as the evaluation reference;
+* the candidate or prospective candidate `TransitionPathway`;
+* the completed `NetOverallSystemRiskResult`; and
+* `user_id` and `pathway_id` attribution.
+
+The result also contains the `evaluation_trace`, which preserves immutable
+artifact references to completed upstream evaluation results that remain
+necessary for provenance, inspection, or downstream evaluation.
+
+Material transition relationships, contribution, scale, Charter, and risk
+findings, unresolved or constrained conditions, assumptions, uncertainties,
+evidence, provenance, and applicable evaluator, compiler, model, and rule-set
+versions remain associated with their owning artifacts and are reachable through
+the primary references or `evaluation_trace`.
+
+It does not determine final Charter validity, assign a bound state, validate or
+commit a global `TransitionPathway`, or authorize deployment.
+
+### 15.5 Preservation of Prior Evaluation State
+
+Final pathway assembly preserves the completed evaluation lineage represented
+by `FinalPathwayResult`.
+
+The assembler does not overwrite upstream result objects, duplicate their
+contents, or collapse findings from different evaluators into an
+indistinguishable aggregate state.
+
+Where multiple findings concern the same transition condition,
+`FinalPathwayResult` preserves their separate evaluator ownership, purpose,
+evidence, provenance, and relationships to the evaluated transition state.
+
+Semantically primary artifacts remain directly referenced. Other completed
+upstream evaluation artifacts remain available through the `evaluation_trace`.
+
+A later evaluation stage creates a new result that references
+`FinalPathwayResult`; it does not modify the assembled result.
+
+### 15.6 Assembly Integrity and Failure
+
+Final pathway assembly completes only when it can construct a structurally valid
+`FinalPathwayResult` and preserve the required identity, attribution,
+relationships, findings, and provenance.
+
+`FinalPathwayAssembly` shall validate the semantically primary references and
+each artifact reference included in the `evaluation_trace`.
+
+Assembly integrity fails when required evaluation state or an artifact reference
+is missing, malformed, inconsistently attributed, incorrectly typed, or cannot
+be validated as part of the evaluation being assembled.
+
+An adverse, constrained, conditional, limited, or unresolved upstream finding
+is not an assembly-integrity failure when the finding is part of a valid
+completed result.
+
+If `FinalPathwayAssembly` cannot construct a valid `FinalPathwayResult`, the
+current evaluation does not proceed to Final Charter Evaluation.
+
+A completed `FinalPathwayResult` proceeds unchanged to
+`CharterEvaluator — FINAL`.
 
 ## 16. Final Charter Evaluation
 
