@@ -2765,6 +2765,7 @@ DocumentationEvaluator
 PathwayComparator
 NetOverallSystemContributionEvaluator
 ScaleDiagnosticEvaluator
+TransitionPathwayCompiler
 NetOverallSystemRiskEvaluator
 FinalPathwayAssembly
 CharterEvaluator
