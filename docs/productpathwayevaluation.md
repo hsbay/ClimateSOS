@@ -2836,15 +2836,7 @@ established only through the privileged validation and atomic commitment path.
 For user-submitted evaluation, the prospective candidate remains separate from
 the authoritative global pathway for the duration of the evaluation.
 
-## 14. Final Charter Evaluation
-
-### 14.1 Final Evaluation Inputs
-### 14.2 Final Charter Result
-### 14.3 Relationship to Earlier Charter Results
-### 14.4 Charter Authority and Non-Supersession
-### 14.5 Conditions Preventing Ordinary Binding
-
-## 15. Net Overall System Risk Evaluation
+## 14. Net Overall System Risk Evaluation
 
 The `NetOverallSystemRiskEvaluator` evaluates how a candidate or prospective candidate `TransitionPathway` changes the overall risk profile of the accelerated net-zero transition.
 
@@ -2864,101 +2856,117 @@ The Foundational Charter remains the authoritative source of Charter validity. W
 
 The evaluator produces documentation in the form of one immutable `NetOverallSystemRiskResult`.
 
-### 15.1 Evaluation Purpose and Boundary
-### 15.2 Candidate-to-Reference Risk Comparison
-### 15.3 Appendix A–C Risk Logic
-### 15.4 Net-Zero Timeline Effects
-### 15.5 Bottlenecks, Pitfalls, and Failure Modes
-### 15.6 New, Increased, Reduced, Transferred, and Unresolved Risks
-### 15.7 Charter-Style Risk Checks
-### 15.8 Relationship to the Final Charter Result
-### 15.9 NetOverallSystemRiskResult
+### 14.1 Evaluation Purpose and Boundary
+### 14.2 Candidate-to-Reference Risk Comparison
+### 14.3 Appendix A–C Risk Logic
+### 14.4 Net-Zero Timeline Effects
+### 14.5 Bottlenecks, Pitfalls, and Failure Modes
+### 14.6 New, Increased, Reduced, Transferred, and Unresolved Risks
+### 14.7 Charter-Style Risk Checks
+### 14.8 Relationship to the Final Charter Result
+### 14.9 NetOverallSystemRiskResult
 
-## 16. Binding and Bound States
+## 15. Final Pathway Assembly
 
-### 16.1 BindingHandler
+### 15.1 FinalPathwayAssembly
+### 15.2 Assembly Inputs
+### 15.3 FinalPathwayResult
+### 15.4 Preservation of Prior Evaluation State
+### 15.5 Assembly Integrity and Failure
 
-### 16.2 Binding Inputs
+## 16. Final Charter Evaluation
 
-### 16.3 Applicable Bound States
+### 16.1 Final Evaluation Inputs
+### 16.2 Final Charter Result
+### 16.3 Relationship to Earlier Charter Results
+### 16.4 Charter Authority and Non-Supersession
+### 16.5 Conditions Preventing Ordinary Binding
 
-### 16.4 Binding Does Not Re-Evaluate the Pathway
+## 17. Binding and Bound States
 
-### 16.5 Binding Evidence and Explanation
+### 17.1 BindingHandler
 
-## 17. Global Context Outcome
+### 17.2 Binding Inputs
 
-### 17.1 TransitionPathwayValidator
+### 17.3 Applicable Bound States
 
-### 17.2 Validation Requirements
+### 17.4 Binding Does Not Re-Evaluate the Pathway
 
-### 17.3 Atomic Immutable Commitment
+### 17.5 Binding Evidence and Explanation
 
-### 17.4 Validation Failure
+## 18. Global Context Outcome
 
-### 17.5 Preservation of the Existing Reference Pathway
+### 18.1 TransitionPathwayValidator
 
-### 17.6 Use at the Next Startup
+### 18.2 Validation Requirements
 
-## 18. User-Submitted Context Outcome
+### 18.3 Atomic Immutable Commitment
 
-### 18.1 Immutable Global Reference Pathway
+### 18.4 Validation Failure
 
-### 18.2 Separate Evaluation of Multiple Submissions
+### 18.5 Preservation of the Existing Reference Pathway
 
-### 18.3 Result Construction
+### 18.6 Use at the Next Startup
 
-### 18.4 No Mutation of the Global TransitionPathway
+## 19. User-Submitted Context Outcome
 
-### 18.5 Combined Pathways as Separate Intakes
+### 19.1 Immutable Global Reference Pathway
 
-## 19. PathwayAssessment and State Preservation
+### 19.2 Separate Evaluation of Multiple Submissions
 
-### 19.1 PathwayAssessment
+### 19.3 Result Construction
 
-### 19.2 Required Result Contents
+### 19.4 No Mutation of the Global TransitionPathway
 
-### 19.3 Evidence and Explanation Trace
+### 19.5 Combined Pathways as Separate Intakes
 
-### 19.4 Prior-State Preservation
+## 20. PathwayAssessment and State Preservation
 
-### 19.5 Re-Evaluation and Successor Results
+### 20.1 PathwayAssessment
 
-### 19.6 No Writeback into ProductPathway
+### 20.2 Required Result Contents
 
-## 20. Resolution and Remedy
+### 20.3 Evidence and Explanation Trace
 
-### 20.1 Resolution Outcomes
+### 20.4 Prior-State Preservation
 
-### 20.2 Remedy Eligibility
+### 20.5 Re-Evaluation and Successor Results
 
-### 20.3 Remedy Processing
+### 20.6 No Writeback into ProductPathway
 
-### 20.4 Re-Evaluation After Remedy
+## 21. Resolution and Remedy
 
-### 20.5 Non-Remediable Outcomes
+### 21.1 Resolution Outcomes
 
-### 20.6 Preservation of Failed and Unresolved Results
+### 21.2 Remedy Eligibility
+
+### 21.3 Remedy Processing
+
+### 21.4 Re-Evaluation After Remedy
+
+### 21.5 Non-Remediable Outcomes
+
+### 21.6 Preservation of Failed and Unresolved Results
 
 This preserves the useful archive material on remedy and state history without treating every failure as remedy-eligible or writing those states back into the pathway.
 
-## 21. Evaluation Questions
+## 22. Evaluation Questions
 
-### 21.1 What Does the Pathway Require?
+### 22.1 What Does the Pathway Require?
 
-### 21.2 What Does the Pathway Produce?
+### 22.2 What Does the Pathway Produce?
 
-### 21.3 What System Contribution Results?
+### 22.3 What System Contribution Results?
 
-### 21.4 What Can Fail?
+### 22.4 What Can Fail?
 
-### 21.5 What Risks Propagate?
+### 22.5 What Risks Propagate?
 
-### 21.6 What Resolution or Remedy Is Available?
+### 22.6 What Resolution or Remedy Is Available?
 
-## 22. Implementation Requirements
+## 23. Implementation Requirements
 
-### 22.1 Required Data Models
+### 23.1 Required Data Models
 
 ```
 IdentityToken
@@ -2983,7 +2991,7 @@ PathwayAssessment
 TransitionPathway
 ```
 
-### 22.2 Required Evaluators, Assemblers and Services
+### 23.2 Required Evaluators, Assemblers and Services
 
 ```
 ProductAdapter
@@ -3005,23 +3013,23 @@ BindingHandler
 TransitionPathwayValidator
 ```
 
-### 22.3 Immutability and State-Integrity Requirements
+### 23.3 Immutability and State-Integrity Requirements
 
-### 22.4 Identity and Attribution Requirements
+### 23.4 Identity and Attribution Requirements
 
-### 22.5 Error and Missing-Result Requirements
+### 23.5 Error and Missing-Result Requirements
 
-### 22.6 Minimum Test Cases
+### 23.6 Minimum Test Cases
 
-## 23. Relationship to the ClimateSOS Runtime Architecture
+## 24. Relationship to the ClimateSOS Runtime Architecture
 
-### 23.1 Shared Product Pathway Evaluation Flow
+### 24.1 Shared Product Pathway Evaluation Flow
 
-### 23.2 Global Boot Context
+### 24.2 Global Boot Context
 
-### 23.3 User-Submitted Context
+### 24.3 User-Submitted Context
 
-### 23.4 Component Ownership Summary
+### 24.4 Component Ownership Summary
 
-## 24. Summary
+## 25. Summary
 
