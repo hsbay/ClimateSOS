@@ -2838,33 +2838,294 @@ the authoritative global pathway for the duration of the evaluation.
 
 ## 14. Net Overall System Risk Evaluation
 
-The `NetOverallSystemRiskEvaluator` evaluates how a candidate or prospective candidate `TransitionPathway` changes the overall risk profile of the accelerated net-zero transition.
+After candidate transition construction, the `NetOverallSystemRiskEvaluator`
+evaluates how the candidate or prospective candidate `TransitionPathway` changes
+the risk profile of the accelerated net-zero transition.
 
-It applies the transition-risk, bottleneck, timeline, pitfall, and failure-mode logic used to develop Appendices A–C of the *2030s Net Zero Playbook*. Its purpose is to document how the candidate affects:
+The evaluator compares the candidate transition state with the authoritative
+`TransitionPathway` used as its reference state. It evaluates whether the
+candidate introduces, increases, reduces, transfers, resolves, or leaves
+unresolved systemic risks that may materially affect the transition.
 
-* the Net Zero ASAP timeline;
-* critical transition bottlenecks;
-* synchronization and sequencing risks;
-* fossil fallback and persistence risks;
-* infrastructure, finance, workforce, adequacy, and delivery constraints;
-* potential pitfalls and failure modes; and
-* risks that are introduced, increased, reduced, transferred, or left unresolved.
+Risk evaluation includes analysis of transition timing, synchronization,
+bottlenecks, failure modes, fossil persistence and fallback, infrastructure
+and delivery constraints, and other conditions that may affect whether the
+combined transition can reach operational net zero within the required
+transition window.
 
-The evaluator may perform Charter-style checks where those checks are necessary to identify or characterize a system risk. These checks are independent risk-analysis operations. They do not replace, revise, override, or supersede the `InitialCharterResult`, `IntegratedCharterResult`, or `FinalCharterResult`.
+The evaluator applies transition-risk logic developed through Appendices A–C
+of the *2030s Net Zero Playbook*, together with the candidate transition
+state, relevant system context, and available evidence.
 
-The Foundational Charter remains the authoritative source of Charter validity. Where a risk finding and a Charter finding address overlapping subject matter, both results must be preserved and their distinct purposes must remain explicit.
-
-The evaluator produces documentation in the form of one immutable `NetOverallSystemRiskResult`.
+The evaluator produces one new immutable `NetOverallSystemRiskResult`.
 
 ### 14.1 Evaluation Purpose and Boundary
+
+The `NetOverallSystemRiskEvaluator` evaluates risks, including systemic risks,
+created or changed by the candidate transition as a whole.
+
+Its primary input is the candidate or prospective candidate
+`TransitionPathway`. The evaluator also uses:
+
+* a reference to the authoritative `TransitionPathway` against which the
+  candidate was constructed;
+* relevant transition and system context;
+* contribution, scale, dependency, constraint, and unresolved-condition
+  findings referenced by the candidate;
+* evidence and provenance required to support the risk evaluation;
+* material assumptions and uncertainties; and
+* `user_id` and `pathway_id` attribution.
+
+The evaluator examines the candidate as an integrated transition state,
+including interactions among pathways, dependencies, and shared
+transition functions. A change that is beneficial or low-risk in
+isolation may create, shift, amplify, or reduce systemic risk elsewhere
+in the transition.
+
+Risk evaluation does not determine Charter validity, assign a bound state,
+validate a global `TransitionPathway`, or authorize commitment or deployment.
+
+A supported adverse or unresolved risk finding is a completed evaluation
+finding. It is distinct from evaluator-integrity failure.
+
 ### 14.2 Candidate-to-Reference Risk Comparison
+
+Net overall system risk is evaluated relative to the authoritative
+`TransitionPathway`.
+
+The evaluator compares the candidate transition state with the reference state
+to identify material changes in transition risk. The comparison preserves the
+distinction between:
+
+* risks already present in the authoritative transition;
+* risks introduced by the candidate;
+* existing risks increased by the candidate;
+* existing risks reduced or resolved by the candidate;
+* risks transferred between transition functions, locations, actors, resources,
+  or time periods;
+* risks whose character or consequences change because of the candidate;
+* risks that remain materially unchanged; and
+* risks that cannot be resolved from the available evidence.
+
+The evaluator preserves the transition relationships through which a given
+risk arises or propagates.
+
+A reduction in one risk does not offset a materially comparable or greater
+risk created or transferred elsewhere in the transition. Any such transferred
+or newly created risk remains explicit in the result.
+
 ### 14.3 Appendix A–C Risk Logic
+
+The risk evaluation incorporates the transition-risk, bottleneck, timeline,
+and pitfall logic used by ClimateSOS, together with the additional failure-mode
+logic developed through Appendices A–C of the *2030s Net Zero Playbook*.
+
+This logic is applied to the candidate transition state rather than treating
+the Appendices as a fixed checklist of pathway labels.
+
+The evaluator examines whether the candidate changes conditions associated
+with:
+
+* delivery of required clean-energy, infrastructure, industrial, workforce,
+  finance, and other transition functions;
+* synchronization between dependent transition activities;
+* fossil retirement, displacement, persistence, and fallback;
+* reliability and adequacy replacement;
+* infrastructure, interconnection, transmission, storage, transport, and other
+  delivery requirements;
+* finance, bankability, public support, and capital availability;
+* workforce and execution capacity;
+* supply-chain and material availability;
+* permitting, authorization, and institutional execution;
+* timing and sequencing of dependent activities;
+* transition bottlenecks and shared constraints;
+* systemic risks arising from interactions among transition functions,
+  dependencies, constraints, and pathway effects;
+* propagation, amplification, or cascading of risk across the transition;
+* biosphere and climate-system risks affected by the transition, including
+  feedbacks, threshold behavior, and tipping-point risks;
+* compound or interacting biosphere and transition risks;
+* implementation pitfalls and failure modes; and
+* other represented conditions that may materially alter transition success,
+  failure, or systemic risk.
+
+The evaluator preserves new risk conditions revealed by the candidate even
+where they are not represented by an existing Appendix category.
+
 ### 14.4 Net-Zero Timeline Effects
+
+Net-zero transition risk, abbreviated in this section as transition
+risk, includes whether the candidate changes the ability of the
+combined transition to complete required functions within the
+accelerated operational net-zero window.
+
+The evaluator determines whether candidate changes:
+
+* advance or delay required transition activity;
+* change the sequence in which dependent functions must occur;
+* create or remove timing dependencies;
+* increase or reduce schedule margin for critical transition functions;
+* cause a required function to become unavailable when needed;
+* extend fossil operation or fallback beyond its required retirement window;
+* accelerate or delay infrastructure, workforce, finance, supply-chain, or
+  other enabling capacity;
+* change the duration of a material transition bottleneck; or
+* otherwise change the probability that required transition functions can be
+  completed in time.
+
+A timing effect remains associated with the transition function, dependency,
+constraint, or risk that produces it.
+
+The evaluator does not treat eventual technical feasibility as equivalent to
+availability within the required transition window.
+
 ### 14.5 Bottlenecks, Pitfalls, and Failure Modes
-### 14.6 New, Increased, Reduced, Transferred, and Unresolved Risks
+
+The evaluator identifies candidate changes that create, worsen, relieve,
+remove, shift, or expose transition bottlenecks, pitfalls, and failure modes.
+
+A bottleneck emerges where one or more constraints materially govern the rate,
+throughput, timing, geographic reach, or achievable scale of a required
+transition function.
+
+A pitfall or failure mode arises where the candidate creates conditions
+under which an otherwise supported transition pathway can fail to produce its
+required system effect.
+
+The evaluator examines the candidate transition state for conditions that
+create, worsen, relieve, remove, shift, or expose transition bottlenecks,
+pitfalls, failure modes, and other emergent system risks. It evaluates how
+those conditions affect required transition functions, biosphere and
+climate-system stability, and whether their effects propagate through
+dependencies, shared constraints, feedbacks, or threshold behavior.
+
+Relevant findings may include:
+
+* creation or removal of shared transition bottlenecks;
+* concentration of dependency on scarce infrastructure, materials, finance,
+  workforce, suppliers, institutions, or other resources;
+* loss of redundancy or creation of single points of transition failure;
+* sequencing failures between dependent transition functions;
+* insufficient replacement of reliability, adequacy, or other required system
+  functions;
+* fossil fallback or persistence created by incomplete replacement or closure;
+* delay or failure propagated through dependent pathways;
+* scale-dependent constraints or effects that become material in the combined
+  transition state;
+* interactions between individually viable pathways that create an aggregate
+  constraint or failure mode;
+* emergence or intensification of climate or biosphere tipping-point risks;
+* threshold behavior in which incremental transition changes produce nonlinear
+  system effects;
+* reinforcing feedbacks that amplify climate, ecological, or transition risk;
+* compound interactions between transition failures and biosphere degradation;
+* cascading effects in which one material failure or threshold crossing alters
+  multiple transition or biosphere functions; or
+* other conditions capable of materially preventing or delaying a required
+  transition function.
+
+### 14.6 Risk State Classification
+
+Risk classification preserves scope, timing, affected transition functions,
+dependencies, and material conditions.
+
+A risk may be:
+
+* **new** when the candidate introduces a material risk not present in the
+  authoritative reference state;
+* **increased** when the candidate materially worsens the likelihood,
+  consequence, scope, duration, or propagation of an existing risk;
+* **reduced** when the candidate materially lowers an existing risk;
+* **resolved** when the candidate removes the material condition producing an
+  existing risk;
+* **transferred** when the candidate reduces or removes risk in one part of the
+  transition while creating or increasing related risk elsewhere; or
+* **unresolved** when available evidence or transition relationships do not
+  support a stronger risk determination.
+
+A transferred risk remains explicit even where the candidate produces a net
+benefit elsewhere in the transition.
+
+An unresolved risk is not an evaluator-integrity failure.
+
 ### 14.7 Charter-Style Risk Checks
+
+The `NetOverallSystemRiskEvaluator` may perform Charter-style checks where a
+Charter safeguard or guardrail provides information necessary to identify or
+characterize a transition risk.
+
+These checks are risk-analysis operations performed within the system-risk
+evaluation. They may identify risks involving rights, accountability,
+scientific integrity, biosphere integrity, planetary boundaries, equitable
+durability, or other Charter-governed conditions where those conditions
+affect the transition risk being evaluated.
+
+The Foundational Charter remains the authoritative source of Charter validity.
+Charter-style risk checks performed by the `NetOverallSystemRiskEvaluator`
+provide risk findings only.
+
+A Charter-style risk check does not constitute a Charter evaluation and does
+not produce or modify a Charter result.
+
+The checks do not replace, revise, override, or supersede the
+`InitialCharterResult` or `IntegratedCharterResult`, and they do not substitute
+for the subsequent Final Charter Evaluation.
+
+Where a risk finding and a Charter finding address overlapping subject matter,
+both remain preserved with their separate evaluator ownership and purpose.
+
 ### 14.8 Relationship to the Final Charter Result
+
+`NetOverallSystemRiskResult` precedes Final Charter Evaluation and is preserved
+through `FinalPathwayAssembly` as part of the completed pathway evaluation state.
+
+Risk findings do not determine Charter validity. Where a system-risk finding
+and a Final Charter finding concern overlapping conditions, both findings remain
+preserved with their distinct evaluator ownership, purpose, evidence, and
+provenance.
+
+The subsequent `FinalCharterResult` does not revise or replace the
+`NetOverallSystemRiskResult`.
+
 ### 14.9 NetOverallSystemRiskResult
+
+All completed system risk findings are recorded in one immutable
+`NetOverallSystemRiskResult`. The result preserves the causes, affected
+transition functions, propagation relationships, and supporting evidence
+associated with each material finding, either directly or by reference.
+
+The result contains or references, as applicable:
+
+* the candidate or prospective candidate `TransitionPathway` evaluated for
+  risk;
+* a reference to the authoritative `TransitionPathway` used for comparison;
+* the evaluated risk findings;
+* the transition functions and relationships to which those findings apply;
+* new, increased, reduced, resolved, transferred, and unresolved risks;
+* timeline and sequencing effects;
+* identified bottlenecks, pitfalls, and failure modes;
+* fossil fallback and persistence risks;
+* infrastructure, finance, workforce, adequacy, delivery, supply-chain, and
+  other material transition constraints;
+* risk propagation relationships;
+* Charter-style risk findings;
+* material assumptions and uncertainties;
+* supporting evidence and provenance references;
+* evaluator and rule-set versions; and
+* `user_id` and `pathway_id` attribution.
+
+The result preserves the distinction between an adverse risk finding, an
+unresolved risk finding, and evaluator-integrity failure.
+
+Where the evaluator completes successfully, adverse and unresolved risks remain
+part of the completed result and proceed to `FinalPathwayAssembly`.
+
+If the evaluator cannot produce a structurally valid
+`NetOverallSystemRiskResult`, the current evaluation does not proceed.
+
+`NetOverallSystemRiskResult` does not perform final pathway assembly, determine
+Charter validity, assign a bound state, validate the global transition, or
+authorize commitment or deployment.
 
 ## 15. Final Pathway Assembly
 
