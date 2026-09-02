@@ -3303,11 +3303,225 @@ A completed `FinalPathwayResult` proceeds unchanged to
 
 ## 16. Final Charter Evaluation
 
+After `FinalPathwayAssembly` completes, the `CharterEvaluator` performs the
+Final Charter Evaluation using the completed immutable `FinalPathwayResult`.
+
+The Final Charter Evaluation is the third Charter evaluation in the Product
+Pathway Evaluation Flow. The Initial Charter Evaluation evaluates the pathway
+before pathway assembly and downstream evaluation. The Integrated Charter
+Evaluation reevaluates the pathway after `PathwayEvaluationEngine` has produced
+the completed `PathwayEngineResult`. The Final Charter Evaluation occurs after
+net overall system contribution, scale evaluation, candidate transition
+construction, net overall system risk evaluation, and final pathway assembly
+have completed.
+
+Each Charter evaluation evaluates the pathway using the information available at
+that stage. The purpose of repeating Charter evaluation across the lifecycle is
+to detect Charter-relevant conditions that become visible only after additional
+pathway relationships, system effects, dependencies, scale effects, risks, or
+other material state have been evaluated.
+
+The Final Charter Evaluation therefore evaluates the pathway and assembled
+candidate transition state against the ClimateSOS Foundational Charter using the
+most complete evaluation state available before binding. This state includes
+the completed system-risk evaluation and the upstream evaluation artifacts
+preserved by the `evaluation_trace`.
+
+As all Charter checks are required, the `CharterEvaluator` reruns every Charter
+check using the information available at the Final Charter stage. Each check
+executes independently. Findings from the Initial or Integrated Charter
+Evaluations do not short-circuit, satisfy, or remove a Final Charter check.
+
+The `CharterEvaluator` produces one immutable `FinalCharterResult`.
+
+A completed Final Charter Evaluation records Charter validity using the most
+complete evaluated pathway and transition state available before bound-state
+determination and binding.
+
 ### 16.1 Final Evaluation Inputs
+
+The `CharterEvaluator` receives the completed immutable `FinalPathwayResult`
+and the Charter resources required to perform the Final Charter Evaluation.
+
+The `FinalPathwayResult` provides direct access to:
+
+* the `ProductPathway` under evaluation;
+* the authoritative `TransitionPathway` used as the evaluation reference;
+* the candidate or prospective candidate `TransitionPathway`;
+* the completed `NetOverallSystemRiskResult`;
+* the `evaluation_trace`; and
+* `user_id` and `pathway_id` attribution.
+
+Through the `evaluation_trace`, the evaluator also has access to:
+
+* the `InitialCharterResult`;
+* the `PathwayEngineResult`;
+* the `IntegratedCharterResult`;
+* the `NetOverallSystemContribution`; and
+* the `ScaleDiagnosticResult`.
+
+The Final Charter Evaluation also receives:
+
+* the ClimateSOS Foundational Charter distributed with the ClimateSOS runtime;
+* the complete set of Charter checks;
+* the evaluator version and Charter rule-set version; and
+* any runtime configuration required to perform the Final Charter Evaluation.
+
+The evaluator shall validate the identity, attribution, required provenance
+references, and relationships of the `FinalPathwayResult` and referenced
+evaluation artifacts before using them in Charter evaluation. This validation
+establishes structural consistency and traceability; it does not independently
+establish the truth of the referenced provenance.
+
+The `CharterEvaluator` runs every Charter check against the completed
+`FinalPathwayResult` and the evaluation state available through its primary
+references and `evaluation_trace`.
+
+It does not add missing pathway facts, convert unresolved conditions into
+established facts, or treat unsupported possible effects as established
+conditions.
+
 ### 16.2 Final Charter Result
+
+The `CharterEvaluator` produces one immutable `FinalCharterResult`.
+
+The `FinalCharterResult` records the complete outcome of the Final Charter
+Evaluation using the pathway, candidate transition, contribution, scale, system
+risk, and other evaluation state available after `FinalPathwayAssembly`.
+
+The `FinalCharterResult` contains or references, as applicable:
+
+* the evaluated `FinalPathwayResult`;
+* the associated `InitialCharterResult`;
+* the associated `IntegratedCharterResult`;
+* the result of every Charter check;
+* findings, evidence references, and supporting provenance associated with each
+  check;
+* pathway, transition, contribution, scale, or system-risk findings supporting
+  each check;
+* unresolved or not-applicable conditions returned by completed checks, where
+  permitted by the applicable Charter rule;
+* any execution error associated with an individual check or with the Final
+  Charter Evaluation;
+* the evaluator version;
+* the Charter rule-set version; and
+* the resulting Final Charter status.
+
+Every Charter check produces one explicit Final-stage result that remains
+individually identifiable within `FinalCharterResult` and contributes to the
+resulting Final Charter status according to the applicable Charter rule.
+
+If a Charter check does not execute, does not complete, times out, does not
+produce a valid result, or produces a result that is absent, null, malformed,
+overwritten, or otherwise unavailable, the check is `MISSING`.
+
+A `MISSING` check is an evaluator-integrity failure. The `FinalCharterResult`
+is recorded as `ERROR`, and the current pathway evaluation does not proceed to
+ordinary bound-state determination or binding until the execution error is
+resolved.
+
+`UNRESOLVED` and `NOT_APPLICABLE` remain distinct from `MISSING`. A successfully
+executed check may return either state where permitted by the applicable Charter
+rule.
+
+A completed `FinalCharterResult` is immutable. Later stages reference it but do
+not revise or replace it.
+
 ### 16.3 Relationship to Earlier Charter Results
+
+The `InitialCharterResult`, `IntegratedCharterResult`, and `FinalCharterResult`
+are separate immutable records produced by the `CharterEvaluator` at different
+points in the Product Pathway Evaluation Flow.
+
+The Initial Charter Evaluation evaluates the pathway before ProductAssembly and
+pathway evaluation.
+
+The Integrated Charter Evaluation evaluates the pathway after
+`PathwayEvaluationEngine` has produced the completed `PathwayEngineResult`.
+
+The Final Charter Evaluation evaluates the completed `FinalPathwayResult` after
+contribution, scale, candidate construction, system-risk evaluation, and final
+pathway assembly have completed.
+
+The `CharterEvaluator` reruns every Charter check during the Final Charter
+Evaluation. It does not update an earlier Charter result, reuse an earlier
+individual check result as the current result, or treat successful completion
+of an earlier Charter Evaluation as satisfaction of a Final Charter check.
+
+A Charter finding may remain unchanged across evaluations or may change when
+additional pathway state, transition relationships, scale effects, systemic
+risks, biosphere or climate-system effects, evidence, or other material
+information becomes available.
+
+Where a Final Charter finding differs from an earlier Charter finding, the
+`FinalCharterResult` preserves the material findings, evidence, and evaluation
+state supporting the changed determination.
+
+All three Charter results remain part of the immutable evaluation lineage.
+
 ### 16.4 Charter Authority and Non-Supersession
-### 16.5 Conditions Preventing Ordinary Binding
+
+The ClimateSOS Foundational Charter is the authoritative source of Charter
+validity throughout Product Pathway Evaluation.
+
+No pathway evaluator, system-risk evaluator, assembler, compiler, binding
+component, or other downstream component may replace, revise, weaken, or
+supersede a Charter determination.
+
+The `FinalCharterResult` is the current Charter evaluation for the assembled
+pathway state at the Final Charter stage. It does not erase or modify the
+`InitialCharterResult` or `IntegratedCharterResult`.
+
+Likewise, the Final Charter Evaluation does not revise or replace findings owned
+by other evaluators. Where a Charter finding overlaps with a contribution,
+scale, system-risk, documentation, or other evaluation finding, each finding
+remains preserved with its separate ownership, purpose, evidence, and
+provenance.
+
+A later stage may use the `FinalCharterResult` to determine whether ordinary
+progression is permitted, but it does not reinterpret Charter validity.
+
+### 16.5 Conditions Governing Further Progression
+
+Final Charter Evaluation completes when every Charter check has executed and
+the `CharterEvaluator` has produced a valid immutable `FinalCharterResult`.
+
+A completed Final Charter Evaluation may contain adverse, failed, unresolved,
+not-applicable, or other valid Charter findings. These findings remain part of
+the completed result and are distinct from evaluator-integrity failure.
+
+The `FinalCharterResult` shall preserve every Charter condition that constrains
+or prevents further runtime progression.
+
+A Charter condition must be positively established where the applicable Charter
+rule requires positive validity. Absence of an identified violation, absence of
+a STOP condition, or incomplete evidence does not by itself establish permission
+to proceed.
+
+An evaluator-integrity failure, including any `MISSING` Charter check, prevents
+further runtime progression. The failure and all available evaluation state,
+evidence, provenance, and attribution are preserved.
+
+A completed Final Charter finding may also prohibit further runtime progression
+where the applicable Charter safeguard or guardrail requires that outcome. In
+that case, the `FinalCharterResult` records the substantive Charter
+determination and its supporting evidence, provenance, and conditions, and the
+current pathway does not proceed to bound-state determination, binding,
+transition validation, commitment, deployment, or another ordinary downstream
+runtime stage.
+
+A substantive Charter prohibition remains distinct from evaluator-integrity
+failure. The former is a completed Charter determination; the latter means the
+required Charter evaluation could not be validly completed.
+
+Where the completed `FinalCharterResult` permits further controlled progression,
+the result proceeds with the existing `FinalPathwayResult` to bound-state
+determination.
+
+The `CharterEvaluator` determines Charter validity and records the conditions
+governing progression. It does not determine the applicable bound state and does
+not perform binding or enforcement. Those responsibilities belong to subsequent
+runtime components.
 
 ## 17. Binding and Bound States
 
