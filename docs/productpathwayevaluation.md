@@ -3827,61 +3827,59 @@ ownership, evidence, provenance, and purpose.
 Binding records the binding state determined by the runtime. It does not create
 a new substantive determination.
 
-## 18. Global Context Outcome
+## 18. PathwayAssessment and State Preservation
 
-### 18.1 TransitionPathwayValidator
+### 18.1 PathwayAssessment
 
-### 18.2 Validation Requirements
+### 18.3 Evidence and Explanation Trace
 
-### 18.3 Atomic Immutable Commitment
+### 18.4 Prior-State Preservation
 
-### 18.4 Validation Failure
+### 18.5 Re-Evaluation and Successor Results
 
-### 18.5 Preservation of the Existing Reference Pathway
+### 18.6 No Writeback into ProductPathway
 
-### 18.6 Use at the Next Startup
+## 19. Resolution and Remedy
 
-## 19. User-Submitted Context Outcome
+### 19.1 Resolution Outcomes
 
-### 19.1 Immutable Global Reference Pathway
+### 19.2 Remedy Eligibility
 
-### 19.2 Separate Evaluation of Multiple Submissions
+### 19.3 Remedy Processing
 
-### 19.3 Result Construction
+### 19.4 Re-Evaluation After Remedy
 
-### 19.4 No Mutation of the Global TransitionPathway
+### 19.5 Non-Remediable Outcomes
 
-### 19.5 Combined Pathways as Separate Intakes
-
-## 20. PathwayAssessment and State Preservation
-
-### 20.1 PathwayAssessment
-
-### 20.2 Required Result Contents
-
-### 20.3 Evidence and Explanation Trace
-
-### 20.4 Prior-State Preservation
-
-### 20.5 Re-Evaluation and Successor Results
-
-### 20.6 No Writeback into ProductPathway
-
-## 21. Resolution and Remedy
-
-### 21.1 Resolution Outcomes
-
-### 21.2 Remedy Eligibility
-
-### 21.3 Remedy Processing
-
-### 21.4 Re-Evaluation After Remedy
-
-### 21.5 Non-Remediable Outcomes
-
-### 21.6 Preservation of Failed and Unresolved Results
+### 19.6 Preservation of Failed and Unresolved Results
 
 This preserves the useful archive material on remedy and state history without treating every failure as remedy-eligible or writing those states back into the pathway.
+
+## 20. Global Context Outcome
+
+### 20.1 TransitionPathwayValidator
+
+### 20.2 Validation Requirements
+
+### 20.3 Atomic Immutable Commitment
+
+### 20.4 Validation Failure
+
+### 20.5 Preservation of the Existing Reference Pathway
+
+### 20.6 Use at the Next Startup
+
+## 21. User-Submitted Context Outcome
+
+### 21.1 Immutable Global Reference Pathway
+
+### 21.2 Separate Evaluation of Multiple Submissions
+
+### 21.3 Result Construction
+
+### 21.4 No Mutation of the Global TransitionPathway
+
+### 21.5 Combined Pathways as Separate Intakes
 
 ## 22. Evaluation Questions
 
