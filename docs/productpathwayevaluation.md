@@ -169,8 +169,11 @@ The principal stages are:
 * comparison of the pathway with the global `TransitionPathway`;
 * pathway, documentation, contribution, scale, and system-risk evaluation;
 * final Charter evaluation;
-* binding into an applicable `[Foo]Bound` state; and
-* validation and commitment of the global `TransitionPathway`, or result construction for a user-submitted pathway.
+* system-side determination of the applicable `[Foo]Bound` state;
+* binding of the completed `FinalPathwayResult` and applicable bound state
+  into an immutable `BoundPathway`; and
+* construction of the final `PathwayAssessment` before the global-context or
+  user-submitted-context outcome flow.
 
 Models hold state and results. Adapters, assemblers, comparators, evaluators, validators, and handlers perform work.
 
@@ -180,7 +183,13 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
-This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results, pathway assessments, system-contribution and scale results, candidate or validated `TransitionPathway` snapshots, risk results, bound-state records, and `PathwayAssessment`.
+This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`,
+`ProductPathway`, `ProductQueueBundle`, `ProductFabric`,
+`QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`,
+`FabricEvaluatorResult`, Charter results, system-contribution and scale
+results, candidate or validated `TransitionPathway` snapshots, risk results,
+`FinalPathwayResult`, bound-state records, `BoundPathway`, and
+`PathwayAssessment`.
 
 Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
 
@@ -210,7 +219,9 @@ After pathway evaluation, contribution analysis, scale diagnosis, global-system-
 
 In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `PathwayAssessment`.
 
-After global-system-risk evaluation, final Charter evaluation, and binding, each user-submitted pathway proceeds to construction of a `PathwayAssessment`.
+After global-system-risk evaluation, Final Charter Evaluation, and binding,
+each user-submitted pathway produces an immutable `BoundPathway`, which then
+proceeds to construction of a `PathwayAssessment`.
 
 Completion of intake, adaptation, assembly, or an intermediate evaluation does not by itself establish pathway validity.
 
@@ -377,10 +388,13 @@ System bound-state determination                          │
     ▼                                                     │
 Applicable [foo]Bound ────────────────────────────────────┤
                                                           ▼
-                                                  BindingHandler
+                                                    BindingHandler
                                                           │
                                                           ▼
-                                                 PathwayAssessment
+                                                     BoundPathway
+                                                          │
+                                                          ▼
+                                                   PathwayAssessment
                                                           │
                               ┌───────────────────────────┴───────────────────────────┐
                               │                                                       │
@@ -500,6 +514,9 @@ Applicable ExampleBound State
 BindingHandler
     │
     ▼
+BoundPathway
+    │
+    ▼
 PathwayAssessment
     │
     ▼
@@ -594,10 +611,13 @@ System bound-state determination A               System bound-state determinatio
 Applicable ExampleBound State A                     Applicable ExampleBound State B
     │                                                             │
     ▼                                                             ▼
-BindingHandler                                           BindingHandler
+BindingHandler                                              BindingHandler
     │                                                             │
     ▼                                                             ▼
-PathwayAssessment A                                    PathwayAssessment B
+BoundPathway                                                 BoundPathway 
+    │                                                             │
+    ▼                                                             ▼
+PathwayAssessment A                                       PathwayAssessment B
 
 ===============================================================================
 
@@ -3543,9 +3563,12 @@ terminate runtime progression under Section 16.5 do not progress to ordinary
 binding flow.
 
 Once the applicable bound state has been determined, `BindingHandler` combines
-that state with the existing immutable `FinalPathwayResult` and
-`FinalCharterResult` to construct the bound pathway-evaluation state used by
-later runtime stages.
+that state with the existing immutable `FinalPathwayResult` to produce a new
+immutable `BoundPathway`.
+
+`BindingHandler` does not modify the `FinalPathwayResult`. The `BoundPathway`
+preserves a reference to that completed evaluation result and records the
+applicable bound state as the subsequent runtime state of that evaluation.
 
 ### 17.1 BindingHandler
 
@@ -3569,37 +3592,62 @@ or system-side functions. Where the required runtime result is not returned as
 a usable result, `BindingHandler` records that failure by binding `NoAck` rather
 than inferring another substantive state.
 
-Binding produces an immutable result used to construct the later
-`PathwayAssessment`.
+Binding produces one immutable `BoundPathway`.
+
+The `BoundPathway` contains or references the immutable
+`FinalPathwayResult` and its applicable bound state. It does not replace,
+modify, or reinterpret the `FinalPathwayResult`.
+
+The completed `BoundPathway` is consumed by the later
+`PathwayAssessment` stage.
 
 ### 17.2 Binding Inputs
 
 `BindingHandler` receives, as applicable:
 
 * the completed immutable `FinalPathwayResult`;
-* the completed immutable `FinalCharterResult`;
 * the applicable bound state returned from runtime evaluation;
 * the identity and version of the rule or mechanism that determined the bound
   state; and
 * `user_id` and `pathway_id` attribution.
 
 Where the expected runtime result is not returned as a usable result,
-`BindingHandler` binds `NoAck` as defined in Section 17.3.1.
+`BindingHandler` binds `NoAck` as defined in Section 17.4.1.
 
-Binding makes no changes to a completed immutable `FinalPathwayResult` or
-`FinalCharterResult`. The `FinalPathwayResult` remains the authoritative
-completed pathway-evaluation artifact. The `FinalCharterResult` remains the
-authoritative Final Charter evaluation for that pathway state.
+Binding makes no changes to the completed immutable `FinalPathwayResult`.
+The `FinalPathwayResult` remains the authoritative completed pathway-evaluation
+artifact.
 
-`BindingHandler` shall validate that the `FinalPathwayResult`,
-`FinalCharterResult`, and applicable bound state refer to the same pathway,
-evaluation lineage, and relevant evaluation state before constructing the bound
-result.
+`BindingHandler` creates a new immutable `BoundPathway` that references the
+`FinalPathwayResult` and records the applicable bound state.
+
+`BindingHandler` shall validate that the `FinalPathwayResult`, applicable bound
+state, and any required evaluation-lineage references identify the same
+pathway and evaluation state before constructing the `BoundPathway`.
 
 A missing, malformed, stale, mismatched, or otherwise invalid binding input does
 not create permission to proceed.
 
-### 17.3 Applicable Bound States
+### 17.3 Binding Outputs
+
+`BoundPathway` is the immutable output of `BindingHandler`.
+
+It associates one completed immutable `FinalPathwayResult` with one applicable
+bound state for the same pathway-evaluation instance.
+
+At minimum, `BoundPathway` preserves:
+
+* a reference to the completed `FinalPathwayResult`;
+* the applicable bound state;
+* `user_id` and `pathway_id` attribution; and
+* the binding-rule or mechanism identity and version required to identify how
+  the state was attached.
+
+`BoundPathway` does not copy or modify the findings contained in the
+`FinalPathwayResult`. Binding adds the runtime state association while leaving
+the completed evaluation artifact unchanged.
+
+### 17.4 Applicable Bound States
 
 Every pathway entering ordinary binding receives one explicit bound state.
 
@@ -3657,7 +3705,7 @@ Charter status, authorization, or another material condition requires
 re-evaluation, the completed re-evaluation produces a new applicable bound
 state rather than modifying the existing state.
 
-#### 17.3.1 Bound-State Definitions
+#### 17.4.1 Bound-State Definitions
 
 ClimateSOS defines the following bound states.
 
@@ -3781,7 +3829,7 @@ The detailed runtime semantics of `RestorationBound`, including restoration
 thresholds, ecological recovery conditions, and required evidence, remain
 subject to further Biosphere Fabric implementation.
 
-#### 17.3.2 Reserved Bound States
+#### 17.4.2 Reserved Bound States
 
 The following names are reserved for future use and are not yet part of the
 ordinary binding contract:
@@ -3808,7 +3856,7 @@ The reserved states exist to preserve architectural space already identified in
 earlier ClimateSOS design work without prematurely fixing runtime behavior that
 has not yet been implemented.
 
-### 17.4 Binding Does Not Re-Evaluate the Pathway
+### 17.5 Binding Does Not Re-Evaluate the Pathway
 
 `BindingHandler` does not rerun pathway evaluation, Charter evaluation, net
 overall system contribution evaluation, scale diagnostics, candidate transition
@@ -3824,8 +3872,8 @@ Where multiple upstream findings contribute to the same bound condition, those
 findings remain separately identifiable with their original evaluator
 ownership, evidence, provenance, and purpose.
 
-Binding records the binding state determined by the runtime. It does not create
-a new substantive determination.
+Binding records the state determined by the runtime in a new immutable
+`BoundPathway`. It does not create a new substantive determination.
 
 ## 18. PathwayAssessment and State Preservation
 
@@ -3920,6 +3968,7 @@ FinalPathwayResult
 FinalCharterResult
 NetOverallSystemRiskResult
 NetOverallSystemContribution
+BoundPathway
 PathwayAssessment
 TransitionPathway
 ```
