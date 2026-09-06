@@ -3602,9 +3602,9 @@ evaluation lineage represented by the `FinalPathwayResult` and
 The handler does not decide whether a Charter condition is valid, whether a
 pathway finding is correct, or whether a substantive bound state would be more
 appropriate. Those determinations are made by prior product-pathway evaluation
-or system-side functions. Where the required runtime result is not returned as
-a usable result, `BindingHandler` records that failure by binding `NoAck` rather
-than inferring another substantive state.
+or system-side functions. Where the runtime does not return a usable result,
+`BindingHandler` produces a `BoundPathway` containing `NoAck`. That
+`BoundPathway` terminates the current evaluation flow before `PathwayAssessment`.
 
 Binding produces one immutable `BoundPathway`.
 
@@ -3612,7 +3612,7 @@ The `BoundPathway` contains or references the immutable
 `FinalPathwayResult` and its applicable bound state. It does not replace,
 modify, or reinterpret the `FinalPathwayResult`.
 
-The completed `BoundPathway` is consumed by the later
+A successfully bound `BoundPathway` is consumed by the later
 `PathwayAssessment` stage.
 
 ### 17.2 Binding Inputs
@@ -3625,8 +3625,8 @@ The completed `BoundPathway` is consumed by the later
   state; and
 * `user_id` and `pathway_id` attribution.
 
-Where the expected runtime result is not returned as a usable result,
-`BindingHandler` binds `NoAck` as defined in Section 17.4.1.
+Where the runtime does not return a usable result, `BindingHandler` produces a
+`BoundPathway` containing `NoAck` as defined in Section 17.4.1.
 
 Binding makes no changes to the completed immutable `FinalPathwayResult`.
 The `FinalPathwayResult` remains the authoritative completed pathway-evaluation
@@ -3646,8 +3646,8 @@ not create permission to proceed.
 
 `BoundPathway` is the immutable output of `BindingHandler`.
 
-It associates one completed immutable `FinalPathwayResult` with one applicable
-bound state for the same pathway-evaluation instance.
+`BoundPathway` contains the association of one completed immutable
+`FinalPathwayResult` with one applicable bound state for the evaluated instance.
 
 At minimum, `BoundPathway` preserves:
 
@@ -3660,6 +3660,11 @@ At minimum, `BoundPathway` preserves:
 `BoundPathway` does not copy or modify the findings contained in the
 `FinalPathwayResult`. Binding adds the runtime state association while leaving
 the completed evaluation artifact unchanged.
+
+Where the runtime does not return a usable result, `BindingHandler` produces a
+`BoundPathway` containing `NoAck`. The resulting `BoundPathway` is invalid for
+downstream progression and terminates the current evaluation flow before
+`PathwayAssessment`.
 
 ### 17.4 Applicable Bound States
 
@@ -3756,14 +3761,14 @@ remedy, resolution, review, redesign, or re-evaluation flow.
 
 **`NoAck`**
 
-`NoAck` indicates that the expected runtime evaluation result was not returned
-as a usable result and does not permit ordinary downstream progression.
+`NoAck` indicates that the runtime did not return a usable result for binding.
 
-This may occur when the runtime times out, terminates unexpectedly, loses the
-evaluation result, or encounters another failure that prevents the result from
-reaching binding. When this condition is detected, `BindingHandler` binds the
-pathway `NoAck`. It does not infer what substantive bound state the missing
-runtime result might otherwise have produced.
+This includes a result that is not returned within the applicable runtime
+period or a returned result that is malformed, invalid, or otherwise unusable.
+
+When this occurs, `BindingHandler` produces a `BoundPathway` containing
+`NoAck`. The resulting `BoundPathway` is invalid for downstream progression
+and terminates the current evaluation flow before `PathwayAssessment`.
 
 **`Unbound`**
 
@@ -3780,10 +3785,11 @@ successfully.
 
 ```text
 NoAck
-    evaluation did not successfully return a usable state determination
+    runtime did not return a usable result for binding
+    BoundPathway is invalid and evaluation stops
 
 Unbound
-    evaluation completed successfully
+    runtime completed successfully
     but no defensible bound state could be determined
 ```
 
@@ -3886,8 +3892,8 @@ Where multiple upstream findings contribute to the same bound condition, those
 findings remain separately identifiable with their original evaluator
 ownership, evidence, provenance, and purpose.
 
-Binding records the state determined by the runtime in a new immutable
-`BoundPathway`. It does not create a new substantive determination.
+Successful binding records the state determined by the runtime in a new
+immutable `BoundPathway`.
 
 ---
 
