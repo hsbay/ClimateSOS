@@ -3831,6 +3831,8 @@ a new substantive determination.
 
 ### 18.1 PathwayAssessment
 
+### 18.2 Required Assessment Contents
+
 ### 18.3 Evidence and Explanation Trace
 
 ### 18.4 Prior-State Preservation
