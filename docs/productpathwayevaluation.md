@@ -3525,15 +3525,307 @@ runtime components.
 
 ## 17. Binding and Bound States
 
+After Final Charter Evaluation completes and continued progression is permitted,
+a system-side function within the runtime determines the bound state of the
+completed pathway evaluation.
+
+The bound state is the final state determination of a completed `ProductPathway`
+evaluation. It records the pathway’s validity or type of failure based on the
+completed system-side progression, including its relationship to the
+`TransitionPathway` and ultimately to achieving accelerated operational net
+zero. The bound state preserves any restrictions, unresolved conditions,
+obligations, and other limits established by the evaluation without altering the
+findings that produced them.
+
+Bound-state determination operates only on completed evaluation state.
+Only evaluator-integrity failures and substantive Charter prohibitions that
+terminate runtime progression under Section 16.5 do not progress to ordinary
+binding flow.
+
+Once the applicable bound state has been determined, `BindingHandler` combines
+that state with the existing immutable `FinalPathwayResult` and
+`FinalCharterResult` to construct the bound pathway-evaluation state used by
+later runtime stages.
+
 ### 17.1 BindingHandler
+
+`BindingHandler` receives a completed pathway evaluation only after Final
+Charter Evaluation has permitted further progression and an applicable bound
+state has been determined.
+
+Its responsibility is to attach the applicable bound state to the completed
+pathway evaluation while preserving the identity, findings, evaluator ownership,
+evidence, provenance, restrictions, and other conditions already established
+upstream.
+
+`BindingHandler` shall verify that the bound state belongs to the same
+evaluation lineage represented by the `FinalPathwayResult` and
+`FinalCharterResult`.
+
+The handler does not decide whether a Charter condition is valid, whether a
+pathway finding is correct, or whether a substantive bound state would be more
+appropriate. Those determinations are made by prior product-pathway evaluation
+or system-side functions. Where the required runtime result is not returned as
+a usable result, `BindingHandler` records that failure by binding `NoAck` rather
+than inferring another substantive state.
+
+Binding produces an immutable result used to construct the later
+`PathwayAssessment`.
 
 ### 17.2 Binding Inputs
 
+`BindingHandler` receives, as applicable:
+
+* the completed immutable `FinalPathwayResult`;
+* the completed immutable `FinalCharterResult`;
+* the applicable bound state returned from runtime evaluation;
+* the identity and version of the rule or mechanism that determined the bound
+  state; and
+* `user_id` and `pathway_id` attribution.
+
+Where the expected runtime result is not returned as a usable result,
+`BindingHandler` bind `NoAck` as defined in Section 17.3.1.
+
+Binding makes no changes to a completed immutable `FinalPathwayResult` or
+`FinalCharterResult`. The `FinalPathwayResult` remains the authoritative
+completed pathway-evaluation artifact. The `FinalCharterResult` remains the
+authoritative Final Charter evaluation for that pathway state.
+
+`BindingHandler` shall validate that the `FinalPathwayResult`,
+`FinalCharterResult`, and applicable bound state refer to the same pathway,
+evaluation lineage, and relevant evaluation state before constructing the bound
+result.
+
+A missing, malformed, stale, mismatched, or otherwise invalid binding input does
+not create permission to proceed.
+
 ### 17.3 Applicable Bound States
+
+Every pathway entering ordinary binding receives one explicit bound state.
+
+A bound state is the final runtime state determination of the completed pathway
+evaluation after Final Charter Evaluation. It records the pathway's validity or
+type of failure in relation to the evaluated `ProductPathway`, its system-side
+progression, its relationship to the applicable `TransitionPathway`, and
+ultimately the accelerated net-zero transition.
+
+Where applicable, a bound state such as `FossilBound`, `HarmBound`, or
+`BoundaryStress` records restrictions, unresolved conditions, obligations, or
+other limits established by the completed evaluation.
+
+The bound-state model distinguishes among:
+
+* states permitting ordinary downstream progression;
+* states permitting progression only under explicit conditions, restrictions,
+  monitoring, or other requirements established by the completed evaluation;
+* states limiting progression to remedy, resolution, review, redesign,
+  evidence gathering, re-evaluation, or another non-ordinary flow; and
+* states indicating that the runtime successfully completed evaluation but
+  could not determine an applicable ordinary bound state.
+
+The bound-state vocabulary shall preserve materially different runtime
+outcomes instead of collapsing them into generic pass, fail, conditional,
+or restricted statuses.
+
+This distinction is necessary because different runtime outcomes may produce
+the same immediate restriction while carrying different meanings, evidence
+histories, risks, and valid next actions. Collapsing those differences would
+discard information needed to determine why progression was restricted and
+what must happen before that restriction can change.
+
+Preserving these distinctions also helps protect against false-green states,
+where a system appears valid, authorized, entrusted, complete, or
+operationally sound only because a required condition was missing, stale,
+mismatched, unresolved, incompletely evaluated, or improperly established
+rather than actually satisfied. Keeping those conditions distinct prevents
+them from being treated as interchangeable or silently converted into a more
+permissive state.
+
+The same principle requires action validity, authorization validity, outcome
+quality, actor entrustment, culpability, evidentiary sufficiency, and system
+integrity to remain distinguishable where they materially affect the result.
+One cannot substitute for another solely because they lead to the same
+immediate restriction.
+
+Preserving these distinctions also allows downstream components to apply the
+appropriate resolution, remedy, review, monitoring, evidence-gathering, or
+re-evaluation flow without reconstructing or reinterpreting the upstream
+evaluation.
+
+A bound state is immutable. If a later change in pathway state, evidence,
+Charter status, authorization, or another material condition requires
+re-evaluation, the completed re-evaluation produces a new applicable bound
+state rather than modifying the existing state.
+
+#### 17.3.1 Bound-State Definitions
+
+ClimateSOS defines the following bound states.
+
+**`CleanBound`**
+
+The pathway completed evaluations successfully, resulting in clean
+deliverability. During evaluation the required queues cleared, and the
+resulting pathway successfully synchronized the applicable clean-transition
+requirements within the required timing window, without fossil fallback.
+
+`CleanBound` permits ordinary downstream progression. Any conditions or
+restrictions established upstream remain attached to the evaluation and
+continue to govern downstream use.
+
+**`MixedBound`**
+
+The pathway has satisfied some or all applicable clean-transition
+requirements, but a material fossil dependency, fallback pathway, unresolved
+system condition, or other restricting condition remains entangled with the
+resulting state.
+
+`MixedBound` does not represent full transition success. Downstream
+progression is limited by the specific restrictions and conditions preserved
+from the completed evaluation.
+
+**`FossilBound`**
+
+The pathway has become bound to fossil fallback, fossil persistence, fossil
+adequacy, fossil lock-in, or another fossil-dependent resulting state.
+
+`FossilBound` does not permit the pathway to proceed as a valid
+clean-transition pathway. Further progression is limited to an applicable
+remedy, resolution, review, redesign, or re-evaluation flow.
+
+**`NoAck`**
+
+`NoAck` indicates that the expected runtime evaluation result was not returned
+as a usable result and does not permit ordinary downstream progression.
+
+This may occur when the runtime times out, terminates unexpectedly, loses the
+evaluation result, or encounters another failure that prevents the result from
+reaching binding. When this condition is detected, `BindingHandler` binds the
+pathway `NoAck`. It does not infer what substantive bound state the missing
+runtime result might otherwise have produced.
+
+**`Unbound`**
+
+The runtime completed the applicable pathway and system-side evaluations
+successfully but could not determine which ordinary or restricted bound state
+correctly applies.
+
+`Unbound` may result when the pathway, its documentation, evidence, or
+completed evaluations do not provide enough information to support a
+defensible bound-state determination, even though evaluation completed
+successfully.
+
+`Unbound` is therefore distinct from `NoAck`.
+
+```text
+NoAck
+    evaluation did not successfully return a usable state determination
+
+Unbound
+    evaluation completed successfully
+    but no defensible bound state could be determined
+```
+
+An `Unbound` pathway may proceed only into the applicable evidence, review,
+resolution, or re-evaluation flow needed to establish a bindable state.
+
+**`HarmBound`**
+
+The completed pathway evaluation has established that the pathway is bound to
+some condition or conditions that cause material harm.
+
+Such conditions may include harm to people, communities, workers, ecosystems,
+rights, agency, sovereignty, data integrity, or other Charter-protected
+interests.
+
+`HarmBound` does not authorize ordinary continuation of the pathway as
+evaluated. Where correction remains possible, further progression is limited
+to halt, remedy, repair, redesign, verification, review, or re-evaluation.
+
+**`BoundaryStress`**
+
+The pathway creates or worsens material pressure against an applicable
+planetary, biosphere, justice, adequacy, or system-integrity boundary without
+necessarily having resolved to final harm or system failure.
+
+`BoundaryStress` preserves the identified boundary pressure and any associated
+constraints. Depending on the completed evaluation, progression may require
+monitoring, additional evidence, mitigation, remedy, redesign, or re-evaluation.
+
+**`BioBound`**
+
+The pathway contributions are exclusively Nature-Based, or primarily
+Nature-Based with other interventions that don't produce any harm or fossil
+fallback. It has completed evaluation in a state consistent with the applicable
+biosphere-integrity requirements and remains within the modeled functional
+resilience conditions of the Biosphere Fabric.
+
+`BioBound` is a biosphere-specific resulting state. It records that the
+pathway's evaluated interaction with relevant ecological systems is compatible
+with the required biosphere conditions rather than merely achieving a carbon
+or technical transition outcome.
+
+The detailed runtime semantics of `BioBound` remain subject to further
+Biosphere Fabric implementation.
+
+**`RestorationBound`**
+
+The pathway has completed evaluation as a valid biosphere-restoration pathway
+under the applicable ecological, Charter, evidence, and system-side
+conditions.
+
+`RestorationBound` is distinct from general `BioBound` because it records an
+affirmative restoration function rather than only compatibility with biosphere
+integrity.
+
+The detailed runtime semantics of `RestorationBound`, including restoration
+thresholds, ecological recovery conditions, and required evidence, remain
+subject to further Biosphere Fabric implementation.
+
+#### 17.3.2 Reserved Bound States
+
+The following names are reserved for future use and are not yet part of the
+ordinary binding contract:
+
+**`CDRBound` — reserved**
+
+Reserved for a future carbon-dioxide-removal-specific state if implementation
+shows that CDR pathways require a distinct bound state rather than
+representation through existing pathway, biosphere, contribution, and risk
+results.
+
+No current pathway may infer `CDRBound` semantics merely from the reserved name.
+
+**`WaterBound` — reserved**
+
+Reserved for a future water-cycle or hydrological resulting state if
+implementation of the Biosphere Fabric demonstrates a need for an independently
+bound water-system outcome.
+
+No current pathway may infer `WaterBound` semantics merely from the reserved
+name.
+
+The reserved states exist to preserve architectural space already identified in
+earlier ClimateSOS design work without prematurely fixing runtime behavior that
+has not yet been implemented.
 
 ### 17.4 Binding Does Not Re-Evaluate the Pathway
 
-### 17.5 Binding Evidence and Explanation
+`BindingHandler` does not rerun pathway evaluation, Charter evaluation, net
+overall system contribution evaluation, scale diagnostics, candidate transition
+construction, or net overall system risk evaluation.
+
+It does not convert an adverse, unresolved, constrained, limited, or conditional
+finding into a more permissive finding.
+
+It does not infer that absence of a newly identified restriction establishes
+permission beyond the authority represented by the applicable bound state.
+
+Where multiple upstream findings contribute to the same bound condition, those
+findings remain separately identifiable with their original evaluator
+ownership, evidence, provenance, and purpose.
+
+Binding records the binding state determined by the runtime. It does not create
+a new substantive determination.
 
 ## 18. Global Context Outcome
 
