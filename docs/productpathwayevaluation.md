@@ -3584,7 +3584,7 @@ Binding produces an immutable result used to construct the later
 * `user_id` and `pathway_id` attribution.
 
 Where the expected runtime result is not returned as a usable result,
-`BindingHandler` bind `NoAck` as defined in Section 17.3.1.
+`BindingHandler` binds `NoAck` as defined in Section 17.3.1.
 
 Binding makes no changes to a completed immutable `FinalPathwayResult` or
 `FinalCharterResult`. The `FinalPathwayResult` remains the authoritative
