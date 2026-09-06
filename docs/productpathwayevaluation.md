@@ -2043,6 +2043,8 @@ A Charter finding may remain unchanged between the two evaluations or may change
 
 Successful completion of the Integrated Charter Evaluation produces a valid immutable `IntegratedCharterResult` and permits progression to Net Overall System Contribution evaluation. Failed, adverse, unresolved, not-applicable, or other valid Charter findings remain in the evaluation history and continue downstream. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
 
+---
+
 ## 11. Product Outputs and Net Overall System Contribution
 
 Evaluation of the `ProductPathway` by the `PathwayEvaluationEngine` and its related
@@ -2357,6 +2359,8 @@ An evaluator-integrity failure is distinct from an unresolved contribution. If
 the evaluator cannot produce a structurally valid contribution result, the
 current evaluation does not proceed.
 
+---
+
 ## 12. Scale Diagnostic
 
 Scale diagnosis evaluates whether the pathway's supported contribution can
@@ -2616,6 +2620,8 @@ relationships, or other conditions may have changed.
 
 Historical evidence remains preserved as evidence.
 
+---
+
 ## 13. Candidate TransitionPathway and Its Construction
 
 After contribution and scale evaluation complete, the evaluated pathway and its
@@ -2855,6 +2861,8 @@ For global evaluation, a new authoritative `TransitionPathway` may be
 established only through the privileged validation and atomic commitment path.
 For user-submitted evaluation, the prospective candidate remains separate from
 the authoritative global pathway for the duration of the evaluation.
+
+---
 
 ## 14. Net Overall System Risk Evaluation
 
@@ -3147,6 +3155,8 @@ If the evaluator cannot produce a structurally valid
 Charter validity, assign a bound state, validate the global transition, or
 authorize commitment or deployment.
 
+---
+
 ## 15. Final Pathway Assembly
 
 After net overall system risk evaluation completes, `FinalPathwayAssembly`
@@ -3320,6 +3330,8 @@ current evaluation does not proceed to Final Charter Evaluation.
 
 A completed `FinalPathwayResult` proceeds unchanged to
 `CharterEvaluator — FINAL`.
+
+---
 
 ## 16. Final Charter Evaluation
 
@@ -3542,6 +3554,8 @@ The `CharterEvaluator` determines Charter validity and records the conditions
 governing progression. It does not determine the applicable bound state and does
 not perform binding or enforcement. Those responsibilities belong to subsequent
 runtime components.
+
+---
 
 ## 17. Binding and Bound States
 
@@ -3875,19 +3889,137 @@ ownership, evidence, provenance, and purpose.
 Binding records the state determined by the runtime in a new immutable
 `BoundPathway`. It does not create a new substantive determination.
 
+---
+
 ## 18. PathwayAssessment and State Preservation
+
+`PathwayAssessment` is the final immutable assessment of one completed
+`ProductPathway` evaluation run.
+
+It is constructed after binding is complete and the immutable `BoundPathway`
+has been produced from the `FinalPathwayResult` and applicable bound state.
+It does not perform another evaluation, revise an upstream finding, or replace
+previously evaluated result objects.
+
+`PathwayAssessment` marks the final stage of the shared product-pathway flow
+when further re-evaluation is not required. If resolution, remedy, or another
+condition requires re-evaluation, that process proceeds from this state before
+the pathway enters either the global-context or user-submitted-context outcome
+flow.
+
+The completed `ProductPathway` and prior evaluation results remain immutable;
+later assessment, remedy, and re-evaluation state is recorded in new runtime
+objects rather than written back into the earlier evaluation state.
 
 ### 18.1 PathwayAssessment
 
+Each completed evaluation run produces one `PathwayAssessment`.
+
+The assessment records the completed evaluation state for the specific
+`ProductPathway`, evaluation run, and transition context that were evaluated.
+It provides the runtime with one stable object from which the permitted next
+flow can be determined without changing or reconstructing the evaluations that
+produced it.
+
+A `PathwayAssessment` shall represent a successful, conditional, restricted,
+failed, unresolved, or other successfully completed bound outcome.
+
 ### 18.2 Required Assessment Contents
 
-### 18.3 Evidence and Explanation Trace
+`PathwayAssessment` has its own immutable assessment identity and identifies the
+evaluation run that produced it.
+
+At minimum, it shall include or reference, as applicable:
+
+* `pathway_assessment_id`;
+* `pathway_id`;
+* `evaluation_run_id`;
+* `InitialCharterResult`;
+* `IntegratedCharterResult`;
+* `FinalCharterResult`;
+* `BoundPathway`; and
+* the identity and version of the validated `TransitionPathway` used as the
+  reference for the evaluation.
+
+The assessment may carry additional references required for provenance,
+methodology, runtime-version, rules-version, or other implementation integrity,
+but those references do not transfer ownership of the underlying records to
+`PathwayAssessment`.
+
+### 18.3 Evaluation Trace and Evidence
+
+Through its `BoundPathway` reference, `PathwayAssessment` retains access to the
+`evaluation_trace` on `FinalPathwayResult` and the documentation, evidence,
+findings, methods, provenance, and evaluation context preserved by the
+referenced upstream results.
+
+A reviewer or downstream runtime component shall be able to follow the
+assessment references through the evaluation lineage sufficiently to determine:
+
+* what pathway and transition state were evaluated;
+* which evaluation run produced the assessment;
+* which evaluator produced each material finding;
+* what evidence, provenance, methodology, or unresolved condition supports that
+  finding; and
+* how the completed findings relate to the resulting bound state.
+
+Missing, conflicting, unresolved, or insufficient evidence remains represented
+by the upstream results that established those conditions and recorded them in
+their respective immutable results.
 
 ### 18.4 Prior-State Preservation
 
+Where a pathway is re-evaluated, ClimateSOS preserves each evaluation run in
+an append-only evaluation history.
+
+A `pathway_id` identifies one `ProductPathway` and its associated pathway
+evaluation lineage. Each complete attempt to evaluate that pathway receives
+a distinct `evaluation_run_id`, and each completed assessment receives a
+distinct `pathway_assessment_id`.
+
+Results belonging to one evaluation run shall not overwrite, replace, or be
+substituted for results belonging to another run.
+
+Where a later evaluation follows an earlier evaluation of the same pathway
+lineage, the later run shall reference the prior run sufficiently to preserve
+the sequence of evaluation history.
+
+Conceptually:
+
+```text
+pathway_id = P123
+
+evaluation_run_id = R001
+    PathwayAssessment = A001
+
+evaluation_run_id = R002
+    prior_evaluation_run_id = R001
+    PathwayAssessment = A002
+```text
+
+`A002` does not replace or mutate `A001`. Both remain part of the pathway's
+evaluation history.
+
 ### 18.5 Re-Evaluation and Successor Results
 
-### 18.6 No Writeback into ProductPathway
+Pathway re-evaluation creates a new evaluation run.
+
+The new run receives a new `evaluation_run_id` and produces new result objects
+through each successfully completed evaluation stage.
+
+The successor run shall preserve a reference to the prior evaluation run and
+the reason the new evaluation was initiated.
+
+The stable `pathway_id` may continue across evaluation runs where the system is
+evaluating the same pathway lineage. A materially separate intake or separately
+defined pathway receives its own pathway identity as defined in Section 5.
+
+A remedy, new evidence, corrected documentation, changed authorization, material
+pathway change, changed Charter condition, changed transition reference, or
+another condition requiring re-evaluation produces a successor run and does not
+modify the completed results or `PathwayAssessment` from the prior run.
+
+---
 
 ## 19. Resolution and Remedy
 
@@ -3905,6 +4037,8 @@ Binding records the state determined by the runtime in a new immutable
 
 This preserves the useful archive material on remedy and state history without treating every failure as remedy-eligible or writing those states back into the pathway.
 
+---
+
 ## 20. Global Context Outcome
 
 ### 20.1 TransitionPathwayValidator
@@ -3919,6 +4053,8 @@ This preserves the useful archive material on remedy and state history without t
 
 ### 20.6 Use at the Next Startup
 
+---
+
 ## 21. User-Submitted Context Outcome
 
 ### 21.1 Immutable Global Reference Pathway
@@ -3930,6 +4066,8 @@ This preserves the useful archive material on remedy and state history without t
 ### 21.4 No Mutation of the Global TransitionPathway
 
 ### 21.5 Combined Pathways as Separate Intakes
+
+---
 
 ## 22. Evaluation Questions
 
@@ -3944,6 +4082,8 @@ This preserves the useful archive material on remedy and state history without t
 ### 22.5 What Risks Propagate?
 
 ### 22.6 What Resolution or Remedy Is Available?
+
+---
 
 ## 23. Implementation Requirements
 
@@ -4003,6 +4143,8 @@ TransitionPathwayValidator
 
 ### 23.6 Minimum Test Cases
 
+---
+
 ## 24. Relationship to the ClimateSOS Runtime Architecture
 
 ### 24.1 Shared Product Pathway Evaluation Flow
@@ -4012,6 +4154,8 @@ TransitionPathwayValidator
 ### 24.3 User-Submitted Context
 
 ### 24.4 Component Ownership Summary
+
+---
 
 ## 25. Summary
 
