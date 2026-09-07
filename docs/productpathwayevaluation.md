@@ -399,20 +399,32 @@ Applicable [foo]Bound ───────────────────�
                                                           ▼
                                                    PathwayAssessment
                                                           │
-                              ┌───────────────────────────┴───────────────────────────┐
-                              │                                                       │
-                              ▼                                                       ▼
-                       Global context                                        User-submitted context
-                              │                                                       │
-                              ▼                                                       ▼
-                   TransitionPathwayValidator                                      return
-                              │
-                              │  privileged global-context operation
-                              ▼
-                   Atomic immutable commitment
-                              │
-                              ▼
-                      TransitionPathway
+                   ┌──────────────────────────────────────┴─────────┐
+                   │                                                │
+                   ▼                                                ▼
+         resolution required                                progression permitted
+                   │                                                │
+                   ▼                                                │
+          ResolutionHandler                                         │
+                   │                                                │
+                   ▼                                                │
+             Re-evaluation                                          │
+                                                                    │
+              ┌─────────────────────────────────────────────────────┴───────────────────────┐
+              │                                                                             │
+              ▼                                                                             ▼
+        Global context                                                            User-submitted context
+              │                                                                             │
+              ▼                                                                             ▼
+       TransitionPathwayValidator                                                         return
+              │
+              │  privileged global-context operation
+              ▼
+     Atomic immutable commitment
+              │
+              ▼
+      TransitionPathway
+
 
 ```
 
@@ -525,18 +537,25 @@ PathwayAssessmentEvaluator
     ▼
 PathwayAssessment
     │
-    ▼
-TransitionPathwayValidator
-    │
-    ├── validation does not permit commitment
+    ├── resolution required
     │       │
-    │       ├── preserve the candidate, findings, Charter results,
-    │       │   risk result, evidence, and bound state
-    │       │
-    │       └── retain the existing authoritative
-    │           TransitionPathway unchanged
+    │       ▼
+    │   ResolutionHandler
     │
-    └── validation permits commitment
+    └── progression permitted
+            │
+            ▼
+    TransitionPathwayValidator
+            │
+            ├── validation does not permit commitment
+            │       │
+            │       ├── preserve the candidate, findings, Charter results,
+            │       │   risk result, evidence, and bound state
+            │       │
+            │       └── retain the existing authoritative
+            │           TransitionPathway unchanged
+            │
+            └── validation permits commitment
             │
             ▼
 Atomic immutable commitment
@@ -627,6 +646,15 @@ PathwayAssessmentEvaluator A                          PathwayAssessmentEvaluator
     │                                                             │
     ▼                                                             ▼
 PathwayAssessment A                                       PathwayAssessment B
+    ├── resolution required                                       ├── resolution required
+    │       │                                                     │       │
+    │       ▼                                                     │       ▼
+    │   ResolutionHandler A ⤴︎                                     │    ResolutionHandler B ⤴︎
+    │                                                             │
+    └── progression permitted                                     └── progression permitted
+            │                                                              │
+            ▼                                                              ▼
+
 
 ===============================================================================
 
@@ -4085,13 +4113,14 @@ evaluation history.
 
 ### 18.6 Re-Evaluation and Successor Results
 
-Pathway re-evaluation creates a new evaluation run.
+Pathway re-evaluation creates a successor evaluation run as described in
+Section 19.
 
 The new run receives a new `evaluation_run_id` and produces new result objects
 through each successfully completed evaluation stage.
 
 The successor run shall preserve a reference to the prior evaluation run and
-the reason the new evaluation was initiated.
+the basis for re-evaluation.
 
 The stable `pathway_id` may continue across evaluation runs where the system is
 evaluating the same pathway lineage. A materially separate intake or separately
@@ -4106,19 +4135,156 @@ modify the completed results or `PathwayAssessment` from the prior run.
 
 ## 19. Resolution and Remedy
 
+Resolution acts on the conditions recorded in a completed `PathwayAssessment`
+when the assessed pathway cannot proceed directly into its applicable
+global-context or user-submitted-context outcome flow.
+
+A resolution may require additional evidence, documentation correction,
+remedy of one or more identified conditions, redesign of the pathway, changed
+authorization, review, or another action required by the completed evaluation.
+
+A remedy is a corrective action taken to address one or more conditions
+identified by the completed evaluation. Remedy may include mitigation, repair,
+redesign, replacement, correction, or another action that changes the condition
+responsible for the failed or restricted outcome.
+
+Where resolution results in re-evaluation, the successor evaluation run
+incorporates any corrected evidence, documentation, authorization, pathway
+design, remedy state, or other material changes produced through the resolution
+process.
+
+Resolution and remedy do not modify the completed `PathwayAssessment`,
+`BoundPathway`, `FinalPathwayResult`, Charter results, or other results from the
+prior evaluation run.
+
 ### 19.1 Resolution Outcomes
+
+A completed `PathwayAssessment` may identify one or more conditions that require
+resolution before further progression.
+
+The applicable resolution may:
+
+* require additional or corrected evidence;
+* require corrected or expanded documentation;
+* require resolution of an unresolved dependency, system condition, system
+  boundary, classification, or materially incomplete pathway representation;
+* require mitigation, repair, or remedy of an identified harm or constraint;
+* require modification or redesign of the represented pathway;
+* require changed or renewed authorization or restoration of an applicable
+  governance or integrity condition;
+* require review, qualified handoff, revalidation, or another action required
+  by the applicable evaluator, Charter condition, bound state, or runtime rule;
+  or
+* establish that the evaluated condition is not remediable within the current
+  pathway.
+
+Resolution preserves the findings and upstream-result references recorded in
+its `ProductPathway`'s `PathwayAssessment`.
+
+Where the resolution requires a successor evaluation, the new run incorporates
+the applicable changes produced through the resolution process.
 
 ### 19.2 Remedy Eligibility
 
-### 19.3 Remedy Processing
+Remedy applies only where the completed evaluation identifies a condition that
+can be corrected, mitigated, repaired, redesigned, or otherwise resolved
+through an available remedy path.
 
-### 19.4 Re-Evaluation After Remedy
+A restricted, failed, unresolved, or otherwise non-progressing
+`PathwayAssessment` is not automatically remedy-eligible.
+
+Remedy eligibility is recorded in the completed `PathwayAssessment` from the
+conditions and restrictions evaluated by `PathwayAssessmentEvaluator`,
+including the applicable Charter findings, bound state, evidence state,
+pathway findings, and system-side results.
+
+A remedy must address the condition that caused the restriction. A change that
+does not resolve or materially alter that condition does not establish remedy
+completion.
+
+### 19.3 Resolution Processing
+
+`ResolutionHandler` consumes a completed `PathwayAssessment` when the assessment
+requires resolution before further progression.
+
+`ResolutionHandler` uses the resolution, remedy, review, or other corrective
+requirements already recorded in the `PathwayAssessment`. It does not
+re-evaluate the pathway, determine whether the identified condition is
+correctable, or replace the findings that established the resolution
+requirement.
+
+`ResolutionHandler` flags the required corrective action and preserves its
+association with the `pathway_id`, originating evaluation run, triggering
+findings, and upstream results that own those findings.
+
+The substantive corrective action is performed by the applicable external
+actor, system, review process, or other authorized process. The corrective
+action may produce updated evidence, documentation, authorization, pathway
+material, remedy state, or other information required by the
+`PathwayAssessment`.
+
+When the root causes identified by the `PathwayAssessment` have been resolved,
+a successor evaluation run is triggered. The successor run preserves its
+relationship to the prior evaluation run and carries the corrected or updated
+material into the shared product-pathway evaluation flow.
+
+Resolution processing does not determine whether the corrective action
+successfully resolves the prior finding. That determination belongs to the
+successor evaluation run.
+
+### 19.4 Re-Evaluation After Resolution
+
+A completed resolution action does not change the result of the evaluation run
+that identified the condition.
+
+After addressing the root causes identified by the `PathwayAssessment`, the
+user or authorized external actor submits the corrected or updated pathway
+material through the re-evaluation intake path.
+
+The re-evaluation intake preserves the `pathway_id`, prior evaluation run,
+`PathwayAssessment`, triggering findings, completed resolution information,
+and corrected or updated material required for the successor evaluation. The
+successor run receives a new `evaluation_run_id` and carries those references
+into the shared product-pathway evaluation flow.
+
+The successor run executes the evaluation stages applicable to the changed
+pathway and current transition context and produces new immutable result objects
+through each successfully completed stage.
+
+Only the successor evaluation determines whether the changes produced through
+resolution result in a different evaluated outcome.
 
 ### 19.5 Non-Remediable Outcomes
 
+Some completed evaluation outcomes may not have a remedy available to the
+evaluated pathway.
+
+A condition is non-remediable when the completed evaluation establishes that
+the root cause of the failed or restricted outcome cannot be corrected within
+the current pathway. This may result from an applicable Charter requirement,
+physical or system constraint, pathway structure, authorization limitation,
+evidence condition, or another finding that prevents the pathway from reaching
+an allowable evaluated state.
+
+A non-remediable outcome remains part of the completed `PathwayAssessment` and
+evaluation history. It does not initiate a remedy loop.
+
+A materially different proposal may be submitted as a new pathway intake where
+applicable, but it is not treated as a remedy that changes the completed
+evaluation of the prior pathway.
+
 ### 19.6 Preservation of Failed and Unresolved Results
 
-This preserves the useful archive material on remedy and state history without treating every failure as remedy-eligible or writing those states back into the pathway.
+Resolution, remedy, and re-evaluation preserve the results that established the
+original failed, restricted, unresolved, or otherwise non-progressing
+condition.
+
+A later remedy or successful successor evaluation does not replace the earlier
+`PathwayAssessment` or its supporting results.
+
+The evaluation history therefore preserves both the condition originally
+identified and any later evaluation that determines whether the condition was
+resolved.
 
 ---
 
@@ -4216,6 +4382,7 @@ FinalPathwayAssembly
 CharterEvaluator
 BindingHandler
 PathwayAssessmentEvaluator
+ResolutionHandler
 TransitionPathwayValidator
 ```
 
