@@ -243,7 +243,7 @@ External pathway material
     │
     ▼
 Identity Gateway  ⥬  Identity Layer
-    IdentityToken ⥫        ↲ 
+    IdentityToken ⥫        ↲
     │
     │  Identity Layer Establishes and issues the canonical IdentityToken.
     │
@@ -394,6 +394,9 @@ Applicable [foo]Bound ───────────────────�
                                                      BoundPathway
                                                           │
                                                           ▼
+                                              PathwayAssessmentEvaluator
+                                                          │
+                                                          ▼
                                                    PathwayAssessment
                                                           │
                               ┌───────────────────────────┴───────────────────────────┐
@@ -439,7 +442,7 @@ Establish authoritative global reference TransitionPathway
             └── used as the current reference where available
     │
     ▼
-Receive a single submission of proposed global candidate pathway or 
+Receive a single submission of proposed global candidate pathway or
 minor change
     │
     │  The proposal may represent:
@@ -517,6 +520,9 @@ BindingHandler
 BoundPathway
     │
     ▼
+PathwayAssessmentEvaluator
+    │
+    ▼
 PathwayAssessment
     │
     ▼
@@ -562,7 +568,7 @@ User UI or public API gateway
 Run Shared Product Pathway Evaluation
     Identity Gateway => IdentityLayer
     │ IdentityToken  <=      -|
-    │    
+    │
     ▼
 User submits one or more separate pathway intakes
 Continue with Shared Product Pathway for each submission
@@ -611,10 +617,13 @@ System bound-state determination A               System bound-state determinatio
 Applicable ExampleBound State A                     Applicable ExampleBound State B
     │                                                             │
     ▼                                                             ▼
-BindingHandler                                              BindingHandler
+BindingHandler A                                             BindingHandler B
     │                                                             │
     ▼                                                             ▼
-BoundPathway                                                 BoundPathway 
+BoundPathway A                                                BoundPathway B
+    │                                                             │
+    ▼                                                             ▼
+PathwayAssessmentEvaluator A                          PathwayAssessmentEvaluator B
     │                                                             │
     ▼                                                             ▼
 PathwayAssessment A                                       PathwayAssessment B
@@ -1010,7 +1019,7 @@ A `ProductFabric` contains:
 * source, evidence, and provenance references required for traceability; and
 * assembly metadata required to preserve the fabric structure.
 
-A `ProductFabric` is a coordination surface. It does not contain the result of fabric evaluation. A completed `ProductFabric` is immutable and is consumed by `FabricEvaluator`. 
+A `ProductFabric` is a coordination surface. It does not contain the result of fabric evaluation. A completed `ProductFabric` is immutable and is consumed by `FabricEvaluator`.
 
 When the pathway does not require a technical fabric structure, `FabricAssembler` is not executed and therefore cannot produce a `ProductFabric`.
 
@@ -1751,7 +1760,7 @@ A `QueueExecutionResult` records the queue's completed execution but does not de
 
 #### 9.3.3 QueueEvaluatorResult
 
-A `QueueEvaluatorResult` records the evaluator's completed conclusion for one queue-family member during one evaluation run. A completed `QueueEvaluatorResult` is immutable. 
+A `QueueEvaluatorResult` records the evaluator's completed conclusion for one queue-family member during one evaluation run. A completed `QueueEvaluatorResult` is immutable.
 
 The result contains the final evaluated queue condition together with the material findings, progress history, temporal and evaluation context, and references to supporting documentation, evidence, and provenance.
 
@@ -3900,37 +3909,90 @@ immutable `BoundPathway`.
 ## 18. PathwayAssessment and State Preservation
 
 `PathwayAssessment` is the final immutable assessment of one completed
-`ProductPathway` evaluation run.
+`ProductPathway` evaluation run and marks the final stage of the shared
+product-pathway evaluation flow. It records whether the assessed pathway may
+proceed and, where progression is restricted or fails, the findings and
+conditions that determine the resulting assessment. It is produced by
+`PathwayAssessmentEvaluator` after binding is complete and the immutable
+`BoundPathway` has been produced from the `FinalPathwayResult` and its bound
+state.
 
-It is constructed after binding is complete and the immutable `BoundPathway`
-has been produced from the `FinalPathwayResult` and applicable bound state.
-It does not perform another evaluation, revise an upstream finding, or replace
-previously evaluated result objects.
+`PathwayAssessmentEvaluator` evaluates the completed bound pathway state using
+the `BoundPathway`, `FinalCharterResult`, and relevant upstream findings,
+documentation, evidence, and provenance as needed to determine the final
+assessment outcome and produce the `PathwayAssessment`.
 
-`PathwayAssessment` marks the final stage of the shared product-pathway flow
-when further re-evaluation is not required. If resolution, remedy, or another
-condition requires re-evaluation, that process proceeds from this state before
-the pathway enters either the global-context or user-submitted-context outcome
-flow.
+The evaluator determines the final assessment from completed upstream findings,
+the applicable Charter results, and the bound state without revising or replacing
+those findings.
 
-The completed `ProductPathway` and prior evaluation results remain immutable;
-later assessment, remedy, and re-evaluation state is recorded in new runtime
-objects rather than written back into the earlier evaluation state.
+Where the final assessment identifies a correctable condition, the
+`PathwayAssessment` records the applicable resolution or remedy justification
+and the conditions that require a successor evaluation run after correction.
+Other runtime components act on those conditions; `PathwayAssessment` does not
+initiate resolution, remedy, or re-evaluation.
 
-### 18.1 PathwayAssessment
+Resolution, remedy, and re-evaluation produce new objects through the shared
+product-pathway evaluation flow rather than modifying the completed
+`ProductPathway` or prior evaluation results.
 
-Each completed evaluation run produces one `PathwayAssessment`.
+### 18.1 PathwayAssessmentEvaluator
 
-The assessment records the completed evaluation state for the specific
-`ProductPathway`, evaluation run, and transition context that were evaluated.
-It provides the runtime with one stable object from which the permitted next
-flow can be determined without changing or reconstructing the evaluations that
-produced it.
+`PathwayAssessmentEvaluator` performs the final evaluation of one successfully
+bound `ProductPathway` evaluation run.
 
-A `PathwayAssessment` shall represent a successful, conditional, restricted,
+It receives the completed immutable `BoundPathway`, the applicable
+`FinalCharterResult`, and the identity and lineage information required to
+evaluate the completed pathway state.
+
+The evaluator may follow references through the `BoundPathway`,
+`FinalPathwayResult`, `evaluation_trace`, Charter results, and other upstream
+results where additional findings, documentation, evidence, methodology,
+provenance, or unresolved conditions are required to evaluate the final
+assessment.
+
+`PathwayAssessmentEvaluator` determines, as applicable:
+
+* whether the assessed pathway may proceed into its applicable outcome flow;
+* whether progression is conditional, restricted, failed, or unresolved;
+* which material findings or conditions prevent ordinary progression;
+* which upstream results own those findings or conditions;
+* whether any material adverse finding, evidentiary contradiction, unresolved
+  condition, or insufficiently established requirement prevents progression;
+* whether a failed, restricted, unresolved, missing, stale, mismatched, or
+  insufficiently established condition is correctable;
+* whether resolution, remedy, review, redesign, corrected evidence,
+  authorization, or another corrective action is required;
+* the justification for any required resolution or remedy; and
+* which material changes require re-evaluation rather than continuation under
+  the existing assessment.
+
+`PathwayAssessmentEvaluator` does not modify any upstream result.
+
+It does not perform the corrective action, determine that a required correction
+has later been completed, or initiate a successor evaluation run.
+
+Each completed execution of `PathwayAssessmentEvaluator` produces one
+`PathwayAssessment`.
+
+### 18.2 PathwayAssessment
+
+`PathwayAssessment` records the final assessment of the pathway-specific findings
+preserved through the `BoundPathway`, together with the resulting evaluated state
+for the specific `ProductPathway`, evaluation run, and transition context.
+
+It provides the runtime with one stable final assessment from which the
+applicable next flow may be determined without changing or reconstructing the
+evaluations that produced it.
+
+A `PathwayAssessment` may represent a successful, conditional, restricted,
 failed, unresolved, or other successfully completed bound outcome.
 
-### 18.2 Required Assessment Contents
+Where the assessment does not permit ordinary progression, it preserves the
+findings and conditions that produced that outcome and the information required
+for any applicable resolution, remedy, review, or later re-evaluation.
+
+### 18.3 Required Assessment Contents
 
 `PathwayAssessment` has its own immutable assessment identity and identifies the
 evaluation run that produced it.
@@ -3943,19 +4005,29 @@ At minimum, it shall include or reference, as applicable:
 * `InitialCharterResult`;
 * `IntegratedCharterResult`;
 * `FinalCharterResult`;
-* `BoundPathway`; and
+* `BoundPathway`;
+* the final assessment outcome;
+* references to material findings or conditions that prevent ordinary
+  progression, where applicable;
+* references to the upstream results that own those findings or conditions;
+* whether the identified condition is correctable, where applicable;
+* the resolution, remedy, review, or other corrective requirement identified by
+  the assessment, where applicable;
+* the justification for that requirement;
+* the conditions requiring a successor evaluation run after correction, where
+  applicable; and
 * the identity and version of the validated `TransitionPathway` used as the
   reference for the evaluation.
 
 The assessment may carry additional references required for provenance,
-methodology, runtime-version, rules-version, or other implementation integrity,
-but those references do not transfer ownership of the underlying records to
-`PathwayAssessment`.
+methodology, runtime-version, rules-version, evaluator-version, or other
+implementation integrity, but those references do not transfer ownership of
+the underlying records to `PathwayAssessment`.
 
-### 18.3 Evaluation Trace and Evidence
+### 18.4 Evaluation Trace and Evidence
 
 Through its `BoundPathway` reference, `PathwayAssessment` retains access to the
-`evaluation_trace` on `FinalPathwayResult` and the documentation, evidence,
+`evaluation_trace` in the `FinalPathwayResult` and the documentation, evidence,
 findings, methods, provenance, and evaluation context preserved by the
 referenced upstream results.
 
@@ -3965,15 +4037,20 @@ assessment references through the evaluation lineage sufficiently to determine:
 * what pathway and transition state were evaluated;
 * which evaluation run produced the assessment;
 * which evaluator produced each material finding;
-* what evidence, provenance, methodology, or unresolved condition supports that
-  finding; and
-* how the completed findings relate to the resulting bound state.
+* what evidence, provenance, methodology, or unresolved condition supports
+  that finding, including whether required evidence was current, sufficient,
+  representative, conflicting, stale, or otherwise limited;
+* how the completed findings relate to the resulting bound state;
+* which findings or conditions determined the final assessment outcome,
+  including any material adverse finding that independently constrained
+  progression; and
+* where applicable, why resolution, remedy, or a successor evaluation is
+  required.
 
 Missing, conflicting, unresolved, or insufficient evidence remains represented
-by the upstream results that established those conditions and recorded them in
-their respective immutable results.
+by the upstream results that established those conditions.
 
-### 18.4 Prior-State Preservation
+### 18.5 Prior-State Preservation
 
 Where a pathway is re-evaluated, ClimateSOS preserves each evaluation run in
 an append-only evaluation history.
@@ -4006,7 +4083,7 @@ evaluation_run_id = R002
 `A002` does not replace or mutate `A001`. Both remain part of the pathway's
 evaluation history.
 
-### 18.5 Re-Evaluation and Successor Results
+### 18.6 Re-Evaluation and Successor Results
 
 Pathway re-evaluation creates a new evaluation run.
 
@@ -4138,6 +4215,7 @@ NetOverallSystemRiskEvaluator
 FinalPathwayAssembly
 CharterEvaluator
 BindingHandler
+PathwayAssessmentEvaluator
 TransitionPathwayValidator
 ```
 
