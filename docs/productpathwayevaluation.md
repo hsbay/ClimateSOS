@@ -690,22 +690,38 @@ The `ProductAdapter` is a translation and structural-mapping component. It may i
 
 ### 5.1 Input and Output
 
-The `ProductAdapter` consumes one immutable `ProductIntakeBundle` from the Intake Layer.
+The `ProductAdapter` consumes one immutable `ProductIntakeBundle` from the
+Intake Layer. For a successor evaluation run, the intake follows the
+re-evaluation intake path and preserves the existing `pathway_id`, prior
+evaluation-run reference, prior `PathwayAssessment`, triggering findings,
+completed resolution information, and corrected or updated pathway material
+submitted for re-evaluation.
 
 The `ProductIntakeBundle` contains the customer-supplied pathway materials and preserves their association with the canonical `IdentityToken`, intake metadata, documentation, evidence, and provenance.
 
 The `ProductAdapter` produces one immutable `ProductAdapterResult`.
 
 ```text
-ProductIntakeBundle
-        │
-        ▼
-ProductAdapter
-        │
-        ▼
-ProductAdapterResult
-    ├── ProductPathway
-    └── ProductIntakeBundle reference
+New pathway intake                          Re-evaluation intake
+        │                                           │
+        ▼                                           ▼
+ProductIntakeBundle                         ProductIntakeBundle
+        │                                           │
+        │                                           ├── existing pathway_id
+        │                                           ├── prior evaluation-run reference
+        │                                           ├── prior PathwayAssessment reference
+        │                                           ├── triggering findings
+        │                                           ├── completed resolution information
+        │                                           └── corrected or updated pathway material
+        │                                           │
+        └──────────────────────┬────────────────────┘
+                               ▼
+                         ProductAdapter
+                               │
+                               ▼
+                      ProductAdapterResult
+                          ├── ProductPathway
+                          └── ProductIntakeBundle reference
 ```
 
 The `ProductAdapterResult` associates the `ProductPathway` with the `ProductIntakeBundle` from which it was derived. It does not duplicate or modify the bundle.
@@ -720,8 +736,11 @@ The format of individual graph-object identifiers remains an implementation deci
 
 The `ProductAdapter` will:
 
-* receive the immutable `ProductIntakeBundle`;
-* preserve references to the canonical `IdentityToken` and any internal pathway or user identity references carried by the bundle;
+* receive the immutable `ProductIntakeBundle`, including re-evaluation lineage
+  and resolution references where the bundle enters through the re-evaluation
+  intake path;
+* preserve references to the canonical `IdentityToken` and any internal pathway
+  or user identity references carried by the bundle;
 * translate external terminology into canonical ClimateSOS terminology;
 * identify the pathway’s operational elements;
 * represent those elements as nodes or equivalent mapped objects;
@@ -732,7 +751,11 @@ The `ProductAdapter` will:
 * construct the normalized mapping to produce the `ProductPathway`; and
 * return an immutable `ProductAdapterResult` containing the `ProductPathway` and a reference to the associated `ProductIntakeBundle`.
 
-The `ProductAdapter` will not modify the `ProductIntakeBundle`, the `IdentityToken`, or any customer-supplied source record. Normalized facts and pathway structures are written to the new `ProductPathway`. The supplied materials remain unchanged.
+The `ProductAdapter` will not modify the `ProductIntakeBundle`, the
+`IdentityToken`, any customer-supplied source record, or any prior evaluation
+or assessment referenced by a re-evaluation intake. Normalized facts and
+pathway structures are written to the new `ProductPathway`. The supplied
+materials remain unchanged.
 
 Where the pathway representation assigns identifiers to individual mapped elements, those identifiers must remain attributable to the originating user and pathway. They must not cause material from separate pathway intakes to be silently merged.
 
@@ -757,7 +780,10 @@ The `ProductAdapter` may identify, inspect, and relate individual queues, fabric
 
 This structural work ends with the completed `ProductAdapterResult`. The result contains the completed `ProductPathway` and preserves its association with the immutable `ProductIntakeBundle`.
 
-Responsibilities downstream from the `ProductAdapterResult` belong to the components defined by the Product Pathway Evaluation Flow.
+Responsibilities downstream from the `ProductAdapterResult` belong to the
+components defined by the Product Pathway Evaluation Flow. The `ProductAdapter`
+preserves re-evaluation lineage and resolution context supplied through intake;
+it does not determine whether the prior condition was resolved.
 
 ### 5.4 ProductPathway Representation
 
