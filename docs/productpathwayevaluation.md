@@ -187,11 +187,15 @@ This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`,
 `ProductPathway`, `ProductQueueBundle`, `ProductFabric`,
 `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`,
 `FabricEvaluatorResult`, Charter results, system-contribution and scale
-results, candidate or validated `TransitionPathway` snapshots, risk results,
+results, candidate and authoritative `TransitionPathway` states, risk results,
 `FinalPathwayResult`, bound-state records, `BoundPathway`, and
 `PathwayAssessment`.
 
-Where ClimateSOS models changing system state, each preserved state is represented as a new immutable snapshot or result rather than by rewriting a previously completed object.
+Where ClimateSOS models changing system state, each completed state is
+represented as a new immutable object or result rather than by modifying or
+overwriting a previously completed object. Persisted authoritative
+`TransitionPathway` states may additionally be preserved as immutable
+snapshots.
 
 Work-performing components such as adapters, assemblers, evaluators, validators, and handlers are not subject to this object-immutability rule merely because they produce immutable outputs.
 
