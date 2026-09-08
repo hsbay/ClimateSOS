@@ -4352,19 +4352,615 @@ resolved.
 
 ---
 
-## 20. Global Context Outcome
+## 20. Global Context Mode
+
+Global Context Mode allows a user to update ClimateSOS's internal net-zero
+transition model by replacing the current authoritative `TransitionPathway`
+with a fully validated candidate `TransitionPathway`.
+
+The candidate must have been evaluated by `PathwayAssessmentEvaluator` as
+successfully modeling the required trajectory to net zero and as functionally
+fit to replace the authoritative `TransitionPathway`. Only a candidate evaluated
+in Global Context Mode with a completed `PathwayAssessment` that allows
+progression may enter this stage. A pathway requiring resolution, remedy, review,
+redesign, corrected evidence, or another corrective action follows the resolution
+flow defined in Section 19 and does not proceed to transition-pathway validation.
+
+After the shared product-pathway evaluation flow is successfully completed in
+Global Context Mode, the candidate `TransitionPathway` proceeds to validation.
+The `TransitionPathwayValidator` validates that the exact proposed candidate
+is a complete, internally coherent, current, and traceable representation of the
+evaluated global transition state.
+
+Global validation context is the versioned runtime, rule, Charter, methodology,
+source, reference-state, and candidate-construction context required to determine
+whether the completed candidate remains valid for promotion. It preserves or
+references the identities, versions, fingerprints, currentness information, and
+other context needed by `TransitionPathwayValidator` without duplicating the
+upstream evaluation artifacts.
+
+Successful validation produces an immutable
+`TransitionPathwayValidatorResult`. The ClimateSOS runtime then performs the
+privileged atomic promotion of the validated candidate to the authoritative
+`TransitionPathway`.
+
+Validation failure does not modify the candidate, the completed evaluation, or
+the existing authoritative `TransitionPathway`.
 
 ### 20.1 TransitionPathwayValidator
 
-### 20.2 Validation Requirements
+`TransitionPathwayValidator` is the last validation step between a
+completed global-context pathway evaluation and updating the authoritative
+global transition state. It receives the candidate `TransitionPathway`,
+completed `PathwayAssessment`, current authoritative `TransitionPathway`,
+`user_id`, `pathway_id`, `evaluation_run_id`, and the global validation context.
 
-### 20.3 Atomic Immutable Commitment
+The validator checks that the proposed candidate is the same candidate produced
+by the completed evaluation run and that its structure, timeline, lineage, rule
+state, and reference state are still valid.
 
-### 20.4 Validation Failure
+When needed, the validator follows references through the `PathwayAssessment`,
+candidate `TransitionPathway`, and other immutable results to verify the
+evaluation chain, such as evidence, documentation, findings and other records.
+It follows the existing references and does not create duplicate copies of those
+materials for validation.
 
-### 20.5 Preservation of the Existing Reference Pathway
+`TransitionPathwayValidator` does not:
 
-### 20.6 Use at the Next Startup
+* repeat substantive product-pathway evaluation;
+* reinterpret or replace Charter findings;
+* recalculate net overall system contribution, scale, net overall system risk,
+  binding, or pathway-assessment findings;
+* modify the candidate or current authoritative `TransitionPathway`;
+* resolve, remedy, redesign, mitigate, or otherwise correct a pathway condition;
+* suppress, downgrade, average away, or reinterpret an adverse or restrictive
+  upstream finding;
+* treat a missing, stale, unresolved, mismatched, incomplete, or insufficiently
+  established required condition as satisfied;
+* determine actor authorization, entrustment, culpability, or actor quality; or
+* perform the atomic commitment.
+
+Global execution-context authorization is outside the current scope of
+`TransitionPathwayValidator`. If authorization functionality is added later, it
+does not change the validator's functional scope of transition-pathway integrity.
+
+### 20.2 Validation Inputs
+
+`TransitionPathwayValidator` receives:
+
+* the immutable candidate `TransitionPathway`;
+* the completed immutable `PathwayAssessment`;
+* the current authoritative `TransitionPathway`;
+* `user_id`;
+* `pathway_id`;
+* `evaluation_run_id`; and
+* the global validation context.
+
+`user_id`, `pathway_id`, and `evaluation_run_id` preserve the common identity
+and evaluation lineage carried across the pathway results.
+
+The global validation context contains or references the current state required
+for validation, including:
+
+* the source and rule-set fingerprint;
+* the applicable Charter rule-set version;
+* the runtime version;
+* the validator version;
+* freshness or currentness information needed to determine whether the
+  evaluation still applies; and
+* candidate construction identity and metadata needed to bind the validation
+  attempt to the exact candidate.
+
+Where applicable, the global validation context also contains or references
+other evaluation-rule or methodology versions whose mismatch would invalidate
+the candidate.
+
+The validator follows the `PathwayAssessment` and its upstream references when
+it needs Charter results, the `BoundPathway`, `FinalPathwayResult`,
+`evaluation_trace`, contribution, scale, risk, evidence, methodology,
+provenance, restrictive findings, or other completed evaluation state.
+
+Those objects remain owned by the stages that produced them and are not copied
+into the validator input.
+
+### 20.3 Validation Execution
+
+The validator runs against one fixed candidate, evaluation lineage,
+authoritative reference state, and validation context.
+
+The validation sequence is:
+
+1. bind the validation attempt to the exact candidate and validation context;
+2. validate identity, lineage, and reference integrity;
+3. validate completion and continuity of the required evaluation chain;
+4. validate progression eligibility and preservation of controlling restrictive
+   states;
+5. validate structural, compositional, and candidate-to-reference integrity;
+6. validate temporal and resulting-state integrity;
+7. validate that the Charter and evaluation context match the completed evaluation;
+8. validate fingerprints, currentness, and candidate reproducibility and
+   provenance;
+9. produce one immutable `TransitionPathwayValidatorResult`; and
+10. return the result to the ClimateSOS runtime.
+
+If a failed prerequisite makes a check impossible to perform, the validator
+records that condition for the affected check rather than treating the
+unexecuted check as passed.
+
+Candidate validation failure is distinct from validator execution or
+result-integrity failure. Each check records only the outcome it actually
+established, except where the check itself failed to execute or produce a valid
+result. In that case, the check records the specific execution or
+result-integrity failure that occurred.
+
+Every defined validation check is required. A missing, null, malformed,
+unexecuted, internally inconsistent, or otherwise invalid check result prevents
+successful validation.
+
+### 20.4 Validation Requirements
+
+#### 20.4.1 Identity, Lineage, and Reference Integrity
+
+The validator checks that the candidate, completed `PathwayAssessment`, current
+authoritative `TransitionPathway`, and required upstream results belong to the
+same applicable evaluation lineage.
+
+Validation confirms that:
+
+* `user_id`, `pathway_id`, `evaluation_run_id`, and `PathwayAssessment`
+  correspond across the completed product-pathway evaluation run, including
+  the run that produced the candidate;
+* referenced upstream results resolve to the expected immutable objects;
+* the candidate was constructed relative to the authoritative
+  `TransitionPathway` identified by the completed product-pathway evaluation
+  run;
+* runtime and Charter versioned state match the versions used by the
+  completed evaluation;
+* stale results are not substituted for results from the current evaluation;
+* results from another evaluation run are not substituted into the current run;
+* references do not point to the wrong candidate; and
+* required result chains remain intact.
+
+Where applicable to each object, validation also confirms that:
+
+* required object versions match; and
+* referenced methodology, rule-set, or other versioned state matches the
+  versions used by the completed evaluation.
+
+These confirmation checks establish that the proposed pathway is the pathway that
+was evaluated.
+
+#### 20.4.2 Evaluation-Chain Completeness
+
+The validator checks that every required stage in the global candidate's
+evaluation lineage completed and produced its required valid immutable result,
+and that those results form a continuous evaluation chain ending in the
+completed `PathwayAssessment`.
+
+It follows the applicable result lineage through:
+
+* `InitialCharterResult`;
+* `PathwayEngineResult`;
+* `IntegratedCharterResult`;
+* `NetOverallSystemContribution`;
+* `ScaleDiagnosticResult`;
+* candidate `TransitionPathway`;
+* `NetOverallSystemRiskResult`;
+* `FinalPathwayResult`;
+* `FinalCharterResult`;
+* `BoundPathway`; and
+* `PathwayAssessment`.
+
+The validator does not recompute these results. It verifies that the chain is
+complete, its references are coherent, and the completed evaluation lineage
+reaches the `PathwayAssessment` stage presently being validated.
+
+A missing required stage or result, malformed result reference, or broken
+evaluation lineage is recorded and prevents successful validation.
+
+#### 20.4.3 Progression and Restrictive-State Integrity
+
+The validator confirms that the completed `PathwayAssessment` explicitly allows
+progression in Global Context Mode and records the candidate as functionally fit
+to replace the authoritative `TransitionPathway`.
+
+It also verifies that the associated `BoundPathway` and completed evaluation
+lineage do not contain a state or finding that requires resolution, remedy,
+review, redesign, corrected evidence, re-evaluation, or another non-progressing
+flow before the candidate may proceed.
+
+A candidate associated with `HarmBound`, `FossilBound`, `Unbound`, or another
+bound or assessment state that prevents ordinary progression is not eligible
+for commitment. `NoAck` does not reach this stage because that evaluation stops
+before `PathwayAssessment`.
+
+The validator also checks that controlling conditions from the completed
+evaluation were not dropped, overwritten, weakened, or converted into a more
+permissive state during candidate construction or later assembly.
+
+The validator does not reconsider the substantive finding recorded by an
+upstream result. It verifies that the result and its progression state are
+carried forward unchanged through the evaluation lineage.
+
+#### 20.4.4 Structural and Compositional Integrity
+
+The validator checks the candidate `TransitionPathway` as one assembled global
+transition state.
+
+It validates:
+
+* presence of every required transition component;
+* resolution and consistency of required internal references;
+* uniqueness and compatibility of component identities and versions;
+* closure of represented dependencies;
+* consistency of represented constraints;
+* compatibility of material assumptions and methodology references;
+* preservation of material state distinctions during candidate construction;
+  and
+* completeness of the candidate as a whole.
+
+Individually valid components do not make a valid candidate if they cannot be
+combined into one coherent transition state.
+
+This check does not repeat feasibility, contribution, scale, risk, or Charter
+evaluation. It checks the integrity of the assembled state that was already
+evaluated.
+
+#### 20.4.5 Candidate-to-Reference Comparison Integrity
+
+The validator performs a bounded comparison between the candidate
+`TransitionPathway` and the current authoritative `TransitionPathway`.
+
+The comparison checks that the candidate represents a complete transition from
+the authoritative reference state.
+
+The validator confirms that:
+
+* components of the authoritative `TransitionPathway` remain represented in the
+  candidate unless an explicit user-driven change removes, retires, replaces,
+  supersedes, or otherwise changes them;
+* each material component change corresponds to an identified change from the
+  authoritative reference;
+* a component not present in the authoritative `TransitionPathway` appears in
+  the candidate only when an explicit user-driven change adds or integrates it
+  into the transition state;
+* when an explicit user-driven change modifies a component, the candidate
+  preserves the component's existing required dependencies or replaces them
+  with the dependencies required by the resulting component state;
+* partial replacement does not leave the candidate incomplete;
+* the candidate was compiled against the same authoritative
+  `TransitionPathway` version presented for validation; and
+* the represented changes and retained state together account for the complete
+  candidate.
+
+The structural relationship it's verifying is:
+
+```text
+current authoritative TransitionPathway
+    +
+represented candidate changes
+    =
+complete candidate TransitionPathway
+```
+
+This is a smaller integrity check than the earlier comparison and compilation.
+It does not determine whether a change is desirable or substantively valid. It
+checks that the candidate did not become incomplete, inconsistent, or detached
+from its reference state during compilation.
+
+#### 20.4.6 Candidate Delta Integrity
+
+The validator checks that the recorded candidate changes produce the exact
+candidate that would be committed.
+
+The validator checks that each represented change remains present in the
+compiled candidate and that each material change in the candidate has a
+corresponding relationship to the authoritative reference state.
+
+It also checks that the compiled candidate `TransitionPathway` remains
+consistent with the represented changes used to construct it.
+
+#### 20.4.7 Temporal and Resulting-State Integrity
+
+The candidate `TransitionPathway` represents a transition through time, not just
+a collection of components. The validator therefore checks the candidate's
+temporal structure separately from its general composition.
+
+It confirms:
+
+* coherent ordering of milestones and state changes;
+* consistency of temporal references, baselines, dates, intervals, and time
+  windows;
+* temporal closure of represented dependencies;
+* continuity between successive transition states;
+* states with the same scope and time do not have incompatible overlaps;
+* the candidate timeline matches the timeline evaluated during the completed
+  run;
+* the authoritative reference state still matches the one used during
+  evaluation;
+* closure between represented temporal changes and the resulting transition
+  state;
+* completeness of temporal information required by represented components and
+  dependencies; and
+* candidate-to-reference integrity for material temporal changes.
+
+A dependency may exist structurally while still being temporally inconsistent.
+The validator checks both.
+
+It also compares the authoritative and candidate temporal states. Changes to
+milestones, availability windows, retirement dates, deployment windows,
+sequencing relationships, or other material temporal state must appear as
+represented changes. Temporal state intended to remain unchanged must still
+match the authoritative reference.
+
+The temporal relationship it's verifying is:
+
+```text
+authoritative temporal state
+    +
+represented temporal changes
+    =
+candidate temporal state
+```
+
+A required temporal value or relationship that disappears during candidate
+construction results in a validation failure even when the associated
+component remains present.
+
+The validator does not decide whether an evaluated date, quantity, sequence, or
+transition strategy is adequate. It checks that the temporal state proposed for
+commitment is the same complete temporal state that was evaluated.
+
+#### 20.4.8 Charter and Evaluation-Context Matching
+
+The validator checks that the required Charter results belong to the same
+evaluation run and that their recorded states agree with the
+progression-permitted `PathwayAssessment`.
+
+It does not rerun or reinterpret Charter evaluation.
+
+The validator also checks that the source, Charter, rule-set, methodology, and
+other material evaluation versions associated with the candidate match those
+used during evaluation.
+
+A materially stale or mismatched evaluation context causes validation to fail.
+
+#### 20.4.9 Currentness and Reference-State Integrity
+
+Before the candidate can be committed, the validator checks that it still applies
+to the current authoritative transition state and current evaluation context.
+
+If the authoritative `TransitionPathway` changed materially after the candidate
+was evaluated, validation fails and the candidate is not eligible for
+commitment. The candidate cannot overwrite the newer authoritative state using
+an evaluation performed against the earlier state.
+
+For example, if candidate A was evaluated against authoritative version A and
+candidate B is committed first as authoritative version B, candidate A no
+longer remains commit-eligible when that change materially affects its
+evaluation or resulting state.
+
+Candidate A must return through the applicable evaluation flow.
+
+The same rule applies when a material change in source, rule, Charter,
+methodology, or other evaluation context invalidates the completed evaluation.
+
+Historical validity is not current validity when the state supporting it has
+materially changed.
+
+#### 20.4.10 Source, Rule, and Fingerprint Integrity
+
+Where ClimateSOS records a source, rule-set, runtime, methodology, or other
+validation fingerprint, the validator checks that the fingerprint matches the
+state actually used during the completed evaluation.
+
+A fingerprint is not valid merely because it exists. It must correspond to the
+candidate and evaluation lineage being validated.
+
+A mismatch that could materially change evaluation or candidate construction
+prevents successful validation.
+
+#### 20.4.11 Candidate Reproducibility and Provenance Integrity
+
+The validator checks that the candidate retains enough identity, references, and
+construction metadata to reconstruct how the exact candidate was produced and
+to preserve the provenance required if its committed authoritative state is
+later persisted as a snapshot.
+
+The validation record must identify:
+
+* the candidate `TransitionPathway` that was validated;
+* the authoritative `TransitionPathway` used as its reference;
+* the user who submitted the originating pathway;
+* the `pathway_id` and `evaluation_run_id`;
+* the completed `PathwayAssessment` that allowed progression;
+* the applicable source, rule, runtime, and validator context; and
+* the candidate changes that produced the resulting global transition state.
+
+The validator does not copy the `ProductPathway`, `ProductIntakeBundle`, source
+documents, Charter results, evidence, or other upstream evaluation records.
+Those remain available through their existing immutable references.
+
+Candidate reproducibility means the candidate's identity and derivation can be
+reconstructed through those references. If the candidate is later committed
+and its authoritative state is persisted as a snapshot, that snapshot preserves
+the candidate's provenance.
+
+### 20.5 TransitionPathwayValidatorResult
+
+Each completed execution of `TransitionPathwayValidator` produces one immutable
+`TransitionPathwayValidatorResult`.
+
+The result records what was validated, the checks that ran, and whether the
+candidate may proceed to runtime promotion. It references the existing pathway
+evaluation record and its upstream results rather than copying them.
+
+At minimum, `TransitionPathwayValidatorResult` contains or references:
+
+* a validator-result identity;
+* `user_id`;
+* `pathway_id`;
+* `evaluation_run_id`;
+* the candidate `TransitionPathway` identity and version;
+* the candidate `TransitionPathway` content fingerprint;
+* the current authoritative `TransitionPathway` identity and version used for
+  validation;
+* the completed `PathwayAssessment`;
+* the validation-context fingerprint or reference;
+* the result of every `TransitionPathwayValidator` check;
+* the overall validation outcome;
+* failed, incomplete, or non-executable checks, where applicable;
+* validation failure or execution-error information, where applicable;
+* the validator version;
+* references to applicable Charter findings and checks supporting identified
+  candidate `TransitionPathway` benefits;
+* applicable source, rule-set, Charter, runtime, or methodology version
+  references needed to identify the validation context; and
+* the validation time.
+
+A reviewer or runtime component follows the result's references when it needs
+additional findings, evidence, provenance, methodology, or evaluation history.
+
+Submission time remains with the intake or originating pathway record.
+Validation time belongs to `TransitionPathwayValidatorResult`. Acceptance and
+commit time belong to the runtime promotion or authoritative transition-state
+record.
+
+A later validation attempt produces a new immutable
+`TransitionPathwayValidatorResult`.
+
+### 20.6 Atomic Immutable Commitment
+
+`TransitionPathwayValidator` does not make the candidate authoritative.
+
+When `TransitionPathwayValidatorResult` allows commitment, the validated
+candidate and result return to the ClimateSOS runtime.
+
+The runtime promotes the exact immutable candidate identified by the
+`TransitionPathwayValidatorResult`. The candidate identity, version, and content
+fingerprint must match the candidate that was validated before promotion.
+
+The runtime owns the privileged atomic promotion:
+
+```text
+candidate TransitionPathway
+        +
+TransitionPathwayValidatorResult
+        │
+        ▼
+runtime-owned atomic promotion
+        │
+        ▼
+new authoritative TransitionPathway
+```
+
+The candidate becomes authoritative only when the complete promotion succeeds.
+As part of the atomic promotion, the runtime verifies that the authoritative
+`TransitionPathway` identity and version still match the reference recorded in
+the `TransitionPathwayValidatorResult`.
+
+If the authoritative reference changed after validation, the promotion fails.
+The candidate does not replace the newer authoritative state and must return
+through the applicable evaluation flow before another promotion attempt.
+
+The runtime also verifies any validation-context fingerprint whose change would
+invalidate the completed validation.
+
+The runtime must not expose a partially committed authoritative
+`TransitionPathway`.
+
+The newly committed `TransitionPathway` becomes the authoritative global
+transition state. Its committed state may be persisted as an immutable snapshot
+for startup, recovery, fallback, and historical reference.
+
+Future global updates produce new candidates evaluated against the applicable
+authoritative state. A candidate becomes authoritative only after successful
+validation and atomic commitment, after which its committed state may likewise
+be preserved as a new immutable snapshot.
+
+The runtime records when the candidate was accepted and committed and which
+`TransitionPathwayValidatorResult` allowed the promotion.
+
+### 20.7 Validation or Promotion Failure and Preservation of the Existing Reference Pathway
+
+A candidate that does not successfully complete validation or runtime promotion
+does not become authoritative.
+
+Validation or runtime promotion may fail because of:
+
+* incomplete or malformed candidate structure;
+* broken identity, lineage, or result references;
+* an incomplete evaluation chain;
+* a `PathwayAssessment` that does not record the candidate as functionally fit
+  to replace the authoritative `TransitionPathway`;
+* loss or contradiction of a controlling restrictive state;
+* missing, duplicated, conflicting, or incompatible transition components;
+* an incomplete or inconsistent candidate-to-reference comparison;
+* a candidate delta that does not produce the resulting candidate;
+* incomplete or inconsistent temporal state;
+* mismatch between the evaluated timeline and the timeline proposed for
+  commitment;
+* a stale authoritative reference state;
+* a materially changed evaluation context;
+* a source, rule, methodology, runtime, or fingerprint mismatch;
+* a missing, null, malformed, unexecuted, internally inconsistent, or otherwise
+  invalid validator check result;
+* insufficient candidate reproducibility or provenance traceability;
+* a mismatch between the validated candidate identity, version, or content
+  fingerprint and the candidate supplied for promotion;
+* a change to the authoritative reference state or validation context after
+  validation that invalidates the completed validation; or
+* validator execution or result-integrity failure.
+
+Validation or runtime promotion failure does not modify the candidate, completed
+`PathwayAssessment`, upstream results, or current authoritative
+`TransitionPathway`.
+
+A failed validation is recorded in `TransitionPathwayValidatorResult` with
+enough context to identify why validation failed. A runtime promotion failure
+remains runtime-owned and is not represented as a validator failure.
+
+If the existing authoritative `TransitionPathway` remains valid, it stays
+authoritative.
+
+The validator does not repair the candidate in place or substitute the existing
+authoritative pathway for the failed candidate.
+
+If no safe authoritative transition state remains available, the applicable
+global startup and runtime failure rules determine whether ClimateSOS can
+continue.
+
+### 20.8 Use at the Next Startup
+
+A successfully committed `TransitionPathway` becomes ClimateSOS's authoritative
+global reference. Its committed state may be persisted as an immutable snapshot
+for use during later startup, recovery, fallback, and historical inspection.
+
+At startup, ClimateSOS checks the applicable startup inputs, source and rule
+state, persisted authoritative snapshot, and required initialization information
+before restoring the saved authoritative `TransitionPathway`.
+
+A persisted authoritative snapshot is not automatically current.
+Changes in startup inputs, Playbook logic, Charter state, rule state,
+methodologies, system models, configuration, initialization data, or other
+material startup conditions may require the global transition state to be
+revalidated or reconstructed.
+
+If the persisted authoritative snapshot remains compatible with the current
+startup context, ClimateSOS may restore its `TransitionPathway` as the
+authoritative global reference.
+
+If consequential startup inputs require a new global transition state,
+ClimateSOS constructs the applicable candidate through the global
+product-pathway evaluation flow. That candidate must again complete
+`PathwayAssessment`, `TransitionPathwayValidator`, and runtime atomic promotion
+before it can replace the current authoritative reference.
+
+After a successor `TransitionPathway` becomes authoritative, the prior
+authoritative state remains preserved as an immutable historical snapshot of
+the state it represented. The successor `TransitionPathway` is preserved
+separately as the new authoritative state and, when persisted, as a new
+immutable snapshot.
 
 ---
 
