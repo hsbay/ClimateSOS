@@ -3974,7 +3974,9 @@ state.
 `PathwayAssessmentEvaluator` evaluates the completed bound pathway state using
 the `BoundPathway`, `FinalCharterResult`, and relevant upstream findings,
 documentation, evidence, and provenance as needed to determine the final
-assessment outcome and produce the `PathwayAssessment`.
+assessment outcome and produce the `PathwayAssessment`. Additionally, it
+evaluates the candidate `TransitionPathway`'s fitness to replace the global
+authoritative `TransitionPathway`.
 
 The evaluator determines the final assessment from completed upstream findings,
 the applicable Charter results, and the bound state without revising or replacing
@@ -3993,7 +3995,9 @@ product-pathway evaluation flow rather than modifying the completed
 ### 18.1 PathwayAssessmentEvaluator
 
 `PathwayAssessmentEvaluator` performs the final evaluation of one successfully
-bound `ProductPathway` evaluation run.
+bound `ProductPathway` evaluation run. In Global Context Mode, it also determines
+whether the candidate `TransitionPathway` is fit to replace the authoritative
+`TransitionPathway`.
 
 It receives the completed immutable `BoundPathway`, the applicable
 `FinalCharterResult`, and the identity and lineage information required to
@@ -4008,6 +4012,9 @@ assessment.
 `PathwayAssessmentEvaluator` determines, as applicable:
 
 * whether the assessed pathway may proceed into its applicable outcome flow;
+* for a candidate `TransitionPathway` evaluated in Global Context Mode, whether
+  the completed candidate is functionally fit to replace the current
+  authoritative `TransitionPathway`;
 * whether progression is conditional, restricted, failed, or unresolved;
 * which material findings or conditions prevent ordinary progression;
 * which upstream results own those findings or conditions;
@@ -4020,6 +4027,22 @@ assessment.
 * the justification for any required resolution or remedy; and
 * which material changes require re-evaluation rather than continuation under
   the existing assessment.
+
+For a candidate `TransitionPathway` evaluated in Global Context Mode,
+replacement fitness is determined from the completed candidate and its
+comparison with the authoritative `TransitionPathway`, including the
+`NetOverallSystemRiskResult`, applicable Charter results, bound state, and other
+material upstream findings.
+
+The `PathwayAssessmentEvaluator` evaluates whether the candidate can complete
+the required net-zero transition within the applicable transition window and
+compares that result with the authoritative `TransitionPathway`. It also
+evaluates material differences in timing, reliability, resilience, justice,
+biosphere integrity, and other Charter- or transition-relevant conditions.
+
+Material improvements and regressions remain separately identifiable. An
+improvement in one dimension does not erase a disqualifying, restrictive, or
+unresolved condition in another.
 
 `PathwayAssessmentEvaluator` does not modify any upstream result.
 
@@ -4042,6 +4065,17 @@ evaluations that produced it.
 A `PathwayAssessment` may represent a successful, conditional, restricted,
 failed, unresolved, or other successfully completed bound outcome.
 
+For a candidate `TransitionPathway` evaluated in Global Context Mode, the
+`PathwayAssessment` records whether the completed candidate is functionally fit
+to replace the authoritative `TransitionPathway` used during the evaluation.
+
+The assessment preserves the basis for that determination, including material
+comparative findings concerning the candidate's net-zero trajectory, timing,
+reliability, resilience, justice, biosphere integrity, and other applicable
+transition or Charter conditions. Material improvements and regressions remain
+separately identifiable, together with any condition that prevents the candidate
+from replacing the authoritative `TransitionPathway`.
+
 Where the assessment does not permit ordinary progression, it preserves the
 findings and conditions that produced that outcome and the information required
 for any applicable resolution, remedy, review, or later re-evaluation.
@@ -4061,6 +4095,10 @@ At minimum, it shall include or reference, as applicable:
 * `FinalCharterResult`;
 * `BoundPathway`;
 * the final assessment outcome;
+* for a Global Context Mode candidate, the replacement-fitness determination
+  and references to the material comparative findings supporting it;
+* references to material improvements or regressions relative to the
+  authoritative `TransitionPathway`, where applicable;
 * references to material findings or conditions that prevent ordinary
   progression, where applicable;
 * references to the upstream results that own those findings or conditions;
