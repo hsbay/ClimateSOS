@@ -4301,10 +4301,13 @@ action may produce updated evidence, documentation, authorization, pathway
 material, remedy state, or other information required by the
 `PathwayAssessment`.
 
-When the root causes identified by the `PathwayAssessment` have been resolved,
-a successor evaluation run is triggered. The successor run preserves its
-relationship to the prior evaluation run and carries the corrected or updated
-material into the shared product-pathway evaluation flow.
+When corrective action addresses the blocking, restrictive, unresolved, or
+otherwise non-progressing conditions identified by the `PathwayAssessment` and
+produces corrected or updated material requiring re-evaluation, that material is
+submitted through the re-evaluation intake path. The resulting successor
+evaluation run preserves its relationship to the prior evaluation run and
+carries the corrected or updated material into the shared product-pathway
+evaluation flow.
 
 Resolution processing does not determine whether the corrective action
 successfully resolves the prior finding. That determination belongs to the
