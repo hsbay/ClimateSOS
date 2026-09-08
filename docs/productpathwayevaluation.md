@@ -4423,6 +4423,7 @@ NetOverallSystemRiskResult
 NetOverallSystemContribution
 BoundPathway
 PathwayAssessment
+TransitionPathwayValidatorResult
 TransitionPathway
 ```
 
