@@ -194,8 +194,18 @@ results, candidate and authoritative `TransitionPathway` states, risk results,
 Where ClimateSOS models changing system state, each completed state is
 represented as a new immutable object or result rather than by modifying or
 overwriting a previously completed object. Persisted authoritative
-`TransitionPathway` states may additionally be preserved as immutable
-snapshots.
+`TransitionPathway` states may additionally be preserved within immutable
+snapshots that retain the state, identity, references, and provenance
+information required to restore the authoritative state and to reach or
+recreate the full provenance of the state they represent.
+
+ClimateSOS preserves immutable evaluation records, authoritative-state records,
+and their references according to the configured retention policy. The default
+retention policy is indefinite. Records may move to archival or other storage,
+but storage-management actions must preserve the identities, references,
+integrity, and provenance required to inspect the preserved state and to reach
+or recreate its supporting evaluation lineage. Retention-policy requirements are
+defined in Section 23.3.
 
 Work-performing components such as adapters, assemblers, evaluators, validators, and handlers are not subject to this object-immutability rule merely because they produce immutable outputs.
 
@@ -4365,7 +4375,8 @@ A later remedy or successful successor evaluation does not replace the earlier
 
 The evaluation history therefore preserves both the condition originally
 identified and any later evaluation that determines whether the condition was
-resolved.
+resolved. Retention of the immutable records and references required to inspect
+that history is governed by Section 23.3.
 
 ---
 
@@ -4837,6 +4848,8 @@ At minimum, `TransitionPathwayValidatorResult` contains or references:
 
 A reviewer or runtime component follows the result's references when it needs
 additional findings, evidence, provenance, methodology, or evaluation history.
+Those references remain subject to the retention and provenance-preservation
+requirements in Section 23.3.
 
 Submission time remains with the intake or originating pathway record.
 Validation time belongs to `TransitionPathwayValidatorResult`. Acceptance and
@@ -4976,8 +4989,12 @@ before it can replace the current authoritative reference.
 After a successor `TransitionPathway` becomes authoritative, the prior
 authoritative state remains preserved as an immutable historical snapshot of
 the state it represented. The successor `TransitionPathway` is preserved
-separately as the new authoritative state and, when persisted, as a new
-immutable snapshot.
+separately as the new authoritative state and, when an authoritative-state
+snapshot is created, is also preserved within a new immutable snapshot. Each
+retained snapshot preserves sufficient state, identity, references, and
+provenance information to restore the authoritative state it represents and to
+reach or recreate its full provenance, subject to the retention requirements
+in Section 23.3.
 
 ---
 
@@ -5064,7 +5081,56 @@ ResolutionHandler
 TransitionPathwayValidator
 ```
 
-### 23.3 Immutability and State-Integrity Requirements
+### 23.3 Immutability, State-Integrity, and Retention Requirements
+
+Completed ClimateSOS records remain immutable for the lifetime of those
+records. Retention determines how long a record is preserved. 
+
+The canonical Playbook-derived baseline `TransitionPathway`, together with the
+state and provenance information required to establish and reconstruct that
+baseline, is retained indefinitely and distributed with ClimateSOS as part of
+its authoritative reference material.
+
+ClimateSOS shall support a configurable retention policy for runtime evaluation
+records, authoritative-state history, and associated provenance. The deploying
+user or system operator is prompted to select and configure that policy. If no
+finite retention period is configured, the system default is indefinite
+retention. If finite retention is selected, a minimum period of ten years is
+recommended.
+
+Regardless of the configured retention period:
+
+* the current authoritative `TransitionPathway` and the state required to
+  restore and inspect it must remain available while that pathway is
+  authoritative;
+* a retained authoritative snapshot must preserve sufficient state, identity,
+  references, fingerprints, and provenance information to restore the
+  authoritative state it represents and to reach or recreate its full
+  provenance;
+* archival, migration, compaction, or movement between storage tiers must not
+  alter the identity or contents of a retained immutable record;
+* retention or archival must preserve the timestamps, versions, currentness
+  information, source context, and other metadata required to distinguish
+  historical evidence or results from evidence or results that remain current;
+* storage-management actions must not silently create dangling references or
+  substitute records from another pathway or evaluation run; and
+* storage pressure alone must not cause unconfigured destructive pruning.
+
+A configured finite retention policy may expire runtime records after the
+applicable retention period, but expiration must be explicit under that policy.
+Before removing a record, ClimateSOS must either preserve the information
+required by any retained authoritative state, snapshot, or historical record to
+reach or recreate the affected provenance, or preserve the referenced record
+through archival storage.
+
+Archival storage may differ from active runtime storage. Moving a record to an
+archive does not change its identity, evaluation lineage, provenance, or
+immutability requirements.
+
+Where available storage becomes insufficient to satisfy the configured
+retention policy, ClimateSOS surfaces the storage condition for operator action
+or archival handling rather than silently discarding retained evaluation
+history.
 
 ### 23.4 Identity and Attribution Requirements
 
