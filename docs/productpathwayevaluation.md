@@ -1865,9 +1865,8 @@ Where tipping is material to the queue evaluation, the finding preserves the app
 * evaluation time;
 * applicable TTL, expiry, age, or last-verification information;
 * the authoritative `TransitionPathway` and applicable system context used for evaluation;
-* evaluator and rule-set versions;
-* the evaluation-run identity; and
-* `user_id` and `pathway_id` attribution.
+* evaluator version and applicable rule-set version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 A `QueueEvaluatorResult` is not a copy of the `QueueExecutionResult` or any individual `QueueProgressRecord`. It records the evaluator's completed conclusion from the queue's execution, final evaluated condition, material progression history, and applicable pathway, transition, and system context.
 
@@ -1926,9 +1925,8 @@ A `FabricEvaluatorResult` contains or references, as applicable:
 * relevant pathway-comparison and downstream-propagation findings;
 * assumptions and uncertainties affecting the evaluation;
 * source, evidence, and provenance references;
-* the evaluator and applicable rule-set version;
-* the evaluation-run identity; and
-* `user_id` and `pathway_id` attribution.
+* evaluator version and applicable rule-set version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 Where a fabric condition emerges from relationships among individually viable queue bundles, the `FabricEvaluatorResult` preserves the coordination relationships responsible for that result.
 
@@ -1983,9 +1981,9 @@ The `PathwayEngineResult` contains or references, as applicable:
 * material assumptions and uncertainties;
 * unresolved evaluation conditions;
 * applicable transition and system context;
-* evaluator and rule-set versions;
+* evaluator version and applicable rule-set version;
 * evidence and provenance references; and
-* `user_id` and `pathway_id` attribution.
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 Applicable `QueueExecutionResult` and `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayEngineResult` does not duplicate queue execution results or queue-progress history.
 
@@ -2295,8 +2293,8 @@ The result contains or references, as applicable:
 * material assumptions and uncertainties;
 * supporting comparison, queue, fabric, and documentation findings;
 * evidence and provenance references;
-* evaluator and rule-set versions; and
-* `user_id` and `pathway_id` attribution.
+* evaluator version and applicable rule-set version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 The result preserves the distinction between supported contribution findings
 and contribution claims that remain conditional, unresolved, or unsupported by
@@ -2539,8 +2537,8 @@ The result contains or references, as applicable:
 * unresolved scale conditions;
 * material assumptions and uncertainties;
 * supporting evidence and provenance references;
-* evaluator and rule-set versions; and
-* `user_id` and `pathway_id` attribution.
+* evaluator version and applicable rule-set version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 The result preserves the distinction between demonstrated scale, supported
 prospective scale, conditional scale, constrained scale, and unresolved scale,
@@ -3216,8 +3214,8 @@ The result contains or references, as applicable:
 * Charter-style risk findings;
 * material assumptions and uncertainties;
 * supporting evidence and provenance references;
-* evaluator and rule-set versions; and
-* `user_id` and `pathway_id` attribution.
+* evaluator version and applicable rule-set version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 The result preserves the distinction between an adverse risk finding, an
 unresolved risk finding, and evaluator-integrity failure.
@@ -3350,8 +3348,9 @@ The result exposes semantically primary references to:
 * the `ProductPathway` under evaluation;
 * the authoritative `TransitionPathway` used as the evaluation reference;
 * the candidate or prospective candidate `TransitionPathway`;
-* the completed `NetOverallSystemRiskResult`; and
-* `user_id` and `pathway_id` attribution.
+* the completed `NetOverallSystemRiskResult`;
+* the `FinalPathwayAssembly` version and applicable assembly-rule version; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 The result also contains the `evaluation_trace`, which preserves immutable
 artifact references to completed upstream evaluation results that remain
@@ -3730,7 +3729,7 @@ At minimum, `BoundPathway` preserves:
 
 * a reference to the completed `FinalPathwayResult`;
 * the applicable bound state;
-* `user_id` and `pathway_id` attribution; and
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution; and
 * the binding-rule or mechanism identity and version required to identify how
   the state was attached.
 
