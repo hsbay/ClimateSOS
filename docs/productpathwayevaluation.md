@@ -215,7 +215,17 @@ The two flows share the same architecture until their final outcomes diverge.
 
 The global context is used strictly to update the reference `TransitionPathway`. It occurs after the program starts and before a user can evaluate one or more product pathways. In this global evaluation context, one candidate global `TransitionPathway` is evaluated against one authoritative global reference `TransitionPathway` at a time. The candidate may represent a limited proposed delta or a prospective replacement for a larger portion of the global net-zero transition. The reference is either the Playbook-derived global pathway or the previously validated `TransitionPathway`.
 
-After pathway evaluation, contribution analysis, scale diagnosis, global-system-risk evaluation, final Charter evaluation, and binding, the candidate must pass `TransitionPathwayValidator` before it can be atomically committed as the validated global `TransitionPathway`. Once committed, the newly validated global `TransitionPathway` replaces the previous reference pathway. It is preserved for use at the next startup and serves as the current reference pathway if the user proceeds with evaluation of a user-submitted `ProductPathway`.
+After pathway evaluation, contribution analysis, scale diagnosis,
+global-system-risk evaluation, final Charter evaluation, and binding, the
+candidate proceeds to construction of a `PathwayAssessment`. A candidate whose
+completed `PathwayAssessment` allows progression in Global Context Mode must
+then be validated by the `TransitionPathwayValidator` before it can be
+atomically committed as the authoritative global `TransitionPathway`.
+
+Once committed, the new authoritative `TransitionPathway` replaces the previous
+authoritative reference state and serves as the current reference pathway for
+subsequent user-submitted `ProductPathway` evaluations. Its committed state may
+be persisted for use at the next startup.
 
 In the user-submitted context, a user may provide one or more intake submissions, each of which generates a separate `ProductPathway` for evaluation against the current validated global `TransitionPathway`. In user-submitted mode, the global `TransitionPathway` is immutable. One or more user-submitted candidate pathways may be evaluated separately and do not modify the global `TransitionPathway`. Each candidate pathway’s modeled effects and evaluation findings are recorded in its `PathwayAssessment`.
 
