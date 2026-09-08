@@ -1781,7 +1781,7 @@ Additional progress records are produced when preserving a material state change
 A `QueueProgressRecord` contains or references, as applicable:
 
 * the evaluated queue;
-* the applicable evaluation-run identity;
+* `evaluation_run_id`;
 * the operational status at that point in the evaluation;
 * the lifecycle state at that point in the evaluation;
 * ordering or synchronization status, where applicable;
@@ -1813,7 +1813,7 @@ The `QueueExecutionResult` preserves the material execution outcome needed to ev
 A `QueueExecutionResult` contains or references, as applicable:
 
 * the evaluated queue;
-* the applicable evaluation-run identity;
+* `evaluation_run_id`;
 * the execution state reached by the represented queue function;
 * the material work completed during execution;
 * applicable timing, sequencing, duration, or completion information;
@@ -4102,6 +4102,7 @@ evaluation run that produced it.
 At minimum, it shall include or reference, as applicable:
 
 * `pathway_assessment_id`;
+* `user_id`;
 * `pathway_id`;
 * `evaluation_run_id`;
 * `InitialCharterResult`;
