@@ -4184,7 +4184,7 @@ evaluation_run_id = R001
 evaluation_run_id = R002
     prior_evaluation_run_id = R001
     PathwayAssessment = A002
-```text
+```
 
 `A002` does not replace or mutate `A001`. Both remain part of the pathway's
 evaluation history.
