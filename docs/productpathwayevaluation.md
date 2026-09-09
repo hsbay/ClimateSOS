@@ -5019,15 +5019,133 @@ in Section 23.3.
 
 ## 21. User-Submitted Context Outcome
 
-### 21.1 Immutable Global Reference Pathway
+User-submitted context evaluates one or more user-submitted pathways against the
+current validated global `TransitionPathway` without changing the validated
+global transition state.
 
-### 21.2 Separate Evaluation of Multiple Submissions
+Each submission proceeds through the shared Product Pathway Evaluation Flow and
+produces its own immutable evaluation lineage. Multiple submissions may be
+received or evaluated concurrently or nearly concurrently, but ClimateSOS
+preserves each submission as a separate pathway and evaluation run.
+
+A user-submitted pathway may produce a prospective candidate
+`TransitionPathway` representing the modeled effect of that pathway on the
+validated global transition. That prospective candidate remains an evaluation
+artifact. It does not become authoritative and does not enter the Global Context
+promotion flow.
+
+### 21.1 Global Reference Pathway Immutable State
+
+The state of the current validated global `TransitionPathway`, as the
+authoritative validated global pathway, is immutable throughout user-submitted
+evaluation.
+
+A user-submitted `ProductPathway`, prospective candidate `TransitionPathway`,
+`PathwayAssessment`, resolution action, or successor evaluation run may inspect,
+compare against, or model effects relative to the validated global
+`TransitionPathway`, but none may modify its state from the user-submitted
+context.
+
+The validated global `TransitionPathway` used by a completed evaluation remains
+identified in that evaluation lineage so the resulting findings can be traced
+to the exact global reference state against which they were produced.
+
+If the validated global `TransitionPathway` changes while a user-submitted
+pathway is being evaluated, the current evaluation run is invalidated because
+its reference state is no longer current. The pathway must be evaluated in a
+new evaluation run against the new validated global `TransitionPathway`.
+
+### 21.2 Independent Evaluation of User Submissions
+
+Each user submission is evaluated as a single independent pathway.
+
+Each user submission receives a canonical `IdentityToken` from the Identity
+Layer, is assigned its own `pathway_id`, and is associated with the `user_id`
+of the user who initiated the request. The resulting `ProductIntakeBundle`,
+`ProductPathway`, evaluation run, evaluation artifacts, and
+`PathwayAssessment` remain associated with that identity, user attribution,
+and pathway lineage.
+
+Multiple submissions from the same user may be received or evaluated
+concurrently or nearly concurrently. Concurrent execution does not merge their
+identity, pathway lineage, evaluation state, evidence, findings, prospective
+candidate `TransitionPathway`, or `PathwayAssessment`.
+
+Each submission is evaluated against the applicable current validated global
+`TransitionPathway` independently of the other user submissions.
+
+A failure, unresolved condition, resolution requirement, re-evaluation, or
+successful outcome for one submitted pathway does not change the evaluation
+state or result of another submitted pathway.
 
 ### 21.3 Result Construction
 
-### 21.4 No Mutation of the Global TransitionPathway
+The terminal architectural result of a successfully completed user-submitted
+evaluation is its immutable `PathwayAssessment`.
 
-### 21.5 Combined Pathways as Separate Intakes
+The `PathwayAssessment` records the completed assessment state and preserves or
+references the findings, Charter results, bound state, contribution, scale,
+global-system-risk findings, evidence, provenance, prospective candidate
+`TransitionPathway`, and other upstream results required to inspect the
+evaluation.
+
+The user-submitted outcome is complete when ClimateSOS produces the
+`PathwayAssessment`.
+
+A user interface, API, report generator, or other presentation layer may
+serialize, format, summarize, or wrap the completed `PathwayAssessment` for
+delivery, but such presentation shall not create a new authoritative evaluation
+result or replace the underlying `PathwayAssessment`.
+
+Where the `PathwayAssessment` requires resolution, the pathway follows the
+resolution and re-evaluation flow defined in Section 19. A successor evaluation
+produces a new immutable `PathwayAssessment` associated with the new
+`evaluation_run_id` while preserving the prior evaluation history.
+
+### 21.4 No Global-State Promotion From User Context
+
+User-submitted context is prohibited from promoting a prospective candidate
+`TransitionPathway` into the validated global transition state.
+
+A prospective candidate `TransitionPathway` produced during user-submitted
+evaluation is used only to represent and evaluate the modeled effect of that
+submitted pathway relative to the validated global reference.
+
+User-submitted context does not route the prospective candidate
+`TransitionPathway` to `TransitionPathwayValidator` and does not invoke runtime
+atomic promotion.
+
+`TransitionPathwayValidator` and authoritative global-state promotion belong to
+the Global Context outcome flow defined in Section 20.
+
+A user-submitted pathway therefore cannot replace, modify, supersede, or become
+the validated global authoritative reference `TransitionPathway` through the
+user-submitted evaluation flow.
+
+### 21.5 Combined Pathways Require a Combined Intake
+
+ClimateSOS does not merge separately submitted user pathways into a combined
+pathway for evaluation.
+
+If a user submits pathway A and pathway B separately, ClimateSOS evaluates them
+as separate `ProductPathway` objects with separate identities, evaluation runs,
+prospective candidate `TransitionPathway` objects, and `PathwayAssessment`
+results.
+
+If the user wants pathways A and B evaluated as one coordinated or combined
+pathway, the combined pathway must be submitted as a single intake
+representing pathways A and B together. That combined intake produces its own
+`ProductIntakeBundle`, `ProductPathway`, pathway lineage, evaluation run, and
+`PathwayAssessment`.
+
+ClimateSOS does not construct a combined pathway by merging previously
+submitted `ProductPathway` objects, completed `PathwayAssessment` objects, or
+their prospective candidate `TransitionPathway` objects.
+
+The implementation should avoid unnecessary assumptions that would prevent a
+future explicitly defined multi-pathway evaluation feature, but no such merge
+or coordinated multi-pathway evaluation operation is part of the current
+Product Pathway Evaluation Flow.
 
 ---
 
