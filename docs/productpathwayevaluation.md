@@ -4328,9 +4328,10 @@ successor evaluation run.
 A completed resolution action does not change the result of the evaluation run
 that identified the condition.
 
-After addressing the root causes identified by the `PathwayAssessment`, the
-user or authorized external actor submits the corrected or updated pathway
-material through the re-evaluation intake path.
+After addressing the blocking, restrictive, unresolved, or otherwise
+non-progressing conditions identified by the `PathwayAssessment`, the user or
+authorized external actor submits the corrected or updated pathway material
+through the re-evaluation intake path.
 
 The re-evaluation intake preserves the `pathway_id`, prior evaluation run,
 `PathwayAssessment`, triggering findings, completed resolution information,
