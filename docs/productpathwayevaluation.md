@@ -163,7 +163,9 @@ The principal stages are:
 
 * identity-token establishment;
 * creation of an immutable `ProductIntakeBundle`;
-* adaptation into a `ProductAdapterResult` containing the normalized `ProductPathway` and a reference to its associated `ProductIntakeBundle`;
+* adaptation into a `ProductAdapterResult` containing the normalized
+  `ProductPathway` and a reference to its associated `ProductIntakeBundle`;
+* creation of an immutable `EvaluationRun` for the completed `ProductPathway`;
 * initial Charter evaluation;
 * assembly of pathway objects into `ProductQueueBundle` and `ProductFabric` groupings, as applicable;
 * comparison of the pathway with the global `TransitionPathway`;
@@ -184,12 +186,12 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
 This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`,
-`ProductPathway`, `ProductQueueBundle`, `ProductFabric`,
+`ProductPathway`, `EvaluationRun`, `ProductQueueBundle`, `ProductFabric`,
 `QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`,
 `FabricEvaluatorResult`, Charter results, system-contribution and scale
 results, candidate and authoritative `TransitionPathway` states, risk results,
-`FinalPathwayResult`, bound-state records, `BoundPathway`, and
-`PathwayAssessment`.
+`FinalPathwayResult`, bound-state records, `BoundPathway`,
+`PathwayAssessment`, and `ResolutionRecord`.
 
 Where ClimateSOS models changing system state, each completed state is
 represented as a new immutable object or result rather than by modifying or
@@ -312,12 +314,22 @@ ProductAdapter
     │
     ▼
 ProductAdapterResult
+    │
     ├── ProductPathway
     │       Normalized pathway represented as an internal map or graph.
     │
     ├── ProductIntakeBundle reference
     │       Preserves the pathway's association with its immutable
-    │       intake materials and IdentityToken.
+    │       intake materials, user attribution, and IdentityToken.
+    │
+    ▼
+EvaluationRunHandler
+    │
+    │  Creates one immutable EvaluationRun for the completed ProductPathway
+    │  using trusted ReEvaluationContext.
+    │
+    ▼
+EvaluationRun
     │
     ▼
 CharterEvaluator
@@ -739,7 +751,10 @@ evaluation-run reference, prior `PathwayAssessment`, triggering findings,
 completed resolution information, and corrected or updated pathway material
 submitted for re-evaluation.
 
-The `ProductIntakeBundle` contains the customer-supplied pathway materials and preserves their association with the canonical `IdentityToken`, intake metadata, documentation, evidence, and provenance.
+The `ProductIntakeBundle` contains the customer-supplied pathway materials and
+preserves their association with the canonical `IdentityToken` and the
+independent `user_id` attribution, together with intake metadata,
+documentation, evidence, and provenance.
 
 The `ProductAdapter` produces one immutable `ProductAdapterResult`.
 
@@ -770,7 +785,11 @@ The `ProductAdapterResult` associates the `ProductPathway` with the `ProductInta
 
 The `ProductAdapter` receives the canonical `IdentityToken` through the `ProductIntakeBundle` and preserves it unchanged.
 
-When constructing the `ProductPathway`, the `ProductAdapter` preserves `user_id` and `pathway_id` on every atomic graph object it creates. Each node, relationship, dependency, claim, evidence reference, output, and other represented element remains attributable to the user and pathway from which it was derived.
+When constructing the `ProductPathway`, the `ProductAdapter` preserves
+`user_id` and the canonical `IdentityToken` association and assigns the new
+immutable `ProductPathway` its `pathway_id`. Each attributable graph object
+preserves the `user_id` and `pathway_id` required to trace it to the user and
+exact `ProductPathway` from which it was derived.
 
 The format of individual graph-object identifiers remains an implementation decision. An object created from one pathway must not be silently merged with or mistaken for an object created from another pathway.
 
@@ -5059,12 +5078,16 @@ new evaluation run against the new validated global `TransitionPathway`.
 
 Each user submission is evaluated as a single independent pathway.
 
-Each user submission receives a canonical `IdentityToken` from the Identity
-Layer, is assigned its own `pathway_id`, and is associated with the `user_id`
-of the user who initiated the request. The resulting `ProductIntakeBundle`,
-`ProductPathway`, evaluation run, evaluation artifacts, and
-`PathwayAssessment` remain associated with that identity, user attribution,
-and pathway lineage.
+Each user submission receives a canonical machine-issued `IdentityToken` from
+the Identity Layer and remains independently associated with the `user_id` of
+the user who initiated the request. The Intake Layer creates a new immutable
+`ProductIntakeBundle`. Successful adaptation creates a new immutable
+`ProductPathway` with its own `pathway_id`, after which the Product Adapter
+flow creates the immutable `EvaluationRun`.
+
+`user_id`, `identity_token_id`, `pathway_id`, and `evaluation_run_id` remain
+separate identity dimensions. They preserve principal attribution, lineage
+identity, exact pathway identity, and exact execution identity respectively.
 
 Multiple submissions from the same user may be received or evaluated
 concurrently or nearly concurrently. Concurrent execution does not merge their
@@ -5172,8 +5195,9 @@ Product Pathway Evaluation Flow.
 ```
 IdentityToken
 ProductIntakeBundle
-ProductPathway
 ProductAdapterResult
+ProductPathway
+EvaluationRun
 ProductQueueBundle
 ProductFabric
 QueueProgressRecord
@@ -5190,6 +5214,8 @@ NetOverallSystemRiskResult
 NetOverallSystemContribution
 BoundPathway
 PathwayAssessment
+ResolutionRecord
+ReEvaluationContext
 TransitionPathwayValidatorResult
 TransitionPathway
 ```
@@ -5198,6 +5224,7 @@ TransitionPathway
 
 ```
 ProductAdapter
+EvaluationRunHandler
 ProductAssembly
 QueueBundler
 FabricAssembler
@@ -5221,7 +5248,7 @@ TransitionPathwayValidator
 ### 23.3 Immutability, State-Integrity, and Retention Requirements
 
 Completed ClimateSOS records remain immutable for the lifetime of those
-records. Retention determines how long a record is preserved. 
+records. Retention determines how long a record is preserved.
 
 The canonical Playbook-derived baseline `TransitionPathway`, together with the
 state and provenance information required to establish and reconstruct that
@@ -5270,6 +5297,102 @@ or archival handling rather than silently discarding retained evaluation
 history.
 
 ### 23.4 Identity and Attribution Requirements
+
+ClimateSOS preserves four independent identity dimensions across the product
+pathway evaluation flow:
+
+```text
+user_id
+    identifies the principal associated with the evaluation
+
+identity_token_id
+    identifies the canonical machine-issued pathway lineage
+
+pathway_id
+    identifies one exact immutable ProductPathway
+
+evaluation_run_id
+    identifies one exact execution of that ProductPathway
+```
+
+`IdentityToken` is the canonical machine-issued lineage identity. It does not
+contain `user_id`, `pathway_id`, evaluation-run identity, or resolution state.
+`user_id` is a separate first-class principal identity and is not contained
+within or derived from `IdentityToken`.
+
+A new ordinary submission receives a new `IdentityToken`. ClimateSOS preserves
+an existing `IdentityToken` only through the explicit resolution and
+re-evaluation path. Lineage continuity must not be inferred from similarity
+between separately submitted materials.
+
+One immutable `ProductIntakeBundle` is adapted into at most one immutable
+`ProductPathway`. A successfully constructed `ProductPathway` receives one
+`pathway_id`. The Product Adapter flow creates one immutable `EvaluationRun`
+for that `ProductPathway` before substantive pathway evaluation begins.
+
+For every run, the Product Adapter flow provides `EvaluationRunHandler` with
+the completed `ProductIntakeBundle`, `ProductPathway`, and trusted
+`ReEvaluationContext`. The handler uses the established `user_id`,
+`identity_token_id`, `intake_bundle_id`, and `pathway_id` associations to
+create the run.
+
+For an ordinary run, `ReEvaluationContext` contains no predecessor or
+resolution references. For a successor run created through the explicit
+resolution and re-evaluation path, that same context carries the applicable
+`predecessor_run_id` and `resolution_record_id`.
+
+The minimum `EvaluationRun` identity and lineage record is:
+
+```text
+EvaluationRun
+    evaluation_run_id
+    user_id
+    identity_token_id
+    intake_bundle_id
+    pathway_id
+    predecessor_run_id       optional
+    resolution_record_id     optional
+```
+
+`predecessor_run_id` and `resolution_record_id` are populated only for a
+successor created through the explicit resolution and re-evaluation path.
+`EvaluationRun` does not infer either relationship.
+
+Every Product Adapter flow creates trusted internal `ReEvaluationContext`.
+Its re-evaluation fields are normally empty and are populated only for a
+successor run created through the explicit resolution and re-evaluation path.
+
+`ReEvaluationContext` carries:
+
+```text
+identity_token_id
+predecessor_run_id       optional
+resolution_record_id     optional
+```
+
+The context is system-authored orchestration state and is not authoritative by
+itself. Before creating the successor `EvaluationRun`,
+`EvaluationRunHandler` resolves and validates the referenced records and
+confirms that the predecessor run, resolution record, current intake, current
+pathway, `IdentityToken`, and `user_id` relationships are internally
+consistent.
+
+`ProductIntakeBundle`, `ProductPathway`, and `EvaluationRun` remain immutable.
+`ProductPathway` does not own predecessor or resolution state.
+
+`PathwayAssessment` carries the `evaluation_run_id` of the exact run that
+produced it. `EvaluationRun` is the canonical durable relationship joining
+`intake_bundle_id`, `pathway_id`, and `evaluation_run_id`. ClimateSOS must be
+able to recover the applicable evaluation state beginning from any retained
+`PathwayAssessment`, `ProductPathway`, and `ProductIntakeBundle`.
+`PathwayAssessment` is the primary completed-state recovery anchor;
+`ProductPathway` and `ProductIntakeBundle` provide independent recovery paths.
+
+The durable reference layer must enforce an unambiguous relationship between
+an `EvaluationRun` and its `intake_bundle_id` and `pathway_id`, and between a
+completed `PathwayAssessment` and its `evaluation_run_id`. Storage and index
+implementation are implementation decisions, but they must preserve these
+relationships through archival, restoration, and retention operations.
 
 ### 23.5 Error and Missing-Result Requirements
 
