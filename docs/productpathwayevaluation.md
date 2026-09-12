@@ -919,7 +919,11 @@ InitialCharterResult
 
 ### 6.1 Evaluation Boundary
 
-The Initial Charter Evaluation examines the `ProductPathway` contained in the completed `ProductAdapterResult`. It accesses the associated `ProductIntakeBundle` when a required check depends on customer-supplied documentation, evidence, or provenance.
+The Initial Charter Evaluation examines the `ProductPathway` contained in the
+completed `ProductAdapterResult`. It accesses the associated
+`ProductIntakeBundle` when a required check depends on customer-supplied
+documentation, evidence, or provenance, and retains the associated
+`EvaluationRun` reference.
 
 It evaluates:
 
@@ -931,25 +935,40 @@ It evaluates:
 * whether every required Initial Charter check executed and produced a valid result; and
 * whether the Initial Charter Evaluation completed without an execution or evaluator-integrity error.
 
-The Initial Charter Evaluation does not determine whether the pathway successfully contributes to net zero, compare it with the authoritative `TransitionPathway`, or assign its binding state.
+During its provenance check, it verifies that the `EvaluationRun`,
+`ProductPathway`, and `ProductIntakeBundle` reference the same `IdentityToken`.
+It also verifies that the `ProductPathway`'s `evaluation_run_id` matches the
+`EvaluationRun`'s `evaluation_run_id`.
+
+The Initial Charter Evaluation does not determine whether the pathway
+successfully contributes to net zero, compare it with the authoritative
+`TransitionPathway`, or assign its binding state.
 
 It does not perform downstream pathway assembly, synchronization comparison, scale evaluation, net overall system contribution evaluation, net overall system risk evaluation, candidate-transition construction, or final binding.
 
 ### 6.2 Initial Evaluation Inputs
 
-The Initial Charter Evaluation receives the completed `ProductPathway`, the associated `ProductIntakeBundle`, and the Charter resources required to evaluate the pathway.
+The Initial Charter Evaluation receives the completed `ProductPathway`, the
+associated `ProductIntakeBundle`, the associated `EvaluationRun` reference,
+and the Charter resources required to evaluate the pathway.
 
 Its inputs include:
 
 * the immutable `ProductPathway`;
 
   * the pathway identity and provenance references carried by the pathway;
+  * the `evaluation_run_id`;
   * the normalized internal representation of the pathway;
 
 * the immutable `ProductIntakeBundle`;
 
   * the associated `IdentityToken`;
   * the documentation, evidence, and provenance available for each applicable check;
+
+* the immutable `EvaluationRun`;
+
+  * the associated `IdentityToken`;
+  * the associated `evaluation_run_id`;
 
 * the ClimateSOS Foundational Charter distributed with the ClimateSOS runtime;
 
@@ -969,7 +988,9 @@ The `InitialCharterResult` represents the complete outcome of the Initial Charte
 
 The immutable `InitialCharterResult` contains:
 
-* a reference to the evaluated `ProductAdapterResult`, preserving its association with the evaluated `ProductPathway`, `ProductIntakeBundle`, and pathway identity;
+* a reference to the evaluated `ProductAdapterResult`, preserving its association with
+  the evaluated `ProductPathway`, `ProductIntakeBundle`, `EvaluationRun`, and pathway
+  identity;
 * the result of every required Initial Charter check;
 * findings, evidence references, and supporting provenance associated with each check;
 * unresolved or not-applicable conditions returned by completed checks, where applicable;
