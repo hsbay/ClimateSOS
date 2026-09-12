@@ -4514,7 +4514,8 @@ the existing authoritative `TransitionPathway`.
 completed global-context pathway evaluation and updating the authoritative
 global transition state. It receives the candidate `TransitionPathway`,
 completed `PathwayAssessment`, current authoritative `TransitionPathway`,
-`user_id`, `pathway_id`, `evaluation_run_id`, and the global validation context.
+`IdentityToken`, `user_id`, `pathway_id`, `evaluation_run_id`, and the global
+validation context.
 
 The validator checks that the proposed candidate is the same candidate produced
 by the completed evaluation run and that its structure, timeline, lineage, rule
@@ -4552,13 +4553,17 @@ does not change the validator's functional scope of transition-pathway integrity
 * the immutable candidate `TransitionPathway`;
 * the completed immutable `PathwayAssessment`;
 * the current authoritative `TransitionPathway`;
+* the current `IdentityToken`;
 * `user_id`;
 * `pathway_id`;
 * `evaluation_run_id`; and
 * the global validation context.
 
-`user_id`, `pathway_id`, and `evaluation_run_id` preserve the common identity
-and evaluation lineage carried across the pathway results.
+The `IdentityToken`, `user_id`, `pathway_id`, and `evaluation_run_id` are
+supplied explicitly at the validation boundary so the validator can verify them
+against the identities and references preserved by the completed evaluation
+chain. Their presence here does not require every upstream result to duplicate
+those identifiers.
 
 The global validation context contains or references the current state required
 for validation, including:
@@ -4628,9 +4633,15 @@ same applicable evaluation lineage.
 
 Validation confirms that:
 
-* `user_id`, `pathway_id`, `evaluation_run_id`, and `PathwayAssessment`
-  correspond across the completed product-pathway evaluation run, including
-  the run that produced the candidate;
+* the supplied `user_id`, `pathway_id`, and `evaluation_run_id` correspond to
+  the user attribution, assessed `ProductPathway`, and `EvaluationRun`
+  established by the completed evaluation chain, including the run that
+  produced the candidate;
+* the supplied `IdentityToken` matches the `IdentityToken` associated with the
+  assessed `ProductPathway` and `EvaluationRun`, and the `PathwayAssessment`
+  resolves to that same lineage through its assessed `ProductPathway`;
+* the assessed `ProductPathway` belongs to the `EvaluationRun` identified by
+  the supplied `evaluation_run_id`;
 * referenced upstream results resolve to the expected immutable objects;
 * the candidate was constructed relative to the authoritative
   `TransitionPathway` identified by the completed product-pathway evaluation
