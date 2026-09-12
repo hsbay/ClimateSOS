@@ -2555,7 +2555,7 @@ Its inputs include:
 * relevant transition and system context;
 * material assumptions and uncertainties;
 * evidence and provenance required to support the scale evaluation; and
-* `user_id` and `pathway_id` attribution.
+* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
 
 The evaluator determines, as supported by the completed `NetOverallSystemContribution`
 record, whether scale depends on conditions such as:
