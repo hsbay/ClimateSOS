@@ -791,11 +791,9 @@ The format of individual graph-object identifiers remains an implementation deci
 
 The `ProductAdapter` will:
 
-* receive the immutable `ProductIntakeBundle`, including re-evaluation lineage
-  and resolution references where the bundle enters through the re-evaluation
-  intake path;
-* preserve references to the canonical `IdentityToken` and any internal pathway
-  or user identity references carried by the bundle;
+* receive the immutable `ProductIntakeBundle`;
+* preserve references to the canonical `IdentityToken`, applicable
+  `EvaluationRun`, and any internal pathway or user identity references;
 * translate external terminology into canonical ClimateSOS terminology;
 * identify the pathway’s operational elements;
 * represent those elements as nodes or equivalent mapped objects;
@@ -804,13 +802,13 @@ The `ProductAdapter` will:
 * preserve declared timing, geographic scope, system boundaries, assumptions, and uncertainties;
 * identify declared product outputs without evaluating their validity or system contribution;
 * construct the normalized mapping to produce the `ProductPathway`; and
-* return an immutable `ProductAdapterResult` containing the `ProductPathway` and a reference to the associated `ProductIntakeBundle`.
+* return an immutable `ProductAdapterResult` containing the `ProductPathway`
+  and references to the associated `ProductIntakeBundle` and `EvaluationRun`.
 
-The `ProductAdapter` will not modify the `ProductIntakeBundle`, the
-`IdentityToken`, any customer-supplied source record, or any prior evaluation
-or assessment referenced by a re-evaluation intake. Normalized facts and
-pathway structures are written to the new `ProductPathway`. The supplied
-materials remain unchanged.
+The `ProductAdapter` will not modify the `ProductIntakeBundle`,
+`IdentityToken`, `EvaluationRun`, or any customer-supplied source record.
+Normalized facts and pathway structures are written to the new
+`ProductPathway`. The supplied materials remain unchanged.
 
 Where the pathway representation assigns identifiers to individual mapped elements, those identifiers must remain attributable to the originating user and pathway. They must not cause material from separate pathway intakes to be silently merged.
 
@@ -837,8 +835,7 @@ This structural work ends with the completed `ProductAdapterResult`. The result 
 
 Responsibilities downstream from the `ProductAdapterResult` belong to the
 components defined by the Product Pathway Evaluation Flow. The `ProductAdapter`
-preserves re-evaluation lineage and resolution context supplied through intake;
-it does not determine whether the prior condition was resolved.
+does not create, interpret, or modify evaluation lineage or resolution state.
 
 ### 5.4 ProductPathway Representation
 
