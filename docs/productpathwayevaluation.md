@@ -5284,7 +5284,15 @@ TransitionPathwayValidator
 ### 23.3 Immutability, State-Integrity, and Retention Requirements
 
 Completed ClimateSOS records remain immutable for the lifetime of those
-records. Retention determines how long a record is preserved. 
+records. Retention determines how long a record is preserved.
+
+Within this specification, preserving a record or reference requires preservation
+of the exact referenced records needed to resolve its evaluation lineage,
+source material, provenance, or reconstructable historical evaluation state.
+A retained reference must remain resolvable to the immutable record it
+identifies for as long as that record is required by a retained evaluation
+history. Preserving an identifier or reference while allowing its required
+target to become unavailable does not satisfy this preservation requirement.
 
 The canonical Playbook-derived baseline `TransitionPathway`, together with the
 state and provenance information required to establish and reconstruct that
@@ -5313,15 +5321,20 @@ Regardless of the configured retention period:
   information, source context, and other metadata required to distinguish
   historical evidence or results from evidence or results that remain current;
 * storage-management actions must not silently create dangling references or
-  substitute records from another pathway or evaluation run; and
+  substitute records from another pathway or evaluation run;
+* reconstruction of historical evaluation state must use the preserved inputs,
+  authoritative reference state, evaluator and rule-set semantics, versions,
+  and other evaluation context applicable to that historical run rather than
+  silently substituting current state or current evaluation semantics; and
 * storage pressure alone must not cause unconfigured destructive pruning.
 
 A configured finite retention policy may expire runtime records after the
 applicable retention period, but expiration must be explicit under that policy.
-Before removing a record, ClimateSOS must either preserve the information
-required by any retained authoritative state, snapshot, or historical record to
-reach or recreate the affected provenance, or preserve the referenced record
-through archival storage.
+Before removing a record, ClimateSOS must determine whether a retained
+authoritative state, snapshot, evaluation record, or historical reference still
+requires that record to resolve its lineage, source material, provenance, or
+reconstructable evaluation state. A required record must remain retained or be
+moved to archival storage without breaking its existing references.
 
 Archival storage may differ from active runtime storage. Moving a record to an
 archive does not change its identity, evaluation lineage, provenance, or
