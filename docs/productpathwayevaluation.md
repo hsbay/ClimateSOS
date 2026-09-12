@@ -789,11 +789,11 @@ The `ProductAdapterResult` associates the `ProductPathway` with the
 `ProductIntakeBundle` from which it was derived and with the applicable
 `EvaluationRun`. It does not duplicate or modify either object.
 
-The `ProductAdapter` receives the immutable, canonical `IdentityToken` through
-the `ProductIntakeBundle`. The `ProductPathway` preserves a reference to that
-same canonical `IdentityToken` and records the `evaluation_run_id` of the
-`EvaluationRun`. A `ProductPathway` belongs to exactly one `EvaluationRun` and
-is never reused by another run.
+The `ProductAdapter` receives the immutable `IdentityToken` for the evaluation
+lineage through the `ProductIntakeBundle`. The `ProductPathway` preserves a
+reference to that same lineage `IdentityToken` and records the
+`evaluation_run_id` of the `EvaluationRun`. A `ProductPathway` belongs to
+exactly one `EvaluationRun` and is never reused by another run.
 
 When constructing the `ProductPathway`, the `ProductAdapter` preserves `user_id` and `pathway_id` on every atomic graph object it creates. Each node, relationship, dependency, claim, evidence reference, output, and other represented element remains attributable to the user and pathway from which it was derived.
 
@@ -857,7 +857,8 @@ It represents the operational elements identified by the `ProductAdapter` and th
 
 At minimum, the `ProductPathway` represents:
 
-* the pathway identity and provenance references carried into adaptation;
+* the canonical `IdentityToken` reference for the evaluation lineage and
+  pathway provenance references carried into adaptation;
 * the `evaluation_run_id` of the `EvaluationRun` associated with the
   `ProductAdapterResult`;
 * the pathway type;
