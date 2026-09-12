@@ -4189,9 +4189,9 @@ for any applicable resolution, remedy, review, or later re-evaluation.
 
 ### 18.3 Required Assessment Contents
 
-`PathwayAssessment` has its own immutable assessment identity and references the
-exact `ProductPathway` assessed. The `ProductPathway` identifies the
-`EvaluationRun` that produced it.
+`PathwayAssessment` has its own immutable assessment identity and references
+the exact `ProductPathway` assessed. The `ProductPathway` belongs to exactly
+one `EvaluationRun`.
 
 At minimum, it shall include or reference, as applicable:
 
