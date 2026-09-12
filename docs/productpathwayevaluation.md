@@ -149,9 +149,13 @@ The Product Pathway Evaluation Flow uses a common architecture for user-submitte
 
 The `ProductAdapter` functions as a device-driver-like translation boundary between the ClimateSOS intake representation and the internal representation consumed by the evaluation system.
 
-The ClimateSOS Identity Layer establishes and issues the canonical `IdentityToken`. The Intake Layer receives the token and the customer-supplied pathway material, preserves their immutable association, and produces a `ProductIntakeBundle`.
+Identity resolution establishes the applicable canonical `IdentityToken` and creates an immutable `EvaluationRun` before intake begins. The Intake Layer receives the token and the customer-supplied pathway material, preserves their immutable association, and produces a `ProductIntakeBundle`.
 
-The `ProductAdapter` consumes the `ProductIntakeBundle` and translates its contents into a normalized `ProductPathway`, which represents the proposed pathway as an internal map or graph. It returns a `ProductAdapterResult` containing the completed `ProductPathway` and a reference to the associated `ProductIntakeBundle`.
+The `ProductAdapter` consumes the `ProductIntakeBundle` and translates its
+contents into a normalized `ProductPathway`, which represents the proposed
+pathway as an internal map or graph. It returns a `ProductAdapterResult`
+containing the completed `ProductPathway` and references to the associated
+`ProductIntakeBundle` and `EvaluationRun`.
 
 The adapter translates and maps the pathway. It does not establish identity, modify the intake bundle, evaluate the pathway, assemble its objects into evaluation groups, compare it with the validated global transition, or assign a resulting state.
 
@@ -161,9 +165,9 @@ The architecture follows a compiler-like flow in which explicit components trans
 
 The principal stages are:
 
-* identity-token establishment;
+* identity resolution and creation of an immutable `EvaluationRun`;
 * creation of an immutable `ProductIntakeBundle`;
-* adaptation into a `ProductAdapterResult` containing the normalized `ProductPathway` and a reference to its associated `ProductIntakeBundle`;
+* adaptation into a `ProductAdapterResult` containing the normalized `ProductPathway` and references to its associated `ProductIntakeBundle` and `EvaluationRun`;
 * initial Charter evaluation;
 * assembly of pathway objects into `ProductQueueBundle` and `ProductFabric` groupings, as applicable;
 * comparison of the pathway with the global `TransitionPathway`;
@@ -183,13 +187,13 @@ Completed ClimateSOS pathway, assembly, evaluation, Charter, contribution, scale
 
 Work-performing components may maintain transient state while executing, but once a canonical data object or result is produced, later stages do not modify it. They preserve references to prior objects and create new objects to represent subsequent assembly, evaluation, state transitions, or results.
 
-This applies to objects such as `ProductIntakeBundle`, `ProductAdapterResult`,
-`ProductPathway`, `ProductQueueBundle`, `ProductFabric`,
-`QueueProgressRecord`, `QueueExecutionResult`, `QueueEvaluatorResult`,
-`FabricEvaluatorResult`, Charter results, system-contribution and scale
-results, candidate and authoritative `TransitionPathway` states, risk results,
-`FinalPathwayResult`, bound-state records, `BoundPathway`, and
-`PathwayAssessment`.
+This applies to objects such as `EvaluationRun`, `ProductIntakeBundle`,
+`ProductAdapterResult`, `ProductPathway`, `ProductQueueBundle`,
+`ProductFabric`, `QueueProgressRecord`, `QueueExecutionResult`,
+`QueueEvaluatorResult`, `FabricEvaluatorResult`, Charter results,
+system-contribution and scale results, candidate and authoritative
+`TransitionPathway` states, risk results, `FinalPathwayResult`, bound-state
+records, `BoundPathway`, and `PathwayAssessment`.
 
 Where ClimateSOS models changing system state, each completed state is
 represented as a new immutable object or result rather than by modifying or
@@ -286,8 +290,10 @@ External pathway material
     ▼
 Identity Gateway  ⥬  Identity Layer
     IdentityToken ⥫        ↲
+    EvaluationRun ⥫        ↲
     │
-    │  Identity Layer Establishes and issues the canonical IdentityToken.
+    │  Identity Layer establishes and issues the canonical IdentityToken
+    │  and creates a new immutable EvaluationRun before intake begins.
     │
     ▼
 Intake Layer
