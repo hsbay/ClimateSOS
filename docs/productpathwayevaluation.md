@@ -969,18 +969,19 @@ Its inputs include:
 
 * the immutable `ProductPathway`;
 
-  * the pathway identity and provenance references carried by the pathway;
+  * the canonical `IdentityToken` reference for the evaluation lineage;
+  * the pathway provenance references carried by the pathway;
   * the `evaluation_run_id`;
   * the normalized internal representation of the pathway;
 
 * the immutable `ProductIntakeBundle`;
 
-  * the associated `IdentityToken`;
+  * the canonical `IdentityToken` reference for the evaluation lineage;
   * the documentation, evidence, and provenance available for each applicable check;
 
 * the immutable `EvaluationRun`;
 
-  * the associated `IdentityToken`;
+  * the canonical `IdentityToken` reference for the evaluation lineage;
   * the associated `evaluation_run_id`;
 
 * the ClimateSOS Foundational Charter distributed with the ClimateSOS runtime;
@@ -1001,9 +1002,10 @@ The `InitialCharterResult` represents the complete outcome of the Initial Charte
 
 The immutable `InitialCharterResult` contains:
 
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
 * a reference to the evaluated `ProductAdapterResult`, preserving its association with
-  the evaluated `ProductPathway`, `ProductIntakeBundle`, `EvaluationRun`, and pathway
-  identity;
+  the evaluated `ProductPathway` and `ProductIntakeBundle`;
 * the result of every required Initial Charter check;
 * findings, evidence references, and supporting provenance associated with each check;
 * unresolved or not-applicable conditions returned by completed checks, where applicable;
