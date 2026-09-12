@@ -1504,13 +1504,18 @@ Evaluation begins after `ProductAssembly` completes successfully. The engine rec
 
 The evaluation engine determines how the represented pathway operates within the transition context. It identifies direct relationships with the reference transition, substitution or combination effects, downstream propagation, queue conditions, fabric coordination conditions, and the sufficiency and traceability of supporting documentation and evidence.
 
-Evaluation does not modify the `ProductPathway`, `ProductQueueBundle`, `ProductFabric`, `ProductIntakeBundle`, or authoritative `TransitionPathway`. Evaluators produce separate immutable results or findings that preserve references to the objects and evidence from which they were derived.
+Evaluation does not modify the `ProductPathway`, `ProductQueueBundle`,
+`ProductFabric`, `ProductIntakeBundle`, `EvaluationRun`, or authoritative
+`TransitionPathway`. Evaluators produce separate immutable results or findings
+that preserve references to the objects and evidence from which they were
+derived.
 
 ```text
 ProductAdapterResult
       │
       ├── ProductPathway
       ├── ProductIntakeBundle reference
+      ├── EvaluationRun reference
       │
       ▼
 CharterEvaluator
@@ -1559,6 +1564,7 @@ The `PathwayEvaluationEngine` coordinates the evaluation functions required to d
 It receives:
 
 * the immutable `ProductAdapterResult` and its associated immutable `ProductPathway`;
+* the associated immutable `EvaluationRun`;
 * the completed `InitialCharterResult`;
 * the immutable `ProductQueueBundle` objects produced by `ProductAssembly`;
 * applicable immutable `ProductFabric` objects;
