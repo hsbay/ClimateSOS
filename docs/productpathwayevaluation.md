@@ -1039,14 +1039,21 @@ When execution cannot proceed, ClimateSOS preserves the available pathway identi
 
 `ProductAssembly` constructs the pathway-derived objects that are later consumed by downstream evaluators. It coordinates the assembly functions that group represented pathway structures into queue bundles and fabrics where grouping is applicable, while preserving unbundled queue elements that remain independently evaluable and the identity, relationships, provenance, and traceability established by the `ProductAdapter`.
 
-Assembly begins only after the Initial Charter Evaluation has completed successfully and produced a valid immutable `InitialCharterResult`. `ProductAssembly` follows the result's reference to the evaluated `ProductAdapterResult`, which identifies the immutable `ProductPathway` and its associated `ProductIntakeBundle`. Assembly operates on the `ProductPathway`; the intake-bundle association remains available for traceability.
+Assembly begins only after the Initial Charter Evaluation has completed
+successfully and produced a valid immutable `InitialCharterResult`.
+`ProductAssembly` follows the result's reference to the evaluated
+`ProductAdapterResult`, which identifies the immutable `ProductPathway`, its
+associated `ProductIntakeBundle`, and `EvaluationRun`. Assembly operates on
+the `ProductPathway`; the intake-bundle and evaluation-run associations remain
+available for traceability.
 
 `ProductAssembly` creates `ProductQueueBundle` and, where applicable, `ProductFabric` objects by executing `QueueBundler` and subsequently `FabricAssembler`. `ProductFabric` objects are constructed only from applicable `ProductQueueBundle` objects. The constructed queue bundles and fabrics are passed to downstream evaluators.
 
 ```text
 ProductAdapterResult
     ├── ProductPathway
-    └── ProductIntakeBundle reference
+    ├── ProductIntakeBundle reference
+    └── EvaluationRun reference
             │
             ▼
 InitialCharterResult
@@ -1070,7 +1077,7 @@ QueueBundler
 
 `ProductAssembly` orchestrates pathway assembly.
 
-It receives a valid completed `InitialCharterResult` and follows its reference to the evaluated `ProductAdapterResult` and associated immutable `ProductPathway`.
+It receives a valid completed `InitialCharterResult` and follows its reference to the evaluated `ProductAdapterResult`, associated immutable `ProductPathway`, and `EvaluationRun`.
 
 `ProductAssembly`:
 
