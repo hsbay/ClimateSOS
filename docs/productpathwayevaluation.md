@@ -325,6 +325,9 @@ ProductAdapterResult
     │       Preserves the pathway's association with its immutable
     │       intake materials and IdentityToken.
     │
+    ├── EvaluationRun reference
+    │       Preserves the pathway's association with the evaluation run.
+    │
     ▼
 CharterEvaluator
     │
@@ -515,6 +518,7 @@ minor change
 Run the Shared Product Pathway Evaluation Flow
     │  Identity Gateway   =>   IdentityLayer
     │      IdentityToken  <=        -|
+    │      EvaluationRun  <=        -|
     │      ↓
     │  Global Intake Layer
     │      ↓
@@ -524,7 +528,8 @@ Run the Shared Product Pathway Evaluation Flow
     │      ↓
     │  ProductAdapterResult
     │    ├── ProductPathway
-    │    └── ProductIntakeBundle reference
+    │    ├── ProductIntakeBundle reference
+    │    └── EvaluationRun reference
     │      ↓
     │  InitialCharterResult
     │      ↓
@@ -635,6 +640,7 @@ User UI or public API gateway
 Run Shared Product Pathway Evaluation
     Identity Gateway => IdentityLayer
     │ IdentityToken  <=      -|
+    │ EvaluationRun  <=      -|
     │
     ▼
 User submits one or more separate pathway intakes
@@ -708,7 +714,12 @@ PathwayAssessment A                                       PathwayAssessment B
 
 User-submitted evaluation invariants:
 
-• Each submission receives its own `IdentityToken` and produces its own immutable `ProductIntakeBundle`. Each `ProductIntakeBundle` is adapted into a separate `ProductAdapterResult`, `ProductPathway`, and evaluation history.
+• Each ordinary submission receives its own `IdentityToken` and `EvaluationRun`
+  and produces its own immutable `ProductIntakeBundle`. Each
+  `ProductIntakeBundle` is adapted into a separate `ProductAdapterResult` and
+  `ProductPathway`. An explicit re-evaluation reuses the existing
+  `IdentityToken` while creating a new `EvaluationRun`, `ProductIntakeBundle`,
+  `ProductAdapterResult`, and `ProductPathway`.
 
 • Each ProductPathway is evaluated separately against the same current
   validated global TransitionPathway.
