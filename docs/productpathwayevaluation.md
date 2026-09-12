@@ -739,42 +739,49 @@ The `ProductAdapter` is a translation and structural-mapping component. It may i
 ### 5.1 Input and Output
 
 The `ProductAdapter` consumes one immutable `ProductIntakeBundle` from the
-Intake Layer. For a successor evaluation run, the intake follows the
-re-evaluation intake path and preserves the existing `pathway_id`, prior
-evaluation-run reference, prior `PathwayAssessment`, triggering findings,
-completed resolution information, and corrected or updated pathway material
-submitted for re-evaluation.
+Intake Layer. Prior to intake, the Identity Layer establishes the applicable
+`IdentityToken` relationship and creates the immutable `EvaluationRun`.
+
+An ordinary submission receives a new `IdentityToken` and a new
+`EvaluationRun` with empty predecessor-run and resolution references.
+A re-evaluation continues through an explicit identity-resolution path, reuses
+the existing `IdentityToken`, and receives a new `EvaluationRun` carrying the
+predecessor-run and resolution references.
 
 The `ProductIntakeBundle` contains the customer-supplied pathway materials and preserves their association with the canonical `IdentityToken`, intake metadata, documentation, evidence, and provenance.
 
 The `ProductAdapter` produces one immutable `ProductAdapterResult`.
 
 ```text
-New pathway intake                          Re-evaluation intake
-        │                                           │
-        ▼                                           ▼
-ProductIntakeBundle                         ProductIntakeBundle
-        │                                           │
-        │                                           ├── existing pathway_id
-        │                                           ├── prior evaluation-run reference
-        │                                           ├── prior PathwayAssessment reference
-        │                                           ├── triggering findings
-        │                                           ├── completed resolution information
-        │                                           └── corrected or updated pathway material
-        │                                           │
-        └──────────────────────┬────────────────────┘
-                               ▼
-                         ProductAdapter
-                               │
-                               ▼
-                      ProductAdapterResult
-                          ├── ProductPathway
-                          └── ProductIntakeBundle reference
+Identity Layer
+        │
+        ├── IdentityToken
+        └── EvaluationRun
+                │
+                ▼
+           Intake Layer
+                │
+                ▼
+       ProductIntakeBundle
+                │
+                ▼
+          ProductAdapter
+                │
+                ▼
+       ProductAdapterResult
+           ├── ProductPathway
+           ├── ProductIntakeBundle reference
+           └── EvaluationRun reference
 ```
 
-The `ProductAdapterResult` associates the `ProductPathway` with the `ProductIntakeBundle` from which it was derived. It does not duplicate or modify the bundle.
+The `ProductAdapterResult` associates the `ProductPathway` with the
+`ProductIntakeBundle` from which it was derived and with the applicable
+`EvaluationRun`. It does not duplicate or modify either object.
 
-The `ProductAdapter` receives the canonical `IdentityToken` through the `ProductIntakeBundle` and preserves it unchanged.
+The `ProductAdapter` receives the immutable, canonical `IdentityToken` through
+the `ProductIntakeBundle`. The `ProductPathway` records the
+`evaluation_run_id` of the `EvaluationRun`. A `ProductPathway` belongs to
+exactly one `EvaluationRun` and is never reused by another run.
 
 When constructing the `ProductPathway`, the `ProductAdapter` preserves `user_id` and `pathway_id` on every atomic graph object it creates. Each node, relationship, dependency, claim, evidence reference, output, and other represented element remains attributable to the user and pathway from which it was derived.
 
