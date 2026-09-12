@@ -4178,15 +4178,15 @@ for any applicable resolution, remedy, review, or later re-evaluation.
 
 ### 18.3 Required Assessment Contents
 
-`PathwayAssessment` has its own immutable assessment identity and identifies the
-evaluation run that produced it.
+`PathwayAssessment` has its own immutable assessment identity and references the
+exact `ProductPathway` assessed. The `ProductPathway` identifies the
+`EvaluationRun` that produced it.
 
 At minimum, it shall include or reference, as applicable:
 
 * `pathway_assessment_id`;
 * `user_id`;
-* `pathway_id`;
-* `evaluation_run_id`;
+* a reference to the assessed `ProductPathway`;
 * `InitialCharterResult`;
 * `IntegratedCharterResult`;
 * `FinalCharterResult`;
@@ -4244,10 +4244,12 @@ by the upstream results that established those conditions.
 Where a pathway is re-evaluated, ClimateSOS preserves each evaluation run in
 an append-only evaluation history.
 
-A `pathway_id` identifies one `ProductPathway` and its associated pathway
-evaluation lineage. Each complete attempt to evaluate that pathway receives
-a distinct `evaluation_run_id`, and each completed assessment receives a
-distinct `pathway_assessment_id`.
+A `pathway_id` identifies one immutable `ProductPathway`. Each completed
+`ProductPathway` belongs to exactly one `EvaluationRun`, and each completed
+assessment receives a distinct `pathway_assessment_id`. Re-evaluation creates a
+new `EvaluationRun` and a new `ProductPathway`, while explicit lineage
+continuity is preserved through the shared `IdentityToken` and the successor
+run's predecessor reference.
 
 Results belonging to one evaluation run shall not overwrite, replace, or be
 substituted for results belonging to another run.
@@ -4259,13 +4261,15 @@ the sequence of evaluation history.
 Conceptually:
 
 ```text
-pathway_id = P123
+IdentityToken = IT1
 
 evaluation_run_id = R001
+    pathway_id = P001
     PathwayAssessment = A001
 
 evaluation_run_id = R002
-    prior_evaluation_run_id = R001
+    predecessor_run_id = R001
+    pathway_id = P002
     PathwayAssessment = A002
 ```
 
@@ -4283,9 +4287,9 @@ through each successfully completed evaluation stage.
 The successor run shall preserve a reference to the prior evaluation run and
 the basis for re-evaluation.
 
-The stable `pathway_id` may continue across evaluation runs where the system is
-evaluating the same pathway lineage. A materially separate intake or separately
-defined pathway receives its own pathway identity as defined in Section 5.
+The successor run reuses the existing `IdentityToken` and produces a new
+`ProductPathway` with a new `pathway_id`. A `ProductPathway` is never reused by
+another evaluation run.
 
 A remedy, new evidence, corrected documentation, changed authorization, material
 pathway change, changed Charter condition, changed transition reference, or
@@ -4406,11 +4410,15 @@ non-progressing conditions identified by the `PathwayAssessment`, the user or
 authorized external actor submits the corrected or updated pathway material
 through the re-evaluation intake path.
 
-The re-evaluation intake preserves the `pathway_id`, prior evaluation run,
-`PathwayAssessment`, triggering findings, completed resolution information,
-and corrected or updated material required for the successor evaluation. The
-successor run receives a new `evaluation_run_id` and carries those references
-into the shared product-pathway evaluation flow.
+The re-evaluation intake preserves the existing `IdentityToken`; prior
+`EvaluationRun`, `PathwayAssessment`, `ProductPathway`, and
+`ProductIntakeBundle`; triggering findings; completed resolution information;
+and corrected or updated material required for the successor evaluation.
+Identity resolution creates a new `EvaluationRun` with a new
+`evaluation_run_id`, the predecessor-run reference, and the applicable
+resolution reference. The corrected or updated material then proceeds through
+the shared intake and adaptation flow and produces a new `ProductPathway` with
+a new `pathway_id`.
 
 The successor run executes the evaluation stages applicable to the changed
 pathway and current transition context and produces new immutable result objects
