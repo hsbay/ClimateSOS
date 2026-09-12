@@ -5122,12 +5122,14 @@ new evaluation run against the new validated global `TransitionPathway`.
 
 Each user submission is evaluated as a single independent pathway.
 
-Each user submission receives a canonical `IdentityToken` from the Identity
-Layer, is assigned its own `pathway_id`, and is associated with the `user_id`
-of the user who initiated the request. The resulting `ProductIntakeBundle`,
-`ProductPathway`, evaluation run, evaluation artifacts, and
-`PathwayAssessment` remain associated with that identity, user attribution,
-and pathway lineage.
+An ordinary user submission receives a new canonical `IdentityToken` and a new
+`EvaluationRun` from the Identity Layer. Adaptation produces a new
+`ProductPathway` with its own `pathway_id`, and the submission remains
+associated with the `user_id` of the user who initiated the request.
+
+An explicit re-evaluation follows the resolution and re-evaluation flow defined
+in Section 19. It reuses the existing `IdentityToken` while creating a new
+`EvaluationRun`, `ProductPathway`, and `pathway_id`.
 
 Multiple submissions from the same user may be received or evaluated
 concurrently or nearly concurrently. Concurrent execution does not merge their
@@ -5162,8 +5164,9 @@ result or replace the underlying `PathwayAssessment`.
 
 Where the `PathwayAssessment` requires resolution, the pathway follows the
 resolution and re-evaluation flow defined in Section 19. A successor evaluation
-produces a new immutable `PathwayAssessment` associated with the new
-`evaluation_run_id` while preserving the prior evaluation history.
+creates a new `EvaluationRun`, a new `ProductPathway`, and, if evaluation
+completes successfully, a new immutable `PathwayAssessment`, while preserving
+the prior evaluation history.
 
 ### 21.4 No Global-State Promotion From User Context
 
@@ -5234,6 +5237,7 @@ Product Pathway Evaluation Flow.
 
 ```
 IdentityToken
+EvaluationRun
 ProductIntakeBundle
 ProductPathway
 ProductAdapterResult
