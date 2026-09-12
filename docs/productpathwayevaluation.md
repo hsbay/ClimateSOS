@@ -846,6 +846,8 @@ It represents the operational elements identified by the `ProductAdapter` and th
 At minimum, the `ProductPathway` represents:
 
 * the pathway identity and provenance references carried into adaptation;
+* the `evaluation_run_id` of the `EvaluationRun` associated with the
+  `ProductAdapterResult`;
 * the pathway type;
 * the relevant time window;
 * geographic and system scope;
@@ -864,7 +866,13 @@ Not every category applies to every pathway. The `ProductPathway` represents onl
 
 The graph preserves local pathway structure. It represents when an element produces an output, requires an input, depends on another element, or interacts with a declared actor or process. Later stages evaluate system-wide effects, substitutions, scale effects, and interactions with the global transition.
 
-The `ProductAdapter` creates the immutable `ProductPathway` and `ProductAdapterResult`. Later stages produce separate evaluation and assembly objects. They do not write Charter results, queue states, pathway assessments, system contributions, scale results, risk results, bound states, remedy records, or evaluation history back into the `ProductPathway`.
+The `ProductAdapter` creates the immutable `ProductPathway` and
+`ProductAdapterResult`. A `ProductPathway` belongs to exactly one
+`EvaluationRun` and is never reused by another run. Later stages produce
+separate evaluation and assembly objects. They do not write Charter results,
+queue states, pathway assessments, system contributions, scale results, risk
+results, bound states, remedy records, or evaluation history back into the
+`ProductPathway`.
 
 ### 5.5 Abstraction and Anonymization
 
@@ -883,7 +891,9 @@ Anonymization must not remove information necessary to evaluate material depende
 
 ## 6. Initial Charter Evaluation
 
-The Initial Charter Evaluation is the first substantive evaluation performed on a completed `ProductAdapterResult` containing the `ProductPathway` and a reference to the associated `ProductIntakeBundle`.
+The Initial Charter Evaluation is the first substantive evaluation performed on
+a completed `ProductAdapterResult` containing the `ProductPathway` and
+references to the associated `ProductIntakeBundle` and `EvaluationRun`.
 
 It evaluates the pathway against the ClimateSOS Foundational Charter before downstream assembly and pathway evaluation. The evaluator follows references to the associated `ProductIntakeBundle` when a check requires source documentation, evidence, or provenance.
 
@@ -897,6 +907,7 @@ The Initial Charter Evaluation completes only when every required check has exec
 ProductAdapterResult
     ├── ProductPathway
     ├── ProductIntakeBundle reference
+    ├── EvaluationRun reference
     │
     ▼
 CharterEvaluator
