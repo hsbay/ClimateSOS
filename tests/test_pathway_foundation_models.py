@@ -6,7 +6,9 @@ import pytest
 
 from climatesos.pathway_evaluation import (
     CharterCheckResult,
+    CharterCheckStatus,
     CharterEvaluationContext,
+    CharterStatus,
     ComparisonFinding,
     EvaluationExecutionStatus,
     EvaluationRun,
@@ -123,6 +125,7 @@ def test_fabric_result_preserves_consumed_evaluation_context() -> None:
         "system_context",
     } <= field_names
 
+
 def test_charter_context_preserves_opaque_resources_and_required_ids() -> None:
     field_names = {field.name for field in fields(CharterEvaluationContext)}
 
@@ -144,6 +147,63 @@ def test_charter_check_preserves_structural_finding_references() -> None:
     assert "supporting_system_findings" in field_names
 
 
+def test_charter_check_status_has_exact_closed_vocabulary() -> None:
+    expected = {
+        "PASS",
+        "FAIL",
+        "UNRESOLVED",
+        "NOT_APPLICABLE",
+        "ERROR",
+        "MISSING",
+        "NULL",
+        "NOACK",
+    }
+
+    assert {status.value for status in CharterCheckStatus} == expected
+    assert {
+        CharterCheckResult("check-1", status).status for status in CharterCheckStatus
+    } == set(CharterCheckStatus)
+
+
+def test_charter_status_is_extensible_and_separate_from_check_outcome() -> None:
+    evidence = SourceReference("evidence-1")
+    documentation = SourceReference("documentation-1")
+    pathway_reference = OpaqueReference("pathway-object-1")
+    substantive_statuses = tuple(
+        CharterStatus(
+            status=status,
+            findings=(f"{status.lower()} finding",),
+            evidence_references=(evidence,),
+            documentation_references=(documentation,),
+            pathway_references=(pathway_reference,),
+        )
+        for status in ("HARM", "BURDEN", "DEBT", "FUTURE_STATUS")
+    )
+    failed_check = CharterCheckResult(
+        "check-1",
+        CharterCheckStatus.FAIL,
+        charter_statuses=substantive_statuses,
+    )
+    passed_check = CharterCheckResult("check-2", CharterCheckStatus.PASS)
+
+    assert tuple(item.status for item in failed_check.charter_statuses) == (
+        "HARM",
+        "BURDEN",
+        "DEBT",
+        "FUTURE_STATUS",
+    )
+    assert failed_check.status is CharterCheckStatus.FAIL
+    assert passed_check.charter_statuses == ()
+    assert substantive_statuses[0].evidence_references == (evidence,)
+    assert substantive_statuses[0].documentation_references == (documentation,)
+    assert substantive_statuses[0].pathway_references == (pathway_reference,)
+
+    with pytest.raises(FrozenInstanceError):
+        failed_check.status = CharterCheckStatus.PASS  # type: ignore[misc]
+    with pytest.raises(FrozenInstanceError):
+        substantive_statuses[0].status = "CHANGED"  # type: ignore[misc]
+
+
 def test_comparison_finding_preserves_required_traceability() -> None:
     field_names = {field.name for field in fields(ComparisonFinding)}
 
@@ -160,7 +220,8 @@ def test_queue_evaluation_failure_is_not_a_completed_result() -> None:
     completed_fields = {field.name for field in fields(QueueEvaluatorResult)}
     failure_fields = {field.name for field in fields(QueueEvaluationFailure)}
     failure_status = next(
-        field for field in fields(QueueEvaluationFailure)
+        field
+        for field in fields(QueueEvaluationFailure)
         if field.name == "execution_status"
     )
 

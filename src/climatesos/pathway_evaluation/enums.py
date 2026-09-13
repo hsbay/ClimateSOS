@@ -7,6 +7,19 @@ class _StringEnum(StrEnum):
     """A JSON-friendly string-valued enum."""
 
 
+class CharterCheckStatus(_StringEnum):
+    """Closed execution and result vocabulary for one Charter check."""
+
+    PASS = "PASS"
+    FAIL = "FAIL"
+    UNRESOLVED = "UNRESOLVED"
+    NOT_APPLICABLE = "NOT_APPLICABLE"
+    ERROR = "ERROR"
+    MISSING = "MISSING"
+    NULL = "NULL"
+    NOACK = "NOACK"
+
+
 class QueueCategory(_StringEnum):
     """Canonical queue functions defined by the pathway specification."""
 
@@ -17,9 +30,7 @@ class QueueCategory(_StringEnum):
     PRODUCT_OUTPUT_AND_DELIVERY_ACCESS = "product_output_and_delivery_access"
     BANKABILITY_AND_REVENUE_CERTAINTY = "bankability_and_revenue_certainty"
     PROJECT_FINANCE = "project_finance"
-    NON_DILUTIVE_CAPITAL_AND_PUBLIC_SUPPORT = (
-        "non_dilutive_capital_and_public_support"
-    )
+    NON_DILUTIVE_CAPITAL_AND_PUBLIC_SUPPORT = "non_dilutive_capital_and_public_support"
     PERMITTING_AND_AUTHORIZATION = "permitting_and_authorization"
     WORKFORCE_AND_EXECUTION = "workforce_and_execution"
     MRV = "mrv"

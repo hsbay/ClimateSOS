@@ -7,8 +7,10 @@ import pytest
 from climatesos.pathway_evaluation import (
     Attribute,
     CharterCheckResult,
+    CharterCheckStatus,
     CharterEvaluationContext,
     CharterEvaluationInvariantError,
+    CharterStatus,
     EvaluationRun,
     IdentityToken,
     IntakeArtifact,
@@ -115,8 +117,15 @@ def _evaluator(
         context: CharterEvaluationContext,
     ) -> CharterCheckResult:
         calls.append(("initial", artifact, definition, context))
-        status = "ADVERSE" if definition.reference_id == "check-1" else "CLEAR"
-        return CharterCheckResult(definition.reference_id, status)
+        if definition.reference_id == "check-1":
+            return CharterCheckResult(
+                definition.reference_id,
+                CharterCheckStatus.FAIL,
+                charter_statuses=(
+                    CharterStatus("HARM", findings=("established harm",)),
+                ),
+            )
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
     def integrated_check(
         artifact: PathwayEngineResult,
@@ -124,7 +133,11 @@ def _evaluator(
         context: CharterEvaluationContext,
     ) -> CharterCheckResult:
         calls.append(("integrated", artifact, definition, context))
-        status = "UNRESOLVED" if definition.reference_id == "check-2" else "CLEAR"
+        status = (
+            CharterCheckStatus.UNRESOLVED
+            if definition.reference_id == "check-2"
+            else CharterCheckStatus.PASS
+        )
         return CharterCheckResult(definition.reference_id, status)
 
     def initial_status(
@@ -173,9 +186,12 @@ def test_initial_executes_every_check_and_preserves_context_and_artifact() -> No
     )
     assert all(call[1] is adapter_result and call[3] is context for call in check_calls)
     assert tuple(check.status for check in result.check_results) == (
-        "ADVERSE",
-        "CLEAR",
-        "CLEAR",
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
+    )
+    assert result.check_results[0].charter_statuses == (
+        CharterStatus("HARM", findings=("established harm",)),
     )
     assert result.adapter_result is adapter_result
     assert result.identity_token is adapter_result.product_pathway.identity_token
@@ -212,9 +228,9 @@ def test_integrated_reruns_complete_set_without_reusing_initial_checks() -> None
     assert result.rule_set_version is context.rule_set_version
     assert result.status == "CALLER-DEFINED-INTEGRATED"
     assert tuple(check.status for check in result.check_results) == (
-        "CLEAR",
-        "UNRESOLVED",
-        "CLEAR",
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.PASS,
     )
     assert all(
         integrated is not initial
@@ -258,6 +274,56 @@ def test_context_must_define_exactly_the_complete_required_check_set() -> None:
     assert calls == []
 
 
+@pytest.mark.parametrize("invalid_status", ["CLEAR", "ADVERSE"])
+def test_arbitrary_charter_check_status_is_structurally_rejected(
+    invalid_status: str,
+) -> None:
+    adapter_result = _adapter_result()
+    context = _context()
+    aggregate_status_called = False
+
+    def invalid_check(
+        _artifact: ProductAdapterResult,
+        definition: OpaqueReference,
+        _context: CharterEvaluationContext,
+    ) -> CharterCheckResult:
+        return CharterCheckResult(
+            definition.reference_id,
+            invalid_status,  # type: ignore[arg-type]
+        )
+
+    def aggregate_status(
+        _artifact: ProductAdapterResult,
+        _results: tuple[CharterCheckResult, ...],
+        _context: CharterEvaluationContext,
+    ) -> str:
+        nonlocal aggregate_status_called
+        aggregate_status_called = True
+        return "SHOULD-NOT-BE-USED"
+
+    evaluator = ValidatedCharterEvaluator(
+        invalid_check,
+        lambda _artifact, definition, _context: CharterCheckResult(
+            definition.reference_id,
+            CharterCheckStatus.PASS,
+        ),
+        aggregate_status,
+        lambda _artifact, _results, _context: "INTEGRATED",
+    )
+
+    result = evaluator.evaluate_initial(adapter_result, context)
+
+    assert all(
+        check.status is CharterCheckStatus.MISSING for check in result.check_results
+    )
+    assert all(
+        check.execution_error is not None
+        and "malformed status" in check.execution_error
+        for check in result.check_results
+    )
+    assert aggregate_status_called is False
+
+
 def test_initial_malformed_result_is_recorded_as_missing_and_error() -> None:
     adapter_result = _adapter_result()
     context = _context()
@@ -271,13 +337,13 @@ def test_initial_malformed_result_is_recorded_as_missing_and_error() -> None:
         executed_ids.append(definition.reference_id)
         if definition.reference_id == "check-1":
             return None  # type: ignore[return-value]
-        return CharterCheckResult(definition.reference_id, "CLEAR")
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
     evaluator = ValidatedCharterEvaluator(
         malformed_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
-            "CLEAR",
+            CharterCheckStatus.PASS,
         ),
         lambda _artifact, _results, _context: "INITIAL",
         lambda _artifact, _results, _context: "INTEGRATED",
@@ -287,9 +353,9 @@ def test_initial_malformed_result_is_recorded_as_missing_and_error() -> None:
 
     assert executed_ids == list(context.required_check_ids)
     assert tuple(check.status for check in result.check_results) == (
-        "MISSING",
-        "CLEAR",
-        "CLEAR",
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
     )
     missing = result.check_results[0]
     assert missing.check_id == "check-1"
@@ -313,20 +379,20 @@ def test_nonmissing_status_with_execution_error_becomes_attributed_missing() -> 
         if definition.reference_id == "check-1":
             return CharterCheckResult(
                 check_id=definition.reference_id,
-                status="CLEAR",
+                status=CharterCheckStatus.PASS,
                 findings=("diagnostic finding",),
                 supporting_evaluation_findings=(supporting,),
                 evidence_references=(evidence,),
                 provenance=(evidence,),
                 execution_error="caller-reported execution failure",
             )
-        return CharterCheckResult(definition.reference_id, "CLEAR")
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
     evaluator = ValidatedCharterEvaluator(
         incoherent_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
-            "CLEAR",
+            CharterCheckStatus.PASS,
         ),
         lambda _artifact, _results, _context: "INITIAL",
         lambda _artifact, _results, _context: "INTEGRATED",
@@ -335,7 +401,7 @@ def test_nonmissing_status_with_execution_error_becomes_attributed_missing() -> 
     result = evaluator.evaluate_initial(adapter_result, context)
 
     missing = result.check_results[0]
-    assert missing.status == "MISSING"
+    assert missing.status is CharterCheckStatus.MISSING
     assert missing.findings == ("diagnostic finding",)
     assert missing.supporting_evaluation_findings == (supporting,)
     assert missing.evidence_references == (evidence,)
@@ -359,7 +425,7 @@ def test_wrong_check_identities_become_missing_integrity_results() -> None:
         calls.append(definition.reference_id)
         return CharterCheckResult(
             "check-1",
-            "CLEAR",
+            CharterCheckStatus.PASS,
             findings=("wrongly attributed diagnostic",),
             evidence_references=(adapter_result.intake_bundle.provenance[0],),
         )
@@ -368,7 +434,7 @@ def test_wrong_check_identities_become_missing_integrity_results() -> None:
         duplicate_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
-            "CLEAR",
+            CharterCheckStatus.PASS,
         ),
         lambda _artifact, _results, _context: "INITIAL",
         lambda _artifact, _results, _context: "INTEGRATED",
@@ -383,9 +449,9 @@ def test_wrong_check_identities_become_missing_integrity_results() -> None:
         "check-3",
     )
     assert tuple(check.status for check in result.check_results) == (
-        "CLEAR",
-        "MISSING",
-        "MISSING",
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.MISSING,
     )
     assert result.status == "ERROR"
     assert result.execution_error is not None
@@ -418,7 +484,7 @@ def test_integrated_malformed_result_is_recorded_as_missing_and_error() -> None:
                 supporting_system_findings=(OpaqueReference("system-finding-1"),),
                 evidence_references=(adapter_result.intake_bundle.provenance[0],),
             )
-        return CharterCheckResult(definition.reference_id, "CLEAR")
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
     def integrated_status(
         _artifact: PathwayEngineResult,
@@ -432,7 +498,7 @@ def test_integrated_malformed_result_is_recorded_as_missing_and_error() -> None:
     evaluator = ValidatedCharterEvaluator(
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
-            "CLEAR",
+            CharterCheckStatus.PASS,
         ),
         malformed_integrated_check,
         lambda _artifact, _results, _context: "INITIAL",
@@ -443,9 +509,9 @@ def test_integrated_malformed_result_is_recorded_as_missing_and_error() -> None:
 
     assert executed_ids == list(context.required_check_ids)
     assert tuple(check.status for check in result.check_results) == (
-        "CLEAR",
-        "MISSING",
-        "CLEAR",
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.PASS,
     )
     missing = result.check_results[1]
     assert missing.check_id == "check-2"
@@ -470,13 +536,13 @@ def test_stage_status_failures_return_error_results_with_completed_checks() -> N
         _context: CharterEvaluationContext,
     ) -> CharterCheckResult:
         check_calls.append(definition.reference_id)
-        return CharterCheckResult(definition.reference_id, "CLEAR")
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
     evaluator = ValidatedCharterEvaluator(
         initial_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
-            "CLEAR",
+            CharterCheckStatus.PASS,
         ),
         lambda _artifact, _results, _context: None,  # type: ignore[arg-type,return-value]
         lambda _artifact, _results, _context: "INTEGRATED",
@@ -486,9 +552,9 @@ def test_stage_status_failures_return_error_results_with_completed_checks() -> N
 
     assert check_calls == list(context.required_check_ids)
     assert tuple(check.status for check in initial_result.check_results) == (
-        "CLEAR",
-        "CLEAR",
-        "CLEAR",
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
     )
     assert initial_result.status == "ERROR"
     assert initial_result.execution_error is not None
@@ -520,9 +586,9 @@ def test_stage_status_failures_return_error_results_with_completed_checks() -> N
     )
 
     assert tuple(check.status for check in integrated_result.check_results) == (
-        "CLEAR",
-        "CLEAR",
-        "CLEAR",
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
     )
     assert integrated_result.status == "ERROR"
     assert integrated_result.execution_error is not None

@@ -8,6 +8,7 @@ from dataclasses import dataclass
 from typing import Literal, TypeAlias
 
 from .enums import (
+    CharterCheckStatus,
     EvaluationExecutionStatus,
     QueueCategory,
     QueueEvaluationState,
@@ -149,21 +150,29 @@ class ProductAdapterResult:
 
 
 @dataclass(frozen=True, slots=True)
-class CharterCheckResult:
-    """One executed Charter check.
+class CharterStatus:
+    """Extensible substantive finding recorded by a Charter check."""
 
-    The separate Charter flow owns the complete status vocabulary, so status is
-    intentionally not narrowed to an invented enum here.
-    """
+    status: str
+    findings: tuple[str, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    documentation_references: tuple[SourceReference, ...] = ()
+    pathway_references: tuple[OpaqueReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class CharterCheckResult:
+    """One Charter check outcome, separate from substantive findings."""
 
     check_id: str
-    status: str
+    status: CharterCheckStatus
     findings: tuple[str, ...] = ()
     supporting_evaluation_findings: tuple[OpaqueReference, ...] = ()
     supporting_system_findings: tuple[OpaqueReference, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
     provenance: tuple[SourceReference, ...] = ()
     execution_error: str | None = None
+    charter_statuses: tuple[CharterStatus, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)

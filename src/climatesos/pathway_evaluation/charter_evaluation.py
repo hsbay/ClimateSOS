@@ -4,10 +4,12 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import cast
 
+from .enums import CharterCheckStatus
 from .models import (
     Attribute,
     CharterCheckResult,
     CharterEvaluationContext,
+    CharterStatus,
     InitialCharterResult,
     IntegratedCharterResult,
     OpaqueReference,
@@ -50,6 +52,10 @@ def _is_string(value: object) -> bool:
     return isinstance(value, str)
 
 
+def _is_charter_check_status(value: object) -> bool:
+    return isinstance(value, CharterCheckStatus)
+
+
 def _is_optional_string(value: object) -> bool:
     return value is None or isinstance(value, str)
 
@@ -73,6 +79,38 @@ def _source_reference_tuple_or_empty(value: object) -> tuple[SourceReference, ..
         isinstance(item, SourceReference) for item in value
     ):
         return cast(tuple[SourceReference, ...], value)
+    return ()
+
+
+def _is_valid_charter_status(value: object) -> bool:
+    return (
+        isinstance(value, CharterStatus)
+        and isinstance(value.status, str)
+        and isinstance(value.findings, tuple)
+        and all(isinstance(finding, str) for finding in value.findings)
+        and isinstance(value.evidence_references, tuple)
+        and all(
+            isinstance(reference, SourceReference)
+            for reference in value.evidence_references
+        )
+        and isinstance(value.documentation_references, tuple)
+        and all(
+            isinstance(reference, SourceReference)
+            for reference in value.documentation_references
+        )
+        and isinstance(value.pathway_references, tuple)
+        and all(
+            isinstance(reference, OpaqueReference)
+            for reference in value.pathway_references
+        )
+    )
+
+
+def _charter_status_tuple_or_empty(value: object) -> tuple[CharterStatus, ...]:
+    if isinstance(value, tuple) and all(
+        _is_valid_charter_status(item) for item in value
+    ):
+        return cast(tuple[CharterStatus, ...], value)
     return ()
 
 
@@ -156,8 +194,16 @@ def _malformed_result_error(result: object, expected_check_id: str) -> str | Non
             f"Required Charter check {expected_check_id} returned result identity "
             f"{result.check_id}"
         )
-    if not _is_string(result.status):
+    if not _is_charter_check_status(result.status):
         return f"Required Charter check {expected_check_id} returned malformed status"
+    if not isinstance(result.charter_statuses, tuple) or not all(
+        _is_valid_charter_status(charter_status)
+        for charter_status in result.charter_statuses
+    ):
+        return (
+            f"Required Charter check {expected_check_id} returned malformed "
+            "Charter statuses"
+        )
     if not isinstance(result.findings, tuple) or not all(
         isinstance(finding, str) for finding in result.findings
     ):
@@ -190,7 +236,10 @@ def _malformed_result_error(result: object, expected_check_id: str) -> str | Non
             f"Required Charter check {expected_check_id} returned malformed "
             "execution error"
         )
-    if result.status != "MISSING" and result.execution_error is not None:
+    if (
+        result.status is not CharterCheckStatus.MISSING
+        and result.execution_error is not None
+    ):
         return (
             f"Required Charter check {expected_check_id} returned execution error "
             f"with non-MISSING status: {result.execution_error}"
@@ -209,7 +258,7 @@ def _missing_check_result(
     ):
         return CharterCheckResult(
             check_id=check_id,
-            status="MISSING",
+            status=CharterCheckStatus.MISSING,
             execution_error=execution_error,
         )
 
@@ -222,7 +271,10 @@ def _missing_check_result(
         )
     return CharterCheckResult(
         check_id=check_id,
-        status="MISSING",
+        status=CharterCheckStatus.MISSING,
+        charter_statuses=_charter_status_tuple_or_empty(
+            malformed_result.charter_statuses
+        ),
         findings=_string_tuple_or_empty(malformed_result.findings),
         supporting_evaluation_findings=_opaque_reference_tuple_or_empty(
             malformed_result.supporting_evaluation_findings
@@ -266,7 +318,7 @@ def _integrity_error(check_results: tuple[CharterCheckResult, ...]) -> str | Non
     errors = tuple(
         result.execution_error or f"Required Charter check {result.check_id} is MISSING"
         for result in check_results
-        if result.status == "MISSING"
+        if result.status is CharterCheckStatus.MISSING
     )
     return "; ".join(errors) if errors else None
 
