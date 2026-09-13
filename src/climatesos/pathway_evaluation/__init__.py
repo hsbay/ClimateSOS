@@ -95,6 +95,7 @@ from .interfaces import (
     ProductAssembly,
     QueueBundler,
     QueueEvaluator,
+    ScaleDiagnosticEvaluator,
 )
 from .models import (
     Attribute,
@@ -125,6 +126,8 @@ from .models import (
     QueueEvaluatorResult,
     QueueExecutionResult,
     QueueProgressRecord,
+    ScaleDiagnosticResult,
+    ScaleFinding,
     SourceReference,
     TransitionPathway,
 )
@@ -231,6 +234,9 @@ __all__ = [
     "ReliabilityAdequacyRuleFunction",
     "ReliabilityDeliveryTimingEvaluationInvariantError",
     "ReliabilityDeliveryTimingFindingFunction",
+    "ScaleDiagnosticEvaluator",
+    "ScaleDiagnosticResult",
+    "ScaleFinding",
     "SourceEmissionsRuleFunction",
     "SourceReference",
     "StructuralPathwayEvaluationEngine",

@@ -441,3 +441,63 @@ class NetOverallSystemContribution:
     uncertainties: tuple[str, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
     provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class ScaleFinding:
+    """One traceable, open-ended material-scale or scaling-condition finding."""
+
+    finding_id: str
+    description: str
+    scale_scope: str | None = None
+    finding_type: str | None = None
+    statuses: tuple[str, ...] = ()
+    contribution_findings: tuple[ContributionFinding, ...] = ()
+    transition_function_references: tuple[OpaqueReference, ...] = ()
+    geographic_scope: str | None = None
+    system_scope: str | None = None
+    quantity_findings: tuple[str, ...] = ()
+    capacity_findings: tuple[str, ...] = ()
+    throughput_findings: tuple[str, ...] = ()
+    coverage_findings: tuple[str, ...] = ()
+    replication_findings: tuple[str, ...] = ()
+    deployment_findings: tuple[str, ...] = ()
+    scale_progression_findings: tuple[str, ...] = ()
+    timing_conditions: tuple[str, ...] = ()
+    sequencing_conditions: tuple[str, ...] = ()
+    constraints: tuple[str, ...] = ()
+    bottlenecks: tuple[str, ...] = ()
+    scale_increases: tuple[str, ...] = ()
+    unblocks: tuple[str, ...] = ()
+    constraint_mitigations: tuple[str, ...] = ()
+    workarounds: tuple[str, ...] = ()
+    resolution_conditions: tuple[str, ...] = ()
+    scale_dependent_effects: tuple[str, ...] = ()
+    unresolved_conditions: tuple[str, ...] = ()
+    supporting_pathway_outputs: tuple[PathwayObject, ...] = ()
+    supporting_comparison_findings: tuple[ComparisonFinding, ...] = ()
+    supporting_queue_results: tuple[QueueEvaluatorResult, ...] = ()
+    supporting_fabric_results: tuple[FabricEvaluatorResult, ...] = ()
+    supporting_documentation_findings: tuple[DocumentationFinding, ...] = ()
+    supporting_system_references: tuple[OpaqueReference, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class ScaleDiagnosticResult:
+    """Immutable result of evaluating contribution at material scale."""
+
+    product_pathway: ProductPathway
+    net_overall_system_contribution: NetOverallSystemContribution
+    transition_pathway: TransitionPathway
+    scale_findings: tuple[ScaleFinding, ...]
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    evaluator_version: str
+    rule_set_version: str
+    assumptions: tuple[str, ...] = ()
+    uncertainties: tuple[str, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()

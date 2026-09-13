@@ -554,8 +554,6 @@ def test_no_subrecords_deferred_domains_scale_or_scalar_fields_are_added() -> No
         "EmissionsAccountingRuleFunction",
         "CDRRuleFunction",
         "BiosphereContributionEvaluator",
-        "ScaleFinding",
-        "ScaleDiagnosticResult",
     )
 
     assert all(not hasattr(pathway_evaluation, name) for name in forbidden_exports)

@@ -6,7 +6,6 @@ from typing import cast, get_args, get_type_hints
 
 import pytest
 
-import climatesos.pathway_evaluation as pathway_evaluation
 from climatesos.pathway_evaluation import (
     BiosphereContributionRuleFunction,
     CarbonRemovalRuleFunction,
@@ -444,8 +443,6 @@ def test_no_queue_subrecords_scale_or_scalar_fields_are_added() -> None:
         "supporting_queue_execution_results",
         "supporting_queue_progress_records",
     }.isdisjoint(finding_fields)
-    assert not hasattr(pathway_evaluation, "ScaleFinding")
-    assert not hasattr(pathway_evaluation, "ScaleDiagnosticResult")
     assert {
         "scale",
         "replication",

@@ -24,6 +24,8 @@ from .models import (
     QueueEvaluationFailure,
     QueueEvaluatorResult,
     QueueSubject,
+    ScaleDiagnosticResult,
+    SourceReference,
     TransitionPathway,
 )
 
@@ -166,3 +168,22 @@ class NetOverallSystemContributionEvaluator(Protocol):
         pathway_engine_result: PathwayEngineResult,
         integrated_charter_result: IntegratedCharterResult,
     ) -> NetOverallSystemContribution: ...
+
+
+class ScaleDiagnosticEvaluator(Protocol):
+    """Evaluate the scale of an established net overall system contribution."""
+
+    def evaluate(
+        self,
+        net_overall_system_contribution: NetOverallSystemContribution,
+        product_pathway: ProductPathway,
+        transition_pathway: TransitionPathway,
+        system_context: OpaqueReference | None,
+        assumptions: tuple[str, ...],
+        uncertainties: tuple[str, ...],
+        evidence_references: tuple[SourceReference, ...],
+        provenance: tuple[SourceReference, ...],
+        user_id: str,
+        pathway_id: str,
+        evaluation_run_id: str,
+    ) -> ScaleDiagnosticResult: ...
