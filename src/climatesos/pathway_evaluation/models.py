@@ -395,3 +395,49 @@ class IntegratedCharterResult:
     rule_set_version: str
     status: str
     execution_error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ContributionFinding:
+    """One traceable, non-scalar effect on the broader net-zero transition."""
+
+    finding_id: str
+    effect_description: str
+    contribution_scope: str | None = None
+    contribution_type: str | None = None
+    contribution_mechanism: str | None = None
+    contribution_statuses: tuple[str, ...] = ()
+    pathway_output_references: tuple[PathwayObject, ...] = ()
+    net_zero_transition_effects: tuple[str, ...] = ()
+    transition_function_references: tuple[OpaqueReference, ...] = ()
+    system_effects: tuple[str, ...] = ()
+    timing_effects: tuple[str, ...] = ()
+    dependencies: tuple[str, ...] = ()
+    conditions: tuple[str, ...] = ()
+    supporting_comparison_findings: tuple[ComparisonFinding, ...] = ()
+    supporting_queue_results: tuple[QueueEvaluatorResult, ...] = ()
+    supporting_fabric_results: tuple[FabricEvaluatorResult, ...] = ()
+    supporting_documentation_findings: tuple[DocumentationFinding, ...] = ()
+    supporting_system_references: tuple[OpaqueReference, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class NetOverallSystemContribution:
+    """Immutable contribution result derived from completed upstream evaluation."""
+
+    product_pathway: ProductPathway
+    pathway_engine_result: PathwayEngineResult
+    integrated_charter_result: IntegratedCharterResult
+    transition_pathway: TransitionPathway
+    contribution_findings: tuple[ContributionFinding, ...]
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    evaluator_version: str
+    rule_set_version: str
+    assumptions: tuple[str, ...] = ()
+    uncertainties: tuple[str, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()

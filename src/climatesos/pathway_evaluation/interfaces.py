@@ -13,6 +13,7 @@ from .models import (
     FabricEvaluatorResult,
     InitialCharterResult,
     IntegratedCharterResult,
+    NetOverallSystemContribution,
     OpaqueReference,
     PathwayEngineResult,
     ProductAdapterResult,
@@ -155,3 +156,13 @@ class PathwayEvaluationEngine(Protocol):
         system_context: OpaqueReference | None,
         evaluation_run_id: str,
     ) -> PathwayEngineResult: ...
+
+
+class NetOverallSystemContributionEvaluator(Protocol):
+    """Evaluate contribution using completed engine and Integrated Charter results."""
+
+    def evaluate(
+        self,
+        pathway_engine_result: PathwayEngineResult,
+        integrated_charter_result: IntegratedCharterResult,
+    ) -> NetOverallSystemContribution: ...
