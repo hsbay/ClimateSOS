@@ -60,7 +60,6 @@ def validate_comparison_findings(
 
     objects_by_id = {item.object_id: item for item in pathway.objects}
     relationships_by_id = {item.relationship_id: item for item in pathway.relationships}
-    token = pathway.identity_token
     for finding in findings:
         reference_fields = (
             (
@@ -96,8 +95,8 @@ def validate_comparison_findings(
                     "ComparisonFinding references an object outside the ProductPathway"
                 )
             if (
-                pathway_object.user_id != token.user_id
-                or pathway_object.pathway_id != token.pathway_id
+                pathway_object.user_id != pathway.user_id
+                or pathway_object.pathway_id != pathway.pathway_id
             ):
                 raise ComparisonInvariantError(
                     "Referenced pathway object attribution must match the "
@@ -111,8 +110,8 @@ def validate_comparison_findings(
                     "ProductPathway"
                 )
             if (
-                relationship.user_id != token.user_id
-                or relationship.pathway_id != token.pathway_id
+                relationship.user_id != pathway.user_id
+                or relationship.pathway_id != pathway.pathway_id
             ):
                 raise ComparisonInvariantError(
                     "Referenced pathway relationship attribution must match the "

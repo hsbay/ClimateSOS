@@ -203,7 +203,6 @@ class StructuralPathwayEvaluationEngine:
             DocumentationFinding,
             "Documentation findings",
         )
-        token = pathway.identity_token
         return PathwayEngineResult(
             product_pathway=pathway,
             transition_pathway=transition_pathway,
@@ -218,8 +217,8 @@ class StructuralPathwayEvaluationEngine:
             system_context=system_context,
             evaluator_versions=self.evaluator_versions,
             rule_set_versions=self.rule_set_versions,
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id=pathway.user_id,
+            pathway_id=pathway.pathway_id,
             assumptions=self._collect_assumptions(
                 pathway,
                 completed_queue_results,
@@ -301,7 +300,6 @@ class StructuralPathwayEvaluationEngine:
         pathway: ProductPathway,
         evaluation_run_id: str,
     ) -> None:
-        token = pathway.identity_token
         if getattr(record, "evaluated_queue", None) is not queue:
             raise PathwayEvaluationInvariantError(
                 "Queue result must preserve the evaluated queue reference"
@@ -311,8 +309,8 @@ class StructuralPathwayEvaluationEngine:
                 "Queue result must preserve the evaluation run identity"
             )
         if (
-            getattr(record, "user_id", None) != token.user_id
-            or getattr(record, "pathway_id", None) != token.pathway_id
+            getattr(record, "user_id", None) != pathway.user_id
+            or getattr(record, "pathway_id", None) != pathway.pathway_id
         ):
             raise PathwayEvaluationInvariantError(
                 "Queue result attribution must match the ProductPathway"
@@ -373,7 +371,7 @@ class StructuralPathwayEvaluationEngine:
             raise PathwayEvaluationInvariantError(
                 "Fabric evaluation must return FabricEvaluatorResult"
             )
-        token = fabric.product_pathway.identity_token
+        pathway = fabric.product_pathway
         if result.product_fabric is not fabric:
             raise PathwayEvaluationInvariantError(
                 "FabricEvaluatorResult must preserve the ProductFabric reference"
@@ -408,7 +406,10 @@ class StructuralPathwayEvaluationEngine:
             raise PathwayEvaluationInvariantError(
                 "FabricEvaluatorResult must preserve the evaluation run identity"
             )
-        if result.user_id != token.user_id or result.pathway_id != token.pathway_id:
+        if (
+            result.user_id != pathway.user_id
+            or result.pathway_id != pathway.pathway_id
+        ):
             raise PathwayEvaluationInvariantError(
                 "Fabric result attribution must match the ProductPathway"
             )

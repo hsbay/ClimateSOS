@@ -3,20 +3,48 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .models import IdentityToken
+from .models import EvaluationRun, IdentityToken
+
+EvaluationRunIssuer = Callable[
+    [IdentityToken, str | None, str | None],
+    EvaluationRun,
+]
 
 
 @dataclass(frozen=True, slots=True)
 class IdentityLayer:
-    """Expose caller-supplied canonical identity issuance to pathway intake.
+    """Establish lineage identity and create a run before pathway intake.
 
-    The specification does not yet define how identity is generated,
-    authorized, or issued. The supplied issuer owns those semantics.
+    The supplied issuers own identifier generation and identity-resolution
+    semantics. This boundary deliberately performs no authorization.
     """
 
-    issuer: Callable[[], IdentityToken]
+    identity_token_issuer: Callable[[], IdentityToken]
+    evaluation_run_issuer: EvaluationRunIssuer
 
-    def issue(self) -> IdentityToken:
-        """Return the canonical token produced by the configured issuer."""
+    def resolve(
+        self,
+        *,
+        identity_token: IdentityToken | None = None,
+        predecessor_run_id: str | None = None,
+        resolution_record_id: str | None = None,
+    ) -> tuple[IdentityToken, EvaluationRun]:
+        """Establish or reuse a token and create its immutable evaluation run."""
 
-        return self.issuer()
+        token = identity_token or self.identity_token_issuer()
+        evaluation_run = self.evaluation_run_issuer(
+            token,
+            predecessor_run_id,
+            resolution_record_id,
+        )
+        if evaluation_run.identity_token_id != token.token_id:
+            raise ValueError("EvaluationRun must reference the resolved IdentityToken")
+        if evaluation_run.predecessor_run_id != predecessor_run_id:
+            raise ValueError(
+                "EvaluationRun must preserve the predecessor run reference"
+            )
+        if evaluation_run.resolution_record_id != resolution_record_id:
+            raise ValueError(
+                "EvaluationRun must preserve the resolution record reference"
+            )
+        return token, evaluation_run

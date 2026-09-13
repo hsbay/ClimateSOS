@@ -297,8 +297,8 @@ def _validate_initial_artifact(adapter_result: ProductAdapterResult) -> None:
             "Initial Charter evaluation requires ProductAdapterResult"
         )
     if (
-        adapter_result.product_pathway.identity_token
-        is not adapter_result.intake_bundle.identity_token
+        adapter_result.product_pathway.identity_token.token_id
+        != adapter_result.intake_bundle.identity_token.token_id
     ):
         raise CharterEvaluationInvariantError(
             "Initial Charter artifact must preserve its canonical IdentityToken"
@@ -323,9 +323,10 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
             "PathwayEngineResult must preserve the Initial Charter pathway reference"
         )
     if (
-        initial_result.adapter_result.intake_bundle.identity_token is not token
-        or engine_result.user_id != token.user_id
-        or engine_result.pathway_id != token.pathway_id
+        initial_result.adapter_result.intake_bundle.identity_token.token_id
+        != token.token_id
+        or engine_result.user_id != pathway.user_id
+        or engine_result.pathway_id != pathway.pathway_id
     ):
         raise CharterEvaluationInvariantError(
             "Integrated Charter artifact attribution must match the ProductPathway"

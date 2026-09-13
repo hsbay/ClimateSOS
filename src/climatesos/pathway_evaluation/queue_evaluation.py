@@ -132,7 +132,6 @@ class ValidatedQueueEvaluator:
         pathway: ProductPathway,
         evaluation_run_id: str,
     ) -> None:
-        token = pathway.identity_token
         if getattr(record, "evaluated_queue", None) is not queue:
             raise QueueEvaluationInvariantError(
                 "Queue result must preserve the evaluated queue reference"
@@ -142,8 +141,8 @@ class ValidatedQueueEvaluator:
                 "Queue result must preserve the evaluation run identity"
             )
         if (
-            getattr(record, "user_id", None) != token.user_id
-            or getattr(record, "pathway_id", None) != token.pathway_id
+            getattr(record, "user_id", None) != pathway.user_id
+            or getattr(record, "pathway_id", None) != pathway.pathway_id
         ):
             raise QueueEvaluationInvariantError(
                 "Queue result attribution must match the ProductPathway"
@@ -156,7 +155,6 @@ class ValidatedQueueEvaluator:
         pathway: ProductPathway,
         evaluation_run_id: str,
     ) -> None:
-        token = pathway.identity_token
         for record in records:
             if record.evaluated_queue is not queue:
                 raise QueueEvaluationInvariantError(
@@ -166,7 +164,10 @@ class ValidatedQueueEvaluator:
                 raise QueueEvaluationInvariantError(
                     "QueueProgressRecord must preserve the evaluation run identity"
                 )
-            if record.user_id != token.user_id or record.pathway_id != token.pathway_id:
+            if (
+                record.user_id != pathway.user_id
+                or record.pathway_id != pathway.pathway_id
+            ):
                 raise QueueEvaluationInvariantError(
                     "QueueProgressRecord attribution must match the ProductPathway"
                 )

@@ -7,6 +7,7 @@ import pytest
 from climatesos.pathway_evaluation import (
     AssemblyInvariantError,
     ComparisonFinding,
+    EvaluationRun,
     FabricEvaluationInvariantError,
     FabricEvaluatorResult,
     IdentityToken,
@@ -45,26 +46,26 @@ def _pathway() -> tuple[
     QueueElement,
     PathwayRelationship,
 ]:
-    token = IdentityToken(user_id="user-1", pathway_id="pathway-1")
+    token = IdentityToken("token-1")
     first_object = PathwayObject(
         object_id="queue-object-1",
         object_type="input_access",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
     )
     second_object = PathwayObject(
         object_id="queue-object-2",
         object_type="delivery_access",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
     )
     relationship = PathwayRelationship(
         relationship_id="relationship-1",
         relationship_type="depends_on",
         source_object_id=second_object.object_id,
         target_object_id=first_object.object_id,
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
     )
     first_queue = QueueElement(
         pathway_object=first_object,
@@ -76,6 +77,9 @@ def _pathway() -> tuple[
     )
     pathway = ProductPathway(
         identity_token=token,
+        evaluation_run_id="run-1",
+        user_id="user-1",
+        pathway_id="pathway-1",
         pathway_type="test",
         time_window=None,
         geographic_scope=None,
@@ -111,8 +115,10 @@ def _bundles(
 
 def _initial_result(pathway: ProductPathway) -> InitialCharterResult:
     source = SourceReference(reference_id="source-1")
+    evaluation_run = EvaluationRun("run-1", pathway.identity_token.token_id)
     intake = ProductIntakeBundle(
         identity_token=pathway.identity_token,
+        evaluation_run=evaluation_run,
         materials=(
             IntakeArtifact(
                 artifact_id="artifact-1",
@@ -123,7 +129,7 @@ def _initial_result(pathway: ProductPathway) -> InitialCharterResult:
         ),
     )
     return InitialCharterResult(
-        adapter_result=ProductAdapterResult(pathway, intake),
+        adapter_result=ProductAdapterResult(pathway, intake, evaluation_run),
         check_results=(),
         evaluator_version="charter-v1",
         rule_set_version="charter-rules-v1",
@@ -138,7 +144,7 @@ def _queue_result(
     run_id: str = "run-1",
     include_progress: bool = True,
 ) -> QueueEvaluatorResult:
-    token = queue.product_pathway.identity_token
+    pathway = queue.product_pathway
     progress = QueueProgressRecord(
         evaluated_queue=queue,
         evaluation_run_id=run_id,
@@ -147,8 +153,8 @@ def _queue_result(
         ordering_status=None,
         synchronization_status=None,
         evaluation_position=0,
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
     )
     progress_records = (progress,) if include_progress else ()
     execution = QueueExecutionResult(
@@ -156,8 +162,8 @@ def _queue_result(
         evaluation_run_id=run_id,
         execution_state="caller-defined-completion",
         progress_records=progress_records,
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
         transition_pathway=transition,
         system_context=system_context,
     )
@@ -174,8 +180,8 @@ def _queue_result(
         transition_pathway=transition,
         evaluator_version="queue-v1",
         rule_set_version="queue-rules-v1",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
     )
 
 
@@ -231,7 +237,7 @@ def test_queue_bundler_rejects_elements_not_owned_by_pathway() -> None:
     foreign_object = PathwayObject(
         object_id="foreign",
         object_type="foreign",
-        user_id=pathway.identity_token.user_id,
+        user_id=pathway.user_id,
         pathway_id="another-pathway",
     )
     foreign_queue = QueueElement(
@@ -356,12 +362,11 @@ def test_queue_evaluation_failure_remains_distinct_from_completion() -> None:
     pathway, first_queue, second_queue, relationship = _pathway()
     queue = _bundles(pathway, first_queue, second_queue, relationship)[0]
     transition = TransitionPathway(reference_id="transition-1")
-    token = pathway.identity_token
     failure = QueueEvaluationFailure(
         evaluated_queue=queue,
         evaluation_run_id="run-1",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
     )
     evaluator = ValidatedQueueEvaluator(
         lambda _queue, _pathway, _direct, _downstream, _transition, _system, _run: (
@@ -432,7 +437,6 @@ def test_fabric_evaluator_preserves_all_supplied_context() -> None:
     )
     direct = (ComparisonFinding("direct", "direct", "direct finding"),)
     downstream = (ComparisonFinding("downstream", "propagation", "downstream finding"),)
-    token = pathway.identity_token
     expected = FabricEvaluatorResult(
         product_fabric=fabric,
         queue_results=queue_results,
@@ -443,8 +447,8 @@ def test_fabric_evaluator_preserves_all_supplied_context() -> None:
         evaluator_version="fabric-v1",
         rule_set_version="fabric-rules-v1",
         evaluation_run_id="run-1",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
         system_context=system_context,
     )
     seen: list[object] = []

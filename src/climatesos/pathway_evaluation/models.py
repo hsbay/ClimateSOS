@@ -45,10 +45,19 @@ class OpaqueReference:
 
 @dataclass(frozen=True, slots=True)
 class IdentityToken:
-    """Canonical identity issued upstream by the Identity Layer."""
+    """Canonical evaluation-lineage identity established by Identity Layer."""
 
-    user_id: str
-    pathway_id: str
+    token_id: str
+
+
+@dataclass(frozen=True, slots=True)
+class EvaluationRun:
+    """One immutable evaluation attempt within an identity lineage."""
+
+    evaluation_run_id: str
+    identity_token_id: str
+    predecessor_run_id: str | None = None
+    resolution_record_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -66,6 +75,7 @@ class ProductIntakeBundle:
     """Immutable association of an identity with submitted pathway material."""
 
     identity_token: IdentityToken
+    evaluation_run: EvaluationRun
     materials: tuple[IntakeArtifact, ...]
     metadata: tuple[Attribute, ...] = ()
     documentation: tuple[SourceReference, ...] = ()
@@ -113,6 +123,9 @@ class ProductPathway:
     """Normalized immutable map or graph created by ProductAdapter."""
 
     identity_token: IdentityToken
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
     pathway_type: str
     time_window: str | None
     geographic_scope: str | None
@@ -128,10 +141,11 @@ class ProductPathway:
 
 @dataclass(frozen=True, slots=True)
 class ProductAdapterResult:
-    """Adapter output retaining the pathway-to-intake association."""
+    """Adapter output retaining pathway, intake, and run associations."""
 
     product_pathway: ProductPathway
     intake_bundle: ProductIntakeBundle
+    evaluation_run: EvaluationRun
 
 
 @dataclass(frozen=True, slots=True)

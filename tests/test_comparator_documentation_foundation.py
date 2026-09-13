@@ -9,6 +9,7 @@ from climatesos.pathway_evaluation import (
     ComparisonInvariantError,
     DocumentationEvaluationInvariantError,
     DocumentationFinding,
+    EvaluationRun,
     FabricEvaluatorResult,
     IdentityToken,
     IntakeArtifact,
@@ -41,13 +42,14 @@ def _foundation() -> tuple[
     TransitionPathway,
     OpaqueReference,
 ]:
-    token = IdentityToken("user-1", "pathway-1")
+    token = IdentityToken("token-1")
+    evaluation_run = EvaluationRun("run-1", token.token_id)
     source = SourceReference("source-1", "artifact-1")
     pathway_object = PathwayObject(
         object_id="object-1",
         object_type="represented-function",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         source_references=(source,),
         evidence_references=(source,),
     )
@@ -56,13 +58,16 @@ def _foundation() -> tuple[
         relationship_type="depends-on",
         source_object_id=pathway_object.object_id,
         target_object_id=pathway_object.object_id,
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         source_references=(source,),
     )
     queue_element = QueueElement(pathway_object, QueueCategory.UNCLASSIFIED)
     pathway = ProductPathway(
         identity_token=token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         pathway_type="test",
         time_window=None,
         geographic_scope=None,
@@ -75,6 +80,7 @@ def _foundation() -> tuple[
     )
     intake = ProductIntakeBundle(
         identity_token=token,
+        evaluation_run=evaluation_run,
         materials=(
             IntakeArtifact(
                 artifact_id="artifact-1",
@@ -87,7 +93,7 @@ def _foundation() -> tuple[
         evidence=(source,),
         provenance=(source,),
     )
-    adapter_result = ProductAdapterResult(pathway, intake)
+    adapter_result = ProductAdapterResult(pathway, intake, evaluation_run)
     bundle = ProductQueueBundle(
         bundle_id="bundle-1",
         product_pathway=pathway,
@@ -101,8 +107,8 @@ def _foundation() -> tuple[
         evaluation_run_id="run-1",
         execution_state="caller-completed",
         progress_records=(),
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
         evidence_references=(source,),
         transition_pathway=transition,
         system_context=context,
@@ -120,8 +126,8 @@ def _foundation() -> tuple[
         transition_pathway=transition,
         evaluator_version="queue-v1",
         rule_set_version="queue-rules-v1",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
         evidence_references=(source,),
     )
     fabric = ProductFabric(
@@ -141,8 +147,8 @@ def _foundation() -> tuple[
         evaluator_version="fabric-v1",
         rule_set_version="fabric-rules-v1",
         evaluation_run_id="run-1",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
         system_context=context,
         evidence_references=(source,),
     )

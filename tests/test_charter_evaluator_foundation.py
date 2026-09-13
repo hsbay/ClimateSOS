@@ -9,6 +9,7 @@ from climatesos.pathway_evaluation import (
     CharterCheckResult,
     CharterEvaluationContext,
     CharterEvaluationInvariantError,
+    EvaluationRun,
     IdentityToken,
     IntakeArtifact,
     OpaqueReference,
@@ -24,17 +25,21 @@ from climatesos.pathway_evaluation import (
 
 
 def _adapter_result() -> ProductAdapterResult:
-    token = IdentityToken("user-1", "pathway-1")
+    token = IdentityToken("token-1")
+    evaluation_run = EvaluationRun("run-1", token.token_id)
     source = SourceReference("source-1")
     pathway_object = PathwayObject(
         object_id="object-1",
         object_type="represented-function",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         source_references=(source,),
     )
     pathway = ProductPathway(
         identity_token=token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         pathway_type="test",
         time_window=None,
         geographic_scope=None,
@@ -45,6 +50,7 @@ def _adapter_result() -> ProductAdapterResult:
     )
     intake = ProductIntakeBundle(
         identity_token=token,
+        evaluation_run=evaluation_run,
         materials=(
             IntakeArtifact(
                 artifact_id="artifact-1",
@@ -55,7 +61,7 @@ def _adapter_result() -> ProductAdapterResult:
         ),
         provenance=(source,),
     )
-    return ProductAdapterResult(pathway, intake)
+    return ProductAdapterResult(pathway, intake, evaluation_run)
 
 
 def _context() -> CharterEvaluationContext:
@@ -80,7 +86,6 @@ def _engine_result(
 ) -> PathwayEngineResult:
     initial = evaluator.evaluate_initial(adapter_result, context)
     pathway = adapter_result.product_pathway
-    token = pathway.identity_token
     return PathwayEngineResult(
         product_pathway=pathway,
         transition_pathway=TransitionPathway("transition-1"),
@@ -95,8 +100,8 @@ def _engine_result(
         system_context=OpaqueReference("system-context-1"),
         evaluator_versions=(),
         rule_set_versions=(),
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id=pathway.user_id,
+        pathway_id=pathway.pathway_id,
     )
 
 
@@ -543,23 +548,42 @@ def test_integrated_rejects_initial_evaluator_integrity_error() -> None:
     assert calls == []
 
 
-def test_initial_and_integrated_artifact_coherence_is_required() -> None:
+def test_charter_identity_validation_uses_durable_token_id() -> None:
     calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
     evaluator = _evaluator(calls)
     adapter_result = _adapter_result()
     context = _context()
-    other_token = IdentityToken("user-1", "pathway-1")
-    incoherent_adapter = replace(
+    reconstructed_token = IdentityToken(
+        adapter_result.product_pathway.identity_token.token_id
+    )
+    reconstructed_adapter = replace(
         adapter_result,
-        intake_bundle=replace(adapter_result.intake_bundle, identity_token=other_token),
+        intake_bundle=replace(
+            adapter_result.intake_bundle,
+            identity_token=reconstructed_token,
+        ),
     )
 
-    with pytest.raises(CharterEvaluationInvariantError, match="IdentityToken"):
-        evaluator.evaluate_initial(incoherent_adapter, context)
+    assert reconstructed_token is not adapter_result.product_pathway.identity_token
+    evaluator.evaluate_initial(reconstructed_adapter, context)
+    engine_result = _engine_result(reconstructed_adapter, evaluator, context)
+    evaluator.evaluate_integrated(engine_result, context)
 
-    engine_result = _engine_result(adapter_result, evaluator, context)
+    different_token_initial = replace(
+        engine_result.initial_charter_result,
+        adapter_result=replace(
+            reconstructed_adapter,
+            intake_bundle=replace(
+                reconstructed_adapter.intake_bundle,
+                identity_token=IdentityToken("token-2"),
+            ),
+        ),
+    )
+    different_token_engine_result = replace(
+        engine_result,
+        initial_charter_result=different_token_initial,
+    )
     calls.clear()
-    misattributed_engine_result = replace(engine_result, user_id="other-user")
     with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
-        evaluator.evaluate_integrated(misattributed_engine_result, context)
+        evaluator.evaluate_integrated(different_token_engine_result, context)
     assert calls == []

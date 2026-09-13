@@ -89,8 +89,7 @@ class ValidatedDocumentationEvaluator:
                 "Documentation evaluation requires ProductAdapterResult"
             )
         pathway = adapter_result.product_pathway
-        token = pathway.identity_token
-        if adapter_result.intake_bundle.identity_token != token:
+        if adapter_result.intake_bundle.identity_token != pathway.identity_token:
             raise DocumentationEvaluationInvariantError(
                 "ProductIntakeBundle attribution must match the ProductPathway"
             )
@@ -113,7 +112,10 @@ class ValidatedDocumentationEvaluator:
                 raise DocumentationEvaluationInvariantError(
                     "Queue result must belong to the adapter ProductPathway"
                 )
-            if result.user_id != token.user_id or result.pathway_id != token.pathway_id:
+            if (
+                result.user_id != pathway.user_id
+                or result.pathway_id != pathway.pathway_id
+            ):
                 raise DocumentationEvaluationInvariantError(
                     "Queue result attribution must match the ProductPathway"
                 )
@@ -130,8 +132,8 @@ class ValidatedDocumentationEvaluator:
                     "Fabric result must belong to the adapter ProductPathway"
                 )
             if (
-                fabric_result.user_id != token.user_id
-                or fabric_result.pathway_id != token.pathway_id
+                fabric_result.user_id != pathway.user_id
+                or fabric_result.pathway_id != pathway.pathway_id
             ):
                 raise DocumentationEvaluationInvariantError(
                     "Fabric result attribution must match the ProductPathway"

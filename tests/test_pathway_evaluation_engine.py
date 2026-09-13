@@ -9,6 +9,7 @@ from climatesos.pathway_evaluation import (
     Attribute,
     ComparisonFinding,
     DocumentationFinding,
+    EvaluationRun,
     FabricEvaluatorResult,
     IdentityToken,
     InitialCharterResult,
@@ -77,13 +78,14 @@ def _foundation() -> tuple[
     tuple[ProductQueueBundle, ProductQueueBundle],
     tuple[ProductFabric],
 ]:
-    token = IdentityToken("user-1", "pathway-1")
+    token = IdentityToken("token-1")
+    evaluation_run = EvaluationRun("run-1", token.token_id)
     objects = tuple(
         PathwayObject(
             object_id=f"object-{index}",
             object_type="queue",
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id="user-1",
+            pathway_id="pathway-1",
         )
         for index in range(3)
     )
@@ -92,6 +94,9 @@ def _foundation() -> tuple[
     )
     pathway = ProductPathway(
         identity_token=token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         pathway_type="test",
         time_window=None,
         geographic_scope=None,
@@ -104,7 +109,8 @@ def _foundation() -> tuple[
     )
     adapter = ProductAdapterResult(
         product_pathway=pathway,
-        intake_bundle=ProductIntakeBundle(token, ()),
+        intake_bundle=ProductIntakeBundle(token, evaluation_run, ()),
+        evaluation_run=evaluation_run,
     )
     initial = InitialCharterResult(
         adapter_result=adapter,
@@ -195,14 +201,13 @@ class RecordingQueueEvaluator:
                 run_id,
             )
         )
-        token = pathway.identity_token
         execution = QueueExecutionResult(
             evaluated_queue=queue,
             evaluation_run_id=run_id,
             execution_state="completed",
             progress_records=(),
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id=pathway.user_id,
+            pathway_id=pathway.pathway_id,
             transition_pathway=transition,
             system_context=system_context,
         )
@@ -219,8 +224,8 @@ class RecordingQueueEvaluator:
             transition_pathway=transition,
             evaluator_version="queue-v1",
             rule_set_version="queue-rules-v1",
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id=pathway.user_id,
+            pathway_id=pathway.pathway_id,
             assumptions=("queue assumption",),
             uncertainties=("queue uncertainty",),
         )
@@ -251,7 +256,7 @@ class RecordingFabricEvaluator:
                 run_id,
             )
         )
-        token = fabric.product_pathway.identity_token
+        pathway = fabric.product_pathway
         return FabricEvaluatorResult(
             product_fabric=fabric,
             queue_results=queue_results,
@@ -262,8 +267,8 @@ class RecordingFabricEvaluator:
             evaluator_version="fabric-v1",
             rule_set_version="fabric-rules-v1",
             evaluation_run_id=run_id,
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id=pathway.user_id,
+            pathway_id=pathway.pathway_id,
             system_context=system_context,
             assumptions=("fabric assumption",),
             uncertainties=("fabric uncertainty",),
@@ -395,12 +400,11 @@ def test_queue_failure_prevents_result_and_is_not_sent_downstream(
         system_context: OpaqueReference | None,
         run_id: str,
     ) -> QueueEvaluationFailure:
-        token = pathway.identity_token
         return QueueEvaluationFailure(
             evaluated_queue=queue,
             evaluation_run_id=run_id,
-            user_id=token.user_id,
-            pathway_id=token.pathway_id,
+            user_id=pathway.user_id,
+            pathway_id=pathway.pathway_id,
         )
 
     monkeypatch.setattr(queue_evaluator, "evaluate", fail_first)
@@ -426,7 +430,7 @@ def test_engine_rejects_foreign_ownership_and_result_attribution(
     transition = TransitionPathway("transition-1")
     foreign_pathway = replace(
         adapter.product_pathway,
-        identity_token=IdentityToken("user-2", "pathway-2"),
+        identity_token=IdentityToken("token-2"),
     )
     foreign_bundle = replace(bundles[0], product_pathway=foreign_pathway)
 

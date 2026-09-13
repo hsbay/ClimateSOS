@@ -69,7 +69,7 @@ class ValidatedFabricEvaluator:
             raise FabricEvaluationInvariantError(
                 "Fabric evaluation must return FabricEvaluatorResult"
             )
-        token = fabric.product_pathway.identity_token
+        pathway = fabric.product_pathway
         if result.product_fabric is not fabric:
             raise FabricEvaluationInvariantError(
                 "FabricEvaluatorResult must preserve the ProductFabric reference"
@@ -104,7 +104,10 @@ class ValidatedFabricEvaluator:
             raise FabricEvaluationInvariantError(
                 "FabricEvaluatorResult must preserve the evaluation run identity"
             )
-        if result.user_id != token.user_id or result.pathway_id != token.pathway_id:
+        if (
+            result.user_id != pathway.user_id
+            or result.pathway_id != pathway.pathway_id
+        ):
             raise FabricEvaluationInvariantError(
                 "FabricEvaluatorResult attribution must match the ProductPathway"
             )
@@ -116,7 +119,7 @@ class ValidatedFabricEvaluator:
         queue_results: tuple[QueueEvaluatorResult, ...],
         evaluation_run_id: str,
     ) -> None:
-        token = fabric.product_pathway.identity_token
+        pathway = fabric.product_pathway
         if len(queue_results) != len(fabric.queue_bundles):
             raise FabricEvaluationInvariantError(
                 "Fabric evaluation requires one result per participating queue bundle"
@@ -141,8 +144,8 @@ class ValidatedFabricEvaluator:
                     "Queue and fabric results must share an evaluation run"
                 )
             if (
-                queue_result.user_id != token.user_id
-                or queue_result.pathway_id != token.pathway_id
+                queue_result.user_id != pathway.user_id
+                or queue_result.pathway_id != pathway.pathway_id
             ):
                 raise FabricEvaluationInvariantError(
                     "Queue result attribution must match the ProductFabric pathway"

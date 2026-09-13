@@ -32,6 +32,7 @@ class ValidatedProductAdapter:
         return ProductAdapterResult(
             product_pathway=pathway,
             intake_bundle=intake_bundle,
+            evaluation_run=intake_bundle.evaluation_run,
         )
 
     @staticmethod
@@ -40,19 +41,28 @@ class ValidatedProductAdapter:
         intake_bundle: ProductIntakeBundle,
     ) -> None:
         token = intake_bundle.identity_token
-        if pathway.identity_token is not token:
+        evaluation_run = intake_bundle.evaluation_run
+        if pathway.identity_token.token_id != token.token_id:
             raise AdapterInvariantError(
                 "ProductPathway must preserve the intake bundle's IdentityToken"
+            )
+        if evaluation_run.identity_token_id != token.token_id:
+            raise AdapterInvariantError(
+                "EvaluationRun must reference the intake lineage IdentityToken"
+            )
+        if pathway.evaluation_run_id != evaluation_run.evaluation_run_id:
+            raise AdapterInvariantError(
+                "ProductPathway evaluation_run_id must match the EvaluationRun"
             )
 
         object_ids: set[str] = set()
         for pathway_object in pathway.objects:
             if (
-                pathway_object.user_id != token.user_id
-                or pathway_object.pathway_id != token.pathway_id
+                pathway_object.user_id != pathway.user_id
+                or pathway_object.pathway_id != pathway.pathway_id
             ):
                 raise AdapterInvariantError(
-                    "Every PathwayObject must carry the intake identity"
+                    "Every PathwayObject must carry the ProductPathway attribution"
                 )
             if pathway_object.object_id in object_ids:
                 raise AdapterInvariantError(
@@ -63,11 +73,11 @@ class ValidatedProductAdapter:
         relationship_ids: set[str] = set()
         for relationship in pathway.relationships:
             if (
-                relationship.user_id != token.user_id
-                or relationship.pathway_id != token.pathway_id
+                relationship.user_id != pathway.user_id
+                or relationship.pathway_id != pathway.pathway_id
             ):
                 raise AdapterInvariantError(
-                    "Every PathwayRelationship must carry the intake identity"
+                    "Every PathwayRelationship must carry ProductPathway attribution"
                 )
             if relationship.relationship_id in relationship_ids:
                 raise AdapterInvariantError(

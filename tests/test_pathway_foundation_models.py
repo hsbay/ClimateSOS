@@ -9,6 +9,7 @@ from climatesos.pathway_evaluation import (
     CharterEvaluationContext,
     ComparisonFinding,
     EvaluationExecutionStatus,
+    EvaluationRun,
     FabricEvaluatorResult,
     IdentityToken,
     IntakeArtifact,
@@ -29,10 +30,12 @@ from climatesos.pathway_evaluation import (
 def _foundation_objects() -> tuple[
     IdentityToken, ProductIntakeBundle, ProductPathway, ProductAdapterResult
 ]:
-    token = IdentityToken(user_id="user-1", pathway_id="pathway-1")
+    token = IdentityToken("token-1")
+    evaluation_run = EvaluationRun("run-1", token.token_id)
     source = SourceReference(reference_id="source-1")
     bundle = ProductIntakeBundle(
         identity_token=token,
+        evaluation_run=evaluation_run,
         materials=(
             IntakeArtifact(
                 artifact_id="artifact-1",
@@ -46,12 +49,15 @@ def _foundation_objects() -> tuple[
     element = PathwayObject(
         object_id="object-1",
         object_type="declared_output",
-        user_id=token.user_id,
-        pathway_id=token.pathway_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         source_references=(source,),
     )
     pathway = ProductPathway(
         identity_token=token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
+        user_id="user-1",
+        pathway_id="pathway-1",
         pathway_type="test",
         time_window=None,
         geographic_scope=None,
@@ -59,7 +65,7 @@ def _foundation_objects() -> tuple[
         objects=(element,),
         relationships=(),
     )
-    return token, bundle, pathway, ProductAdapterResult(pathway, bundle)
+    return token, bundle, pathway, ProductAdapterResult(pathway, bundle, evaluation_run)
 
 
 def test_adapter_result_preserves_identity_and_intake_references() -> None:
@@ -68,15 +74,15 @@ def test_adapter_result_preserves_identity_and_intake_references() -> None:
     assert result.intake_bundle is bundle
     assert result.product_pathway is pathway
     assert pathway.identity_token is token
-    assert pathway.objects[0].user_id == token.user_id
-    assert pathway.objects[0].pathway_id == token.pathway_id
+    assert pathway.objects[0].user_id == pathway.user_id
+    assert pathway.objects[0].pathway_id == pathway.pathway_id
 
 
 def test_foundation_records_are_frozen_and_collections_are_immutable() -> None:
     token, bundle, pathway, _ = _foundation_objects()
 
     with pytest.raises(FrozenInstanceError):
-        token.user_id = "different-user"  # type: ignore[misc]
+        token.token_id = "different-token"  # type: ignore[misc]
 
     with pytest.raises(TypeError):
         bundle.materials[0] = bundle.materials[0]  # type: ignore[index]
