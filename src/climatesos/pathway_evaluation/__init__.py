@@ -28,6 +28,7 @@ from .comparison import (
     SubstitutionCombinationFunction,
     ValidatedPathwayComparator,
 )
+from .contribution_composition import CompleteNetOverallSystemContributionFunction
 from .contribution_evaluation import (
     ContributionEvaluationFunction,
     ContributionEvaluationInvariantError,
@@ -154,6 +155,7 @@ __all__ = [
     "CharterStatus",
     "ComparisonFinding",
     "ComparisonInvariantError",
+    "CompleteNetOverallSystemContributionFunction",
     "ContributionEvaluationFunction",
     "ContributionEvaluationInvariantError",
     "ContributionFinding",
