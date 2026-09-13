@@ -988,6 +988,14 @@ A failed check causes its applicable grouping to fail. A passing
 check does not cancel, outweigh, override, or compensate for a failed sibling
 check.
 
+A Charter condition must be positively established where the applicable
+Charter safeguard or validity requirement requires positive validity. Absence
+of an identified violation, incomplete evidence, or absence of an adverse
+finding does not by itself establish `PASS`. Substantive Charter findings remain
+distinct from evaluator- or result-integrity failures, and every Charter
+condition that constrains or prevents progression remains preserved in the
+applicable Charter result.
+
 The meanings and handling of `CharterCheckResult` states, including
 evaluator- and result-integrity failures, are defined in
 [Section 6.4.1](#641-check-result-and-error-handling).
@@ -2211,7 +2219,11 @@ At this stage, the completed `PathwayEngineResult` contains operational, relatio
 
 As all Charter checks are required, the `CharterEvaluator` reruns every Charter check using the information available at the Integrated Charter stage. Each check executes independently, and a finding from the Initial Charter Evaluation does not short-circuit, satisfy, or remove any remaining check.
 
-The `CharterEvaluator` distinguishes Charter findings from evaluator execution failures. A successfully executed check may return a failed, adverse, unresolved, not-applicable, or other valid Charter finding. Those findings remain part of the pathway evaluation record and may affect later evaluation and binding.
+The `CharterEvaluator` distinguishes substantive Charter findings from evaluator
+execution failures. A successfully executed check may return `PASS`, `FAIL`,
+`UNRESOLVED`, or `NOT_APPLICABLE`. A `FAIL` result records the applicable
+substantive `CharterStatus` finding or findings. Those findings remain part of
+the pathway evaluation record and may affect later evaluation and binding.
 
 The Integrated Charter Evaluation completes only when every Charter check has executed and the `CharterEvaluator` has produced a valid immutable `IntegratedCharterResult`. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
 
@@ -2294,11 +2306,13 @@ The `IntegratedCharterResult` contains:
 
 Each Charter check records its result at the Integrated Charter stage.
 
-If a Charter check does not execute, does not complete, times out, produces no valid result, or produces a result that is absent, null, malformed, overwritten, or otherwise unavailable, the check is `MISSING`.
+Integrated Charter checks use the `CharterCheckResult` states and error-handling
+semantics defined in [Section 6.4.1](#641-check-result-and-error-handling).
 
-A `MISSING` check is an evaluator-integrity failure. The `IntegratedCharterResult` is recorded as `ERROR`, and the current pathway evaluation does not proceed until the execution error is resolved.
-
-`UNRESOLVED` and `NOT_APPLICABLE` remain distinct from `MISSING`. A successfully executed check may return either state where permitted by the applicable Charter rule.
+Any `MISSING`, `NULL`, `NOACK`, or `ERROR` result is an evaluator-integrity
+failure. The `IntegratedCharterResult` is recorded as `ERROR`, and the current
+pathway evaluation does not proceed until the execution or integrity failure is
+resolved.
 
 The completed `IntegratedCharterResult` is immutable. Later stages may reference it and carry its findings forward, but they do not overwrite or replace it.
 
@@ -2333,7 +2347,12 @@ The `CharterEvaluator` reruns every Charter check during the Integrated Charter 
 
 A Charter finding may remain unchanged between the two evaluations or may change because additional information, emergent behavior, propagated effects, or system context has become available. Both results remain part of the pathway evaluation history.
 
-Successful completion of the Integrated Charter Evaluation produces a valid immutable `IntegratedCharterResult` and permits progression to Net Overall System Contribution evaluation. Failed, adverse, unresolved, not-applicable, or other valid Charter findings remain in the evaluation history and continue downstream. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
+Successful completion of the Integrated Charter Evaluation produces a valid
+immutable `IntegratedCharterResult` and permits progression to Net Overall
+System Contribution evaluation. `FAIL`, `UNRESOLVED`, and `NOT_APPLICABLE`
+results and their associated Charter findings remain in the evaluation history
+and continue downstream. An evaluator or result-integrity failure prevents the
+current pathway evaluation from proceeding.
 
 ---
 
@@ -3765,18 +3784,13 @@ Every Charter check produces one explicit Final-stage result that remains
 individually identifiable within `FinalCharterResult` and contributes to the
 resulting Final Charter status according to the applicable Charter rule.
 
-If a Charter check does not execute, does not complete, times out, does not
-produce a valid result, or produces a result that is absent, null, malformed,
-overwritten, or otherwise unavailable, the check is `MISSING`.
+Final Charter checks use the `CharterCheckResult` states and error-handling
+semantics defined in [Section 6.4.1](#641-check-result-and-error-handling).
 
-A `MISSING` check is an evaluator-integrity failure. The `FinalCharterResult`
-is recorded as `ERROR`, and the current pathway evaluation does not proceed to
-ordinary bound-state determination or binding until the execution error is
-resolved.
-
-`UNRESOLVED` and `NOT_APPLICABLE` remain distinct from `MISSING`. A successfully
-executed check may return either state where permitted by the applicable Charter
-rule.
+Any `MISSING`, `NULL`, `NOACK`, or `ERROR` result is an evaluator-integrity
+failure. The `FinalCharterResult` is recorded as `ERROR`, and the current
+pathway evaluation does not proceed to ordinary bound-state determination or
+binding until the execution or integrity failure is resolved.
 
 A completed `FinalCharterResult` is immutable. Later stages reference it but do
 not revise or replace it.
@@ -3840,9 +3854,9 @@ progression is permitted, but it does not reinterpret Charter validity.
 Final Charter Evaluation completes when every Charter check has executed and
 the `CharterEvaluator` has produced a valid immutable `FinalCharterResult`.
 
-A completed Final Charter Evaluation may contain adverse, failed, unresolved,
-not-applicable, or other valid Charter findings. These findings remain part of
-the completed result and are distinct from evaluator-integrity failure.
+A completed Final Charter Evaluation may contain `FAIL`, `UNRESOLVED`, or
+`NOT_APPLICABLE` results and their associated Charter findings. These remain
+part of the completed result and are distinct from evaluator-integrity failure.
 
 The `FinalCharterResult` shall preserve every Charter condition that constrains
 or prevents further runtime progression.
@@ -3852,9 +3866,8 @@ rule requires positive validity. Absence of an identified violation, absence of
 a STOP condition, or incomplete evidence does not by itself establish permission
 to proceed.
 
-An evaluator-integrity failure, including any `MISSING` Charter check, prevents
-further runtime progression. The failure and all available evaluation state,
-evidence, provenance, and attribution are preserved.
+An evaluator-integrity failure, including any `MISSING`, `NULL`, `NOACK`, or
+`ERROR` Charter check result, prevents further runtime progression.
 
 A completed Final Charter finding may also prohibit further runtime progression
 where the applicable Charter safeguard or guardrail requires that outcome. In
