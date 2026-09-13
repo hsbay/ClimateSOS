@@ -2486,17 +2486,26 @@ contribution, including whether and how the pathway:
 * adds, reduces, shifts, or otherwise materially affects energy, resource,
   infrastructure, or other demand on the broader transition;
 * introduces, removes, reduces, or transfers material emissions, resource,
-  infrastructure, ecological, or other system burdens that affect its net contribution;
-* shortens, preserves, delays, or extends the time required to reach accelerated
-  operational net zero;
+  infrastructure, ecological, or other system burdens that affect its net
+  contribution;
+* shortens, preserves, delays, or extends the time required to reach
+  accelerated operational net zero;
 * introduces effects that depend on unresolved downstream conditions; or
 * provides local, limited, indirect, conditional, or presently unresolved
   system value.
 
-Where a supported contribution depends on an upstream comparison finding,
-queue result, fabric result, documentation finding, system-model relationship,
-or evidence source, the resulting `NetOverallSystemContribution` preserves
-references sufficient to trace that dependency.
+Where a supported contribution depends on upstream evaluation findings, the
+applicable contribution finding preserves references to each summary finding
+materially relied upon to establish that contribution. Where a concrete
+summary result or finding type exists within the Product Pathway Evaluation
+Flow, the contribution finding references that immutable record directly
+rather than reducing it to an opaque identifier.
+
+Subordinate execution or progress records already preserved through a referenced
+summary result are not separately surfaced for completeness. They remain
+reachable through the summary result that owns them. An opaque reference is used
+where the upstream system boundary itself exposes the relevant state or
+relationship opaquely.
 
 The evaluator does not infer contribution from a product label, technology
 class, commercial claim, emissions claim, or declared pathway purpose. It
@@ -2529,10 +2538,20 @@ The result contains or references, as applicable:
 * material dependencies and conditions affecting contribution;
 * limited, indirect, conditional, or unresolved contribution findings;
 * material assumptions and uncertainties;
-* supporting comparison, queue, fabric, and documentation findings;
+* the material comparison findings, queue evaluator results, fabric evaluator
+  results, documentation findings, and other applicable summary findings relied
+  upon to establish each contribution finding;
 * evidence and provenance references;
 * evaluator version and applicable rule-set version; and
 * `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
+
+The supporting records attached to a contribution finding form that finding's
+evaluation surface: they identify the material upstream summary findings relied
+upon to establish that contribution. They do not reproduce every subordinate
+execution, progress, or intermediate record already preserved through those
+summary findings. This is distinct from the later `evaluation_trace`, which
+preserves completed upstream evaluation artifacts for whole-evaluation
+provenance, inspection, and reconstruction.
 
 The result preserves the distinction between supported contribution findings
 and contribution claims that remain conditional, unresolved, or unsupported by
@@ -2740,9 +2759,23 @@ record, whether scale depends on conditions such as:
   capacity, coverage, or deployment.
 
 The evaluator preserves the relationship between each scale finding and the
-contribution it affects. Where the available evidence does not establish whether a
-constraint or bottleneck can be resolved within the required transition window,
-that condition remains unresolved and is recorded in the `ScaleDiagnosticResult`.
+contribution it affects. Each scale finding also preserves references to the
+material upstream summary findings relied upon to establish that scale finding.
+These may include the applicable contribution finding and other evaluation
+results or findings relevant to scale. Scale-supporting findings remain separate
+from contribution-supporting findings where the underlying evaluation records
+differ.
+
+Where a concrete summary result or finding type exists within the Product
+Pathway Evaluation Flow, the scale finding references that immutable record
+directly rather than reducing it to an opaque identifier. Subordinate
+execution, progress, or intermediate records already preserved through a
+referenced summary result are not separately surfaced for completeness. They
+remain reachable through the summary result that owns them.
+
+Where the available evidence does not establish whether a constraint or
+bottleneck can be resolved within the required transition window, that
+condition remains unresolved and is recorded in the `ScaleDiagnosticResult`.
 
 The evaluator does not assume that a technically feasible pathway can scale
 merely because additional deployment is physically conceivable. Scale findings
