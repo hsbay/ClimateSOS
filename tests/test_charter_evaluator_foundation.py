@@ -833,26 +833,106 @@ def test_stage_status_failures_return_error_results_with_completed_checks() -> N
     )
 
 
-def test_integrated_rejects_initial_evaluator_integrity_error() -> None:
+@pytest.mark.parametrize(
+    "failure_kind",
+    [
+        "stage-status",
+        "execution-error",
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.NOACK,
+    ],
+)
+def test_integrated_rejects_initial_integrity_failure_before_callbacks(
+    failure_kind: str | CharterCheckStatus,
+) -> None:
     calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
     evaluator = _evaluator(calls)
     adapter_result = _adapter_result()
     context = _context()
     engine_result = _engine_result(adapter_result, evaluator, context)
-    integrity_error_initial = replace(
-        engine_result.initial_charter_result,
-        status="ERROR",
-        execution_error="required check was MISSING",
-    )
+    initial_result = engine_result.initial_charter_result
+    if isinstance(failure_kind, CharterCheckStatus):
+        integrity_error_initial = replace(
+            initial_result,
+            status="CALLER-DEFINED-INITIAL",
+            execution_error=None,
+            check_results=(CharterCheckResult("check-1", failure_kind),),
+        )
+    elif failure_kind == "stage-status":
+        integrity_error_initial = replace(
+            initial_result,
+            status="ERROR",
+            execution_error=None,
+        )
+    else:
+        integrity_error_initial = replace(
+            initial_result,
+            status="CALLER-DEFINED-INITIAL",
+            execution_error="Initial Charter execution failed",
+        )
     ineligible_engine_result = replace(
         engine_result,
         initial_charter_result=integrity_error_initial,
     )
     calls.clear()
 
-    with pytest.raises(CharterEvaluationInvariantError, match="integrity ERROR"):
+    with pytest.raises(CharterEvaluationInvariantError, match="integrity failure"):
         evaluator.evaluate_integrated(ineligible_engine_result, context)
     assert calls == []
+
+
+@pytest.mark.parametrize(
+    "check_status",
+    [
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.NOT_APPLICABLE,
+    ],
+)
+def test_integrated_accepts_completed_substantive_initial_outcomes(
+    check_status: CharterCheckStatus,
+) -> None:
+    calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
+    evaluator = _evaluator(calls)
+    adapter_result = _adapter_result()
+    context = _context()
+    engine_result = _engine_result(adapter_result, evaluator, context)
+    charter_statuses = (
+        (CharterStatus("HARM", findings=("established harm",)),)
+        if check_status is CharterCheckStatus.FAIL
+        else ()
+    )
+    check_result = CharterCheckResult(
+        "check-1",
+        check_status,
+        charter_statuses=charter_statuses,
+    )
+    initial_result = replace(
+        engine_result.initial_charter_result,
+        check_results=(check_result,),
+    )
+    eligible_engine_result = replace(
+        engine_result,
+        initial_charter_result=initial_result,
+    )
+    calls.clear()
+
+    result = evaluator.evaluate_integrated(eligible_engine_result, context)
+
+    assert result.initial_charter_result is initial_result
+    assert result.initial_charter_result.check_results[0] is check_result
+    assert result.initial_charter_result.check_results[0].charter_statuses is (
+        charter_statuses
+    )
+    assert [call[0] for call in calls] == [
+        "integrated",
+        "integrated",
+        "integrated",
+        "integrated-status",
+    ]
 
 
 def test_charter_identity_validation_uses_durable_token_id() -> None:
@@ -930,9 +1010,31 @@ def test_initial_and_integrated_reject_mismatched_lineage_or_run() -> None:
             replace(engine_result, identity_token=IdentityToken("token-2")),
             context,
         )
+    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=replace(
+                    engine_result.initial_charter_result,
+                    identity_token=IdentityToken("token-2"),
+                ),
+            ),
+            context,
+        )
     with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
         evaluator.evaluate_integrated(
             replace(engine_result, evaluation_run_id="run-2"),
+            context,
+        )
+    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=replace(
+                    engine_result.initial_charter_result,
+                    evaluation_run_id="run-2",
+                ),
+            ),
             context,
         )
     assert calls == []
@@ -946,14 +1048,19 @@ def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
     engine_result = _engine_result(adapter_result, evaluator, context)
 
     calls.clear()
+    mismatched_token_run = replace(
+        adapter_result.evaluation_run,
+        identity_token_id="token-2",
+    )
     mismatched_token_initial = replace(
         engine_result.initial_charter_result,
         adapter_result=replace(
             adapter_result,
-            evaluation_run=replace(
-                adapter_result.evaluation_run,
-                identity_token_id="token-2",
+            intake_bundle=replace(
+                adapter_result.intake_bundle,
+                evaluation_run=mismatched_token_run,
             ),
+            evaluation_run=mismatched_token_run,
         ),
     )
     with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
@@ -965,14 +1072,19 @@ def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
             context,
         )
 
+    mismatched_evaluation_run = replace(
+        adapter_result.evaluation_run,
+        evaluation_run_id="run-2",
+    )
     mismatched_run_initial = replace(
         engine_result.initial_charter_result,
         adapter_result=replace(
             adapter_result,
-            evaluation_run=replace(
-                adapter_result.evaluation_run,
-                evaluation_run_id="run-2",
+            intake_bundle=replace(
+                adapter_result.intake_bundle,
+                evaluation_run=mismatched_evaluation_run,
             ),
+            evaluation_run=mismatched_evaluation_run,
         ),
     )
     with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
@@ -980,6 +1092,52 @@ def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
             replace(
                 engine_result,
                 initial_charter_result=mismatched_run_initial,
+            ),
+            context,
+        )
+    assert calls == []
+
+
+def test_integrated_enforces_exact_upstream_artifact_references() -> None:
+    calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
+    evaluator = _evaluator(calls)
+    adapter_result = _adapter_result()
+    context = _context()
+    engine_result = _engine_result(adapter_result, evaluator, context)
+    initial_result = engine_result.initial_charter_result
+    calls.clear()
+
+    reconstructed_run_initial = replace(
+        initial_result,
+        adapter_result=replace(
+            adapter_result,
+            intake_bundle=replace(
+                adapter_result.intake_bundle,
+                evaluation_run=replace(adapter_result.evaluation_run),
+            ),
+        ),
+    )
+    with pytest.raises(CharterEvaluationInvariantError, match="reference"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=reconstructed_run_initial,
+            ),
+            context,
+        )
+
+    reconstructed_pathway_initial = replace(
+        initial_result,
+        adapter_result=replace(
+            adapter_result,
+            product_pathway=replace(adapter_result.product_pathway),
+        ),
+    )
+    with pytest.raises(CharterEvaluationInvariantError, match="pathway reference"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=reconstructed_pathway_initial,
             ),
             context,
         )

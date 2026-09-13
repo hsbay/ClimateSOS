@@ -414,14 +414,29 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
     pathway = engine_result.product_pathway
     token = pathway.identity_token
     initial_result = engine_result.initial_charter_result
-    if initial_result.status == "ERROR" and initial_result.execution_error is not None:
+    if (
+        initial_result.status == "ERROR"
+        or initial_result.execution_error is not None
+        or any(
+            result.status in _INTEGRITY_FAILURE_STATUSES
+            for result in initial_result.check_results
+        )
+    ):
         raise CharterEvaluationInvariantError(
             "Integrated Charter evaluation cannot consume an Initial Charter "
-            "evaluator-integrity ERROR"
+            "evaluator-integrity failure"
         )
     if initial_result.adapter_result.product_pathway is not pathway:
         raise CharterEvaluationInvariantError(
             "PathwayEngineResult must preserve the Initial Charter pathway reference"
+        )
+    if (
+        initial_result.adapter_result.evaluation_run
+        is not initial_result.adapter_result.intake_bundle.evaluation_run
+    ):
+        raise CharterEvaluationInvariantError(
+            "ProductAdapterResult must preserve the ProductIntakeBundle "
+            "EvaluationRun reference"
         )
     if (
         engine_result.identity_token.token_id != token.token_id
@@ -440,6 +455,8 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
         engine_result.evaluation_run_id != pathway.evaluation_run_id
         or initial_result.evaluation_run_id != pathway.evaluation_run_id
         or initial_result.adapter_result.evaluation_run.evaluation_run_id
+        != pathway.evaluation_run_id
+        or initial_result.adapter_result.intake_bundle.evaluation_run.evaluation_run_id
         != pathway.evaluation_run_id
     ):
         raise CharterEvaluationInvariantError(
