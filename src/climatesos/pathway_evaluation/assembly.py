@@ -3,6 +3,7 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
+from .enums import CharterCheckStatus
 from .interfaces import FabricAssembler, QueueBundler
 from .models import (
     InitialCharterResult,
@@ -23,6 +24,16 @@ FabricAssemblyFunction = Callable[
 
 class AssemblyInvariantError(ValueError):
     """Raised when an assembly product violates pathway ownership."""
+
+
+_INITIAL_CHARTER_INTEGRITY_FAILURES = frozenset(
+    {
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.NOACK,
+    }
+)
 
 
 def _contains_reference(values: tuple[object, ...], candidate: object) -> bool:
@@ -134,9 +145,63 @@ class StructuralProductAssembly:
     ) -> tuple[tuple[ProductQueueBundle, ...], tuple[ProductFabric, ...]]:
         """Assemble queue bundles and optional fabrics without evaluation."""
 
+        self._validate_initial_result(initial_result)
         pathway = initial_result.adapter_result.product_pathway
         queue_bundles = self.queue_bundler.bundle(pathway)
         if self.fabric_assembler is None:
             return queue_bundles, ()
         fabrics = self.fabric_assembler.assemble(pathway, queue_bundles)
         return queue_bundles, fabrics
+
+    @staticmethod
+    def _validate_initial_result(initial_result: InitialCharterResult) -> None:
+        if not isinstance(initial_result, InitialCharterResult):
+            raise AssemblyInvariantError(
+                "ProductAssembly requires a completed InitialCharterResult"
+            )
+        if (
+            initial_result.status == "ERROR"
+            or initial_result.execution_error is not None
+        ):
+            raise AssemblyInvariantError(
+                "ProductAssembly requires an InitialCharterResult without "
+                "execution-integrity failure"
+            )
+        if any(
+            result.status in _INITIAL_CHARTER_INTEGRITY_FAILURES
+            for result in initial_result.check_results
+        ):
+            raise AssemblyInvariantError(
+                "ProductAssembly cannot consume an InitialCharterResult with "
+                "check-result integrity failure"
+            )
+
+        adapter_result = initial_result.adapter_result
+        pathway = adapter_result.product_pathway
+        intake_bundle = adapter_result.intake_bundle
+        evaluation_run = adapter_result.evaluation_run
+        if evaluation_run is not intake_bundle.evaluation_run:
+            raise AssemblyInvariantError(
+                "ProductAdapterResult must preserve the ProductIntakeBundle "
+                "EvaluationRun reference"
+            )
+
+        token_id = pathway.identity_token.token_id
+        if (
+            initial_result.identity_token.token_id != token_id
+            or intake_bundle.identity_token.token_id != token_id
+            or evaluation_run.identity_token_id != token_id
+        ):
+            raise AssemblyInvariantError(
+                "ProductAssembly inputs must share the ProductPathway IdentityToken"
+            )
+
+        evaluation_run_id = pathway.evaluation_run_id
+        if (
+            initial_result.evaluation_run_id != evaluation_run_id
+            or evaluation_run.evaluation_run_id != evaluation_run_id
+            or intake_bundle.evaluation_run.evaluation_run_id != evaluation_run_id
+        ):
+            raise AssemblyInvariantError(
+                "ProductAssembly inputs must share the ProductPathway EvaluationRun"
+            )

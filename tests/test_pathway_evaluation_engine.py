@@ -7,6 +7,9 @@ import pytest
 
 from climatesos.pathway_evaluation import (
     Attribute,
+    CharterCheckResult,
+    CharterCheckStatus,
+    CharterStatus,
     ComparisonFinding,
     DocumentationFinding,
     EvaluationRun,
@@ -453,6 +456,87 @@ def test_engine_rejects_mismatched_lineage_and_caller_run_before_evaluation() ->
             "run-2",
         )
     assert comparator.direct_input is None
+
+
+@pytest.mark.parametrize(
+    "failure_kind",
+    ["stage-status", "execution-error", "check-integrity"],
+)
+def test_engine_rejects_initial_integrity_failure_before_any_evaluator(
+    failure_kind: str,
+) -> None:
+    adapter, initial, bundles, fabrics = _foundation()
+    engine, comparator, queue_evaluator, fabric_evaluator, documentation = _engine()
+    if failure_kind == "stage-status":
+        invalid = replace(initial, status="ERROR")
+    elif failure_kind == "execution-error":
+        invalid = replace(initial, execution_error="Initial Charter execution failed")
+    else:
+        invalid = replace(
+            initial,
+            check_results=(CharterCheckResult("check-1", CharterCheckStatus.NULL),),
+        )
+
+    with pytest.raises(PathwayEvaluationInvariantError, match="integrity failure"):
+        engine.evaluate(
+            adapter,
+            invalid,
+            bundles,
+            fabrics,
+            TransitionPathway("transition-1"),
+            None,
+            "run-1",
+        )
+
+    assert comparator.direct_input is None
+    assert comparator.substitution_input is None
+    assert comparator.propagation_input is None
+    assert queue_evaluator.calls == []
+    assert fabric_evaluator.calls == []
+    assert documentation.calls == []
+
+
+@pytest.mark.parametrize(
+    "check_status",
+    [
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.NOT_APPLICABLE,
+    ],
+)
+def test_engine_accepts_completed_substantive_initial_charter_outcomes(
+    check_status: CharterCheckStatus,
+) -> None:
+    adapter, initial, bundles, fabrics = _foundation()
+    engine, comparator, _, _, _ = _engine()
+    charter_statuses = (
+        (CharterStatus("HARM", findings=("established harm",)),)
+        if check_status is CharterCheckStatus.FAIL
+        else ()
+    )
+    check_result = CharterCheckResult(
+        "check-1",
+        check_status,
+        charter_statuses=charter_statuses,
+    )
+    substantive_initial = replace(initial, check_results=(check_result,))
+
+    result = engine.evaluate(
+        adapter,
+        substantive_initial,
+        bundles,
+        fabrics,
+        TransitionPathway("transition-1"),
+        None,
+        "run-1",
+    )
+
+    assert result.initial_charter_result is substantive_initial
+    assert result.initial_charter_result.check_results[0] is check_result
+    assert result.initial_charter_result.check_results[0].charter_statuses is (
+        charter_statuses
+    )
+    assert comparator.direct_input is not None
 
 
 def test_queue_failure_prevents_result_and_is_not_sent_downstream(

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TypeVar
 
 from .comparison import ComparisonInvariantError, validate_comparison_findings
+from .enums import CharterCheckStatus
 from .interfaces import (
     DocumentationEvaluator,
     FabricEvaluator,
@@ -29,6 +30,15 @@ from .models import (
 )
 
 T = TypeVar("T")
+
+_INITIAL_CHARTER_INTEGRITY_FAILURES = frozenset(
+    {
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.NOACK,
+    }
+)
 
 
 class PathwayEvaluationInvariantError(ValueError):
@@ -262,6 +272,18 @@ class StructuralPathwayEvaluationEngine:
         fabrics: tuple[ProductFabric, ...],
         evaluation_run_id: str,
     ) -> None:
+        if (
+            initial_charter_result.status == "ERROR"
+            or initial_charter_result.execution_error is not None
+            or any(
+                result.status in _INITIAL_CHARTER_INTEGRITY_FAILURES
+                for result in initial_charter_result.check_results
+            )
+        ):
+            raise PathwayEvaluationInvariantError(
+                "Pathway evaluation requires an InitialCharterResult without "
+                "execution-integrity failure"
+            )
         if initial_charter_result.adapter_result is not adapter_result:
             raise PathwayEvaluationInvariantError(
                 "InitialCharterResult must preserve the ProductAdapterResult reference"

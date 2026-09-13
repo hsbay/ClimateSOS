@@ -1,11 +1,14 @@
 """Structural and ownership checks for queue/fabric work boundaries."""
 
-from dataclasses import FrozenInstanceError
+from dataclasses import FrozenInstanceError, replace
 
 import pytest
 
 from climatesos.pathway_evaluation import (
     AssemblyInvariantError,
+    CharterCheckResult,
+    CharterCheckStatus,
+    CharterStatus,
     ComparisonFinding,
     EvaluationRun,
     FabricEvaluationInvariantError,
@@ -232,6 +235,214 @@ def test_product_assembly_omits_fabrics_when_none_are_applicable() -> None:
     )
 
     assert assembly.assemble(_initial_result(pathway)) == (expected_bundles, ())
+
+
+@pytest.mark.parametrize(
+    "failure_kind",
+    ["stage-status", "execution-error", "check-integrity"],
+)
+def test_product_assembly_rejects_initial_integrity_failure_before_work(
+    failure_kind: str,
+) -> None:
+    pathway, _, _, _ = _pathway()
+    initial = _initial_result(pathway)
+    if failure_kind == "stage-status":
+        invalid = replace(initial, status="ERROR")
+    elif failure_kind == "execution-error":
+        invalid = replace(initial, execution_error="Initial Charter execution failed")
+    else:
+        invalid = replace(
+            initial,
+            check_results=(CharterCheckResult("check-1", CharterCheckStatus.ERROR),),
+        )
+    calls: list[str] = []
+
+    def bundle(_pathway: ProductPathway) -> tuple[ProductQueueBundle, ...]:
+        calls.append("queue")
+        return ()
+
+    def assemble_fabric(
+        _pathway: ProductPathway,
+        _bundles: tuple[ProductQueueBundle, ...],
+    ) -> tuple[ProductFabric, ...]:
+        calls.append("fabric")
+        return ()
+
+    assembly = StructuralProductAssembly(
+        queue_bundler=ValidatedQueueBundler(bundle),
+        fabric_assembler=ValidatedFabricAssembler(assemble_fabric),
+    )
+
+    with pytest.raises(AssemblyInvariantError, match="integrity failure"):
+        assembly.assemble(invalid)
+    assert calls == []
+
+
+@pytest.mark.parametrize(
+    "mismatch",
+    [
+        "initial-token",
+        "intake-token",
+        "evaluation-run-token",
+        "initial-run",
+        "pathway-run",
+        "evaluation-run-reference",
+    ],
+)
+def test_product_assembly_rejects_lineage_run_or_reference_mismatch_before_work(
+    mismatch: str,
+) -> None:
+    pathway, _, _, _ = _pathway()
+    initial = _initial_result(pathway)
+    adapter = initial.adapter_result
+    intake = adapter.intake_bundle
+    evaluation_run = adapter.evaluation_run
+
+    if mismatch == "initial-token":
+        invalid = replace(initial, identity_token=IdentityToken("token-2"))
+    elif mismatch == "intake-token":
+        invalid = replace(
+            initial,
+            adapter_result=replace(
+                adapter,
+                intake_bundle=replace(
+                    intake,
+                    identity_token=IdentityToken("token-2"),
+                ),
+            ),
+        )
+    elif mismatch == "evaluation-run-token":
+        mismatched_run = replace(evaluation_run, identity_token_id="token-2")
+        invalid = replace(
+            initial,
+            adapter_result=replace(
+                adapter,
+                intake_bundle=replace(intake, evaluation_run=mismatched_run),
+                evaluation_run=mismatched_run,
+            ),
+        )
+    elif mismatch == "initial-run":
+        invalid = replace(initial, evaluation_run_id="run-2")
+    elif mismatch == "pathway-run":
+        invalid = replace(
+            initial,
+            adapter_result=replace(
+                adapter,
+                product_pathway=replace(pathway, evaluation_run_id="run-2"),
+            ),
+        )
+    else:
+        invalid = replace(
+            initial,
+            adapter_result=replace(
+                adapter,
+                intake_bundle=replace(
+                    intake,
+                    evaluation_run=replace(evaluation_run),
+                ),
+            ),
+        )
+
+    calls: list[str] = []
+
+    def bundle(_pathway: ProductPathway) -> tuple[ProductQueueBundle, ...]:
+        calls.append("queue")
+        return ()
+
+    def assemble_fabric(
+        _pathway: ProductPathway,
+        _bundles: tuple[ProductQueueBundle, ...],
+    ) -> tuple[ProductFabric, ...]:
+        calls.append("fabric")
+        return ()
+
+    assembly = StructuralProductAssembly(
+        queue_bundler=ValidatedQueueBundler(bundle),
+        fabric_assembler=ValidatedFabricAssembler(assemble_fabric),
+    )
+
+    with pytest.raises(AssemblyInvariantError):
+        assembly.assemble(invalid)
+    assert calls == []
+
+
+def test_product_assembly_accepts_reconstructed_tokens_with_same_id() -> None:
+    pathway, first_queue, second_queue, relationship = _pathway()
+    initial = _initial_result(pathway)
+    reconstructed_pathway = replace(
+        pathway,
+        identity_token=IdentityToken(pathway.identity_token.token_id),
+    )
+    reconstructed_intake = replace(
+        initial.adapter_result.intake_bundle,
+        identity_token=IdentityToken(pathway.identity_token.token_id),
+    )
+    reconstructed_adapter = replace(
+        initial.adapter_result,
+        product_pathway=reconstructed_pathway,
+        intake_bundle=reconstructed_intake,
+    )
+    reconstructed_initial = replace(
+        initial,
+        identity_token=IdentityToken(pathway.identity_token.token_id),
+        adapter_result=reconstructed_adapter,
+    )
+    expected_bundles = _bundles(
+        reconstructed_pathway,
+        first_queue,
+        second_queue,
+        relationship,
+    )
+    seen: list[ProductPathway] = []
+
+    def bundle(received: ProductPathway) -> tuple[ProductQueueBundle, ...]:
+        seen.append(received)
+        return expected_bundles
+
+    assembly = StructuralProductAssembly(queue_bundler=ValidatedQueueBundler(bundle))
+
+    assert assembly.assemble(reconstructed_initial) == (expected_bundles, ())
+    assert seen == [reconstructed_pathway]
+    assert (
+        reconstructed_initial.identity_token is not reconstructed_pathway.identity_token
+    )
+    assert (
+        reconstructed_intake.identity_token is not reconstructed_pathway.identity_token
+    )
+
+
+@pytest.mark.parametrize(
+    "check_status",
+    [
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.NOT_APPLICABLE,
+    ],
+)
+def test_product_assembly_allows_completed_substantive_charter_outcomes(
+    check_status: CharterCheckStatus,
+) -> None:
+    pathway, first_queue, second_queue, relationship = _pathway()
+    expected_bundles = _bundles(pathway, first_queue, second_queue, relationship)
+    charter_statuses = (
+        (CharterStatus("HARM", findings=("established harm",)),)
+        if check_status is CharterCheckStatus.FAIL
+        else ()
+    )
+    check_result = CharterCheckResult(
+        "check-1",
+        check_status,
+        charter_statuses=charter_statuses,
+    )
+    initial = replace(_initial_result(pathway), check_results=(check_result,))
+    assembly = StructuralProductAssembly(
+        queue_bundler=ValidatedQueueBundler(lambda _pathway: expected_bundles)
+    )
+
+    assert assembly.assemble(initial) == (expected_bundles, ())
+    assert initial.check_results[0] is check_result
+    assert initial.check_results[0].charter_statuses is charter_statuses
 
 
 def test_queue_bundler_rejects_elements_not_owned_by_pathway() -> None:
