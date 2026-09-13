@@ -912,11 +912,31 @@ references to the associated `ProductIntakeBundle` and `EvaluationRun`.
 
 It evaluates the pathway against the ClimateSOS Foundational Charter before downstream assembly and pathway evaluation. The evaluator follows references to the associated `ProductIntakeBundle` when a check requires source documentation, evidence, or provenance.
 
-All Charter checks are required. The Initial Charter Evaluation executes every Charter check using the information available at the Initial Charter stage. Each check executes independently, and a prior finding does not short-circuit or remove any remaining check.
+After preliminary identity, evaluation-run, reference, and input-set integrity
+verification completes, the `CharterEvaluator` executes the Initial Charter
+checks against the `ProductPathway` and supporting evidence available at this
+stage. Each check produces its own `CharterCheckResult` and resulting check
+status.
 
-The Initial Charter Evaluation distinguishes pathway findings from evaluator execution failures. A successfully executed check may return a failed, adverse, unresolved, not-applicable, or other valid Charter finding. Those findings remain part of the pathway evaluation record and may affect later evaluation and binding. They do not by themselves indicate that the ClimateSOS runtime failed.
+Checks may be grouped by safeguard or validity condition for documentation,
+traceability, and maintainability. Grouping does not alter execution semantics.
+Each check executes independently, and any failed check causes the
+applicable grouping to fail. A passing check does not cancel, override, or
+compensate for a failed sibling check.
 
-The Initial Charter Evaluation completes only when every required check has executed and a valid immutable `InitialCharterResult` has been produced. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
+All Charter checks are required. The Initial Charter Evaluation executes every
+Charter check using the information available at the Initial Charter
+stage. A prior finding does not short-circuit or remove any remaining check.
+
+The Initial Charter Evaluation distinguishes substantive Charter findings from
+evaluator execution failures. A successfully executed check may return `PASS`,
+`FAIL`, `UNRESOLVED`, or `NOT_APPLICABLE`. A `FAIL` result records the
+applicable substantive `CharterStatus` finding or findings. Those findings
+remain part of the pathway evaluation record and may affect later evaluation
+and binding. They do not by themselves indicate that the ClimateSOS runtime
+failed.
+
+The Initial Charter Evaluation completes only when every check has executed and a valid immutable `InitialCharterResult` has been produced. An evaluator or result-integrity failure prevents the current pathway evaluation from proceeding.
 
 ```text
 ProductAdapterResult
@@ -932,11 +952,51 @@ CharterEvaluator
 InitialCharterResult
 ```
 
+### 6.0 Charter Check Definition
+
+A `CharterCheck` is a process that performs Charter-validity evaluation of
+one or more identified safeguards or validity requirements in
+[Section 2 of the ClimateSOS Foundational Charter](foundationalcharter.md#2-safeguards).
+
+Each Charter safeguard or validity condition may map to one or more
+`CharterCheck` objects. Checks may be grouped under their associated safeguard
+or validity condition for documentation, traceability, reporting, and
+maintainability. Grouping does not create an execution stage or voting rule.
+Each check executes independently.
+
+A `CharterCheck` evaluates the applicable pathway condition using the pathway
+state, evidence, documentation, provenance, and other material available at the
+current Charter pass. It produces one `CharterCheckResult`.
+
+The top-level `CharterCheckResult` status is one of:
+
+* `PASS`
+* `FAIL`
+* `UNRESOLVED`
+* `NOT_APPLICABLE`
+* `ERROR`
+* `MISSING`
+* `NULL`
+* `NOACK`
+
+A `FAIL` result records one or more substantive `CharterStatus` findings.
+The `CharterStatus` vocabulary is extensible. The initial implementation
+supports at least `HARM`, `BURDEN`, and `DEBT`, together with the findings and
+references that establish the condition.
+
+A failed check causes its applicable grouping to fail. A passing
+check does not cancel, outweigh, override, or compensate for a failed sibling
+check.
+
+The meanings and handling of `CharterCheckResult` states, including
+evaluator- and result-integrity failures, are defined in
+[Section 6.4.1](#641-check-result-and-error-handling).
+
 ### 6.1 Evaluation Boundary
 
 The Initial Charter Evaluation examines the `ProductPathway` contained in the
 completed `ProductAdapterResult`. It accesses the associated
-`ProductIntakeBundle` when a required check depends on customer-supplied
+`ProductIntakeBundle` when a check depends on customer-supplied
 documentation, evidence, or provenance, and retains the associated
 `EvaluationRun` reference.
 
@@ -947,7 +1007,7 @@ It evaluates:
 * whether the pathway contains prohibited or disqualifying conditions visible before `ProductAssembly`;
 * whether declared assumptions, uncertainties, dependencies, inputs, outputs, and system boundaries are sufficiently represented for the applicable checks;
 * whether the pathway conflicts with, exceeds, or diverges from Foundational Charter safeguards or guardrails;
-* whether every required Initial Charter check executed and produced a valid result; and
+* whether every Initial Charter check executed and produced a valid result; and
 * whether the Initial Charter Evaluation completed without an execution or evaluator-integrity error.
 
 During its provenance check, it verifies that the `EvaluationRun`,
@@ -988,7 +1048,7 @@ Its inputs include:
 
 * the ClimateSOS Foundational Charter distributed with the ClimateSOS runtime;
 
-  * the complete set of required Initial Charter checks;
+  * the complete set of Initial Charter checks;
 
 * the evaluator version and Charter rule-set version; and
 
@@ -1008,7 +1068,7 @@ The immutable `InitialCharterResult` contains:
 * the `evaluation_run_id` of the `EvaluationRun`;
 * a reference to the evaluated `ProductAdapterResult`, preserving its association with
   the evaluated `ProductPathway` and `ProductIntakeBundle`;
-* the result of every required Initial Charter check;
+* the result of every Initial Charter check;
 * findings, evidence references, and supporting provenance associated with each check;
 * unresolved or not-applicable conditions returned by completed checks, where applicable;
 * any execution error associated with an individual check or with the Initial Charter Evaluation;
@@ -1016,7 +1076,7 @@ The immutable `InitialCharterResult` contains:
 * the Charter rule-set version; and
 * the resulting Initial Charter status.
 
-A Charter check result records the outcome of the check that was actually executed. The evaluator does not infer the result of one check from another check or substitute an earlier finding for execution of a required check.
+A Charter check result records the outcome of the check that was actually executed. The evaluator does not infer the result of one check from another check or substitute an earlier finding for execution of a charter check.
 
 A successfully completed check may identify a Charter conflict, prohibited condition, unresolved condition, or other adverse finding. Such a finding is part of the pathway evaluation and does not by itself constitute an evaluator execution error.
 
@@ -1026,29 +1086,63 @@ The completed `InitialCharterResult` is immutable. Later evaluation stages may r
 
 Every Initial Charter check is required and executes before the Initial Charter Evaluation is complete. A prior finding does not short-circuit any remaining check.
 
-When every required check has executed and the evaluator successfully produces a valid immutable `InitialCharterResult`, ClimateSOS preserves that result and continues the pathway through the Product Pathway Evaluation Flow.
+When every Charter check has executed and the evaluator successfully produces a valid immutable `InitialCharterResult`, ClimateSOS preserves that result and continues the pathway through the Product Pathway Evaluation Flow.
 
 A pathway may progress beyond the Initial Charter Evaluation while carrying failed, adverse, unresolved, not-applicable, or other valid Charter findings. Those findings remain part of the pathway evaluation record and are available to later evaluation stages and binding.
 
 Progression does not erase, weaken, satisfy, or overwrite an earlier Charter finding. Later Charter evaluations examine information made available by subsequent stages and produce separate immutable results.
 
-The product pathway evaluation does not proceed to `ProductAssembly` when the Initial Charter Evaluation cannot successfully complete or when a valid required check result or `InitialCharterResult` cannot be produced.
+The product pathway evaluation does not proceed to `ProductAssembly` when the Initial Charter Evaluation cannot successfully complete or when a valid check result or `InitialCharterResult` cannot be produced.
 
-### 6.4.1 Missing, Unresolved, and Error Handling
+### 6.4.1 Check Result and Error Handling
 
-`MISSING` indicates that a Charter check did not produce a valid result. This occurs when the required check did not execute, timed out, executed without recording a result state, or produced a result that is absent, null, malformed, overwritten, or otherwise unavailable as a valid check result.
+`MISSING`, `NULL`, `NOACK`, and `ERROR` are distinct evaluator or
+result-integrity failure states.
 
-A `MISSING` check is an evaluator-integrity failure. The enclosing `InitialCharterResult` is recorded as `ERROR`, and the current pathway evaluation does not proceed until the execution error is resolved.
+`MISSING` indicates that a required `CharterCheckResult` is absent or that no
+result state was recorded.
 
-`UNRESOLVED` is distinct from `MISSING`. An `UNRESOLVED` result means that the required check executed successfully but the available pathway information or evidence was insufficient to resolve the Charter question. The unresolved finding and its supporting information are preserved in the `InitialCharterResult` and carried forward.
+`NULL` indicates that a result was explicitly returned or recorded as
+null.
 
-`NOT_APPLICABLE` is also distinct from `MISSING`. Where a Charter check permits a legitimate not-applicable outcome, the check still executes and returns such a result.
+`NOACK` indicates that the evaluator did not return a result within the required
+execution window.
 
-A failed or adverse Charter finding is not an execution error when the evaluator successfully executes the check and produces a valid result.
+`ERROR` indicates that the evaluator attempted the check but execution or
+result production failed, or that the returned result is malformed, corrupt,
+mismatched, or otherwise invalid.
 
-An execution error must not be converted into `UNRESOLVED`, `NOT_APPLICABLE`, a failed Charter finding, or another ordinary evaluation state. Likewise, an adverse Charter finding must not be represented as a software failure.
+Any `MISSING`, `NULL`, `NOACK`, or `ERROR` result is an evaluator-integrity
+failure. The enclosing `InitialCharterResult` is recorded as `ERROR`, and the
+current pathway evaluation stops execution and does not proceed until the
+execution or integrity failure is resolved.
 
-When execution cannot proceed, ClimateSOS preserves the available pathway identity, evaluation state, error information, and supporting evidence needed to diagnose the failure. The pathway may be evaluated again in a separate execution of ClimateSOS after the execution error is resolved.
+`UNRESOLVED` is distinct from these failure states. An `UNRESOLVED` result
+means that the check executed successfully but the applicable Charter
+condition could not be established as either satisfied or failed from the
+available and sufficiently valid pathway information or evidence. The
+unresolved finding and its supporting information are preserved in the
+`InitialCharterResult` and carried forward.
+
+`NOT_APPLICABLE` is also distinct from these failure states. Where a Charter
+check permits a legitimate not-applicable outcome, the check still executes
+and establishes that the associated Charter condition does not apply to the
+pathway conditions being evaluated.
+
+A `FAIL` result is not an execution error when the evaluator successfully
+executes the check and produces a valid result. The failed check records the
+affected substantive `CharterStatus` finding or findings.
+
+An execution or result-integrity failure must not be converted into
+`UNRESOLVED`, `NOT_APPLICABLE`, `FAIL`, or another ordinary evaluation state.
+Likewise, an adverse Charter finding must not be represented as a software
+failure.
+
+When execution cannot proceed, ClimateSOS preserves the available pathway
+identity, evaluation-run state, error information, and supporting evidence
+needed to diagnose the failure. The pathway may be evaluated again in a
+separate execution of ClimateSOS after the execution or integrity failure is
+resolved.
 
 ---
 
