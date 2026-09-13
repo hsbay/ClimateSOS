@@ -143,6 +143,11 @@ from .reliability_delivery_timing import (
     ReliabilityDeliveryTimingFindingFunction,
     TransitionTimingRuleFunction,
 )
+from .scale_evaluation import (
+    ScaleDiagnosticEvaluationFunction,
+    ScaleDiagnosticEvaluationInvariantError,
+    ValidatedScaleDiagnosticEvaluator,
+)
 
 __all__ = [
     "AdapterInvariantError",
@@ -234,6 +239,8 @@ __all__ = [
     "ReliabilityAdequacyRuleFunction",
     "ReliabilityDeliveryTimingEvaluationInvariantError",
     "ReliabilityDeliveryTimingFindingFunction",
+    "ScaleDiagnosticEvaluationFunction",
+    "ScaleDiagnosticEvaluationInvariantError",
     "ScaleDiagnosticEvaluator",
     "ScaleDiagnosticResult",
     "ScaleFinding",
@@ -256,4 +263,5 @@ __all__ = [
     "ValidatedProductAdapter",
     "ValidatedQueueBundler",
     "ValidatedQueueEvaluator",
+    "ValidatedScaleDiagnosticEvaluator",
 ]
