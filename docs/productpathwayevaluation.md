@@ -5594,16 +5594,34 @@ history.
 
 ### 23.4 Identity and Attribution Requirements
 
-A result is load-bearing when a later stage consumes it to complete or finalize
-a product-pathway stage or result, or when it must remain directly identifiable
-to preserve evaluation provenance.
+A result is load-bearing when a later stage consumes it in order to complete
+or finalize a product-pathway stage or result, or when it must remain directly
+identifiable to preserve evaluation provenance.
 
-Each load-bearing result preserves the canonical `IdentityToken` reference for
-its evaluation lineage, the `evaluation_run_id` of the `EvaluationRun` that
-produced it, and its own immutable artifact identity or reference. The
-authoritative `TransitionPathway` preserves the lineage and run that produced
-that authoritative state. Later evaluations are not required to match its
-lineage or `evaluation_run_id`.
+Load-bearing describes retention and provenance requirements. It does not by
+itself determine whether the result carries `IdentityToken` directly. Direct
+lineage identity and lineage preserved through exact upstream references are
+both valid where explicitly specified by the architecture.
+
+Each load-bearing result must preserve sufficient lineage to identify the
+evaluation lineage and exact evaluation run from which it was produced.
+
+Results on the direct lineage spine preserve the canonical `IdentityToken`
+reference together with `evaluation_run_id`.
+
+A load-bearing result that is intentionally outside the direct lineage spine
+may instead preserve lineage through its exact immutable upstream artifact
+references together with `evaluation_run_id`, `user_id`, and `pathway_id`, as
+specified for that result type. Such a result must not acquire an
+`IdentityToken` merely because a later stage consumes it.
+
+`NetOverallSystemContribution` and `ScaleDiagnosticResult` use this latter
+pattern.
+
+The authoritative `TransitionPathway` preserves the lineage and
+`evaluation_run_id` of the run that produced that authoritative state. A later
+evaluation that consumes the authoritative `TransitionPathway` is not required
+to share its lineage or `evaluation_run_id`.
 
 ### 23.5 Error and Missing-Result Requirements
 
