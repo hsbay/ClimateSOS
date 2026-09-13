@@ -43,6 +43,23 @@ IntegratedCharterStatusFunction = Callable[
     str,
 ]
 
+_SUBSTANTIVE_CHECK_STATUSES = frozenset(
+    {
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.NOT_APPLICABLE,
+    }
+)
+_INTEGRITY_FAILURE_STATUSES = frozenset(
+    {
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.NOACK,
+    }
+)
+
 
 class CharterEvaluationInvariantError(ValueError):
     """Raised when a Charter pass is structurally incomplete or incoherent."""
@@ -237,18 +254,19 @@ def _malformed_result_error(result: object, expected_check_id: str) -> str | Non
             "execution error"
         )
     if (
-        result.status is not CharterCheckStatus.MISSING
+        result.status in _SUBSTANTIVE_CHECK_STATUSES
         and result.execution_error is not None
     ):
         return (
             f"Required Charter check {expected_check_id} returned execution error "
-            f"with non-MISSING status: {result.execution_error}"
+            f"with substantive status {result.status.value}: {result.execution_error}"
         )
     return None
 
 
-def _missing_check_result(
+def _integrity_failure_result(
     check_id: str,
+    status: CharterCheckStatus,
     execution_error: str,
     malformed_result: object = None,
 ) -> CharterCheckResult:
@@ -258,7 +276,7 @@ def _missing_check_result(
     ):
         return CharterCheckResult(
             check_id=check_id,
-            status=CharterCheckStatus.MISSING,
+            status=status,
             execution_error=execution_error,
         )
 
@@ -271,7 +289,7 @@ def _missing_check_result(
         )
     return CharterCheckResult(
         check_id=check_id,
-        status=CharterCheckStatus.MISSING,
+        status=status,
         charter_statuses=_charter_status_tuple_or_empty(
             malformed_result.charter_statuses
         ),
@@ -304,11 +322,33 @@ def _execute_required_checks(
                 f"Required Charter check {check_id} raised "
                 f"{type(error).__name__}: {error}"
             )
-            results.append(_missing_check_result(check_id, execution_error))
+            results.append(
+                _integrity_failure_result(
+                    check_id,
+                    CharterCheckStatus.ERROR,
+                    execution_error,
+                )
+            )
+            continue
+        if raw_result is None:
+            results.append(
+                _integrity_failure_result(
+                    check_id,
+                    CharterCheckStatus.NULL,
+                    f"Required Charter check {check_id} returned null",
+                )
+            )
             continue
         malformed_error = _malformed_result_error(raw_result, check_id)
         if malformed_error is not None:
-            results.append(_missing_check_result(check_id, malformed_error, raw_result))
+            results.append(
+                _integrity_failure_result(
+                    check_id,
+                    CharterCheckStatus.ERROR,
+                    malformed_error,
+                    raw_result,
+                )
+            )
             continue
         results.append(cast(CharterCheckResult, raw_result))
     return tuple(results)
@@ -316,9 +356,10 @@ def _execute_required_checks(
 
 def _integrity_error(check_results: tuple[CharterCheckResult, ...]) -> str | None:
     errors = tuple(
-        result.execution_error or f"Required Charter check {result.check_id} is MISSING"
+        result.execution_error
+        or f"Required Charter check {result.check_id} is {result.status.value}"
         for result in check_results
-        if result.status is CharterCheckStatus.MISSING
+        if result.status in _INTEGRITY_FAILURE_STATUSES
     )
     return "; ".join(errors) if errors else None
 

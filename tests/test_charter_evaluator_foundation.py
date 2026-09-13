@@ -314,7 +314,7 @@ def test_arbitrary_charter_check_status_is_structurally_rejected(
     result = evaluator.evaluate_initial(adapter_result, context)
 
     assert all(
-        check.status is CharterCheckStatus.MISSING for check in result.check_results
+        check.status is CharterCheckStatus.ERROR for check in result.check_results
     )
     assert all(
         check.execution_error is not None
@@ -324,7 +324,241 @@ def test_arbitrary_charter_check_status_is_structurally_rejected(
     assert aggregate_status_called is False
 
 
-def test_initial_malformed_result_is_recorded_as_missing_and_error() -> None:
+def test_exception_null_and_malformed_outputs_remain_distinct_and_ordered() -> None:
+    adapter_result = _adapter_result()
+    context = _context()
+    executed_ids: list[str] = []
+    aggregate_status_called = False
+
+    def mixed_failures(
+        _artifact: ProductAdapterResult,
+        definition: OpaqueReference,
+        _context: CharterEvaluationContext,
+    ) -> CharterCheckResult:
+        executed_ids.append(definition.reference_id)
+        if definition.reference_id == "check-1":
+            raise RuntimeError("check execution failed")
+        if definition.reference_id == "check-2":
+            return None  # type: ignore[return-value]
+        return object()  # type: ignore[return-value]
+
+    def aggregate_status(
+        _artifact: ProductAdapterResult,
+        _results: tuple[CharterCheckResult, ...],
+        _context: CharterEvaluationContext,
+    ) -> str:
+        nonlocal aggregate_status_called
+        aggregate_status_called = True
+        return "SHOULD-NOT-BE-USED"
+
+    evaluator = ValidatedCharterEvaluator(
+        mixed_failures,
+        lambda _artifact, definition, _context: CharterCheckResult(
+            definition.reference_id,
+            CharterCheckStatus.PASS,
+        ),
+        aggregate_status,
+        lambda _artifact, _results, _context: "INTEGRATED",
+    )
+
+    result = evaluator.evaluate_initial(adapter_result, context)
+
+    assert executed_ids == list(context.required_check_ids)
+    assert tuple(check.check_id for check in result.check_results) == (
+        context.required_check_ids
+    )
+    assert tuple(check.status for check in result.check_results) == (
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.ERROR,
+    )
+    assert "RuntimeError: check execution failed" in (
+        result.check_results[0].execution_error or ""
+    )
+    assert "returned null" in (result.check_results[1].execution_error or "")
+    assert "no valid result" in (result.check_results[2].execution_error or "")
+    assert result.status == "ERROR"
+    assert result.execution_error is not None
+    assert aggregate_status_called is False
+
+
+def test_malformed_charter_status_payload_becomes_error() -> None:
+    adapter_result = _adapter_result()
+    context = _context()
+    executed_ids: list[str] = []
+    aggregate_status_called = False
+
+    def malformed_status_payload(
+        _artifact: ProductAdapterResult,
+        definition: OpaqueReference,
+        _context: CharterEvaluationContext,
+    ) -> CharterCheckResult:
+        executed_ids.append(definition.reference_id)
+        if definition.reference_id == "check-1":
+            malformed_status = CharterStatus(
+                "HARM",
+                findings=("valid finding", 1),  # type: ignore[arg-type]
+            )
+            return CharterCheckResult(
+                definition.reference_id,
+                CharterCheckStatus.FAIL,
+                charter_statuses=(malformed_status,),
+            )
+        return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
+
+    def aggregate_status(
+        _artifact: ProductAdapterResult,
+        _results: tuple[CharterCheckResult, ...],
+        _context: CharterEvaluationContext,
+    ) -> str:
+        nonlocal aggregate_status_called
+        aggregate_status_called = True
+        return "SHOULD-NOT-BE-USED"
+
+    evaluator = ValidatedCharterEvaluator(
+        malformed_status_payload,
+        lambda _artifact, definition, _context: CharterCheckResult(
+            definition.reference_id,
+            CharterCheckStatus.PASS,
+        ),
+        aggregate_status,
+        lambda _artifact, _results, _context: "INTEGRATED",
+    )
+
+    result = evaluator.evaluate_initial(adapter_result, context)
+
+    assert executed_ids == list(context.required_check_ids)
+    assert tuple(check.status for check in result.check_results) == (
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.PASS,
+    )
+    assert result.check_results[0].charter_statuses == ()
+    assert "malformed Charter statuses" in (
+        result.check_results[0].execution_error or ""
+    )
+    assert result.status == "ERROR"
+    assert aggregate_status_called is False
+
+
+@pytest.mark.parametrize(
+    "integrity_status",
+    [
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
+        CharterCheckStatus.NOACK,
+    ],
+)
+def test_returned_integrity_status_is_preserved_and_bypasses_aggregate(
+    integrity_status: CharterCheckStatus,
+) -> None:
+    adapter_result = _adapter_result()
+    context = _context()
+    executed_ids: list[str] = []
+    aggregate_status_called = False
+
+    def integrity_result(
+        _artifact: ProductAdapterResult,
+        definition: OpaqueReference,
+        _context: CharterEvaluationContext,
+    ) -> CharterCheckResult:
+        executed_ids.append(definition.reference_id)
+        return CharterCheckResult(
+            definition.reference_id,
+            integrity_status,
+            execution_error=f"{integrity_status.value} diagnostic",
+        )
+
+    def aggregate_status(
+        _artifact: ProductAdapterResult,
+        _results: tuple[CharterCheckResult, ...],
+        _context: CharterEvaluationContext,
+    ) -> str:
+        nonlocal aggregate_status_called
+        aggregate_status_called = True
+        return "SHOULD-NOT-BE-USED"
+
+    evaluator = ValidatedCharterEvaluator(
+        integrity_result,
+        lambda _artifact, definition, _context: CharterCheckResult(
+            definition.reference_id,
+            CharterCheckStatus.PASS,
+        ),
+        aggregate_status,
+        lambda _artifact, _results, _context: "INTEGRATED",
+    )
+
+    result = evaluator.evaluate_initial(adapter_result, context)
+
+    assert executed_ids == list(context.required_check_ids)
+    assert all(check.status is integrity_status for check in result.check_results)
+    assert result.status == "ERROR"
+    assert result.execution_error is not None
+    assert integrity_status.value in result.execution_error
+    assert aggregate_status_called is False
+
+
+@pytest.mark.parametrize(
+    "substantive_status",
+    [
+        CharterCheckStatus.PASS,
+        CharterCheckStatus.FAIL,
+        CharterCheckStatus.UNRESOLVED,
+        CharterCheckStatus.NOT_APPLICABLE,
+    ],
+)
+def test_substantive_outcomes_are_not_integrity_failures(
+    substantive_status: CharterCheckStatus,
+) -> None:
+    adapter_result = _adapter_result()
+    context = _context()
+    aggregate_status_called = False
+
+    def completed_check(
+        _artifact: ProductAdapterResult,
+        definition: OpaqueReference,
+        _context: CharterEvaluationContext,
+    ) -> CharterCheckResult:
+        charter_statuses = (
+            (CharterStatus("HARM", findings=("established harm",)),)
+            if substantive_status is CharterCheckStatus.FAIL
+            else ()
+        )
+        return CharterCheckResult(
+            definition.reference_id,
+            substantive_status,
+            charter_statuses=charter_statuses,
+        )
+
+    def aggregate_status(
+        _artifact: ProductAdapterResult,
+        _results: tuple[CharterCheckResult, ...],
+        _context: CharterEvaluationContext,
+    ) -> str:
+        nonlocal aggregate_status_called
+        aggregate_status_called = True
+        return "AGGREGATED"
+
+    evaluator = ValidatedCharterEvaluator(
+        completed_check,
+        lambda _artifact, definition, _context: CharterCheckResult(
+            definition.reference_id,
+            CharterCheckStatus.PASS,
+        ),
+        aggregate_status,
+        lambda _artifact, _results, _context: "INTEGRATED",
+    )
+
+    result = evaluator.evaluate_initial(adapter_result, context)
+
+    assert all(check.status is substantive_status for check in result.check_results)
+    assert result.status == "AGGREGATED"
+    assert result.execution_error is None
+    assert aggregate_status_called is True
+
+
+def test_initial_null_result_is_recorded_as_null_integrity_failure() -> None:
     adapter_result = _adapter_result()
     context = _context()
     executed_ids: list[str] = []
@@ -353,19 +587,19 @@ def test_initial_malformed_result_is_recorded_as_missing_and_error() -> None:
 
     assert executed_ids == list(context.required_check_ids)
     assert tuple(check.status for check in result.check_results) == (
-        CharterCheckStatus.MISSING,
+        CharterCheckStatus.NULL,
         CharterCheckStatus.PASS,
         CharterCheckStatus.PASS,
     )
-    missing = result.check_results[0]
-    assert missing.check_id == "check-1"
-    assert missing.execution_error is not None
-    assert "no valid result" in missing.execution_error
+    null_result = result.check_results[0]
+    assert null_result.check_id == "check-1"
+    assert null_result.execution_error is not None
+    assert "returned null" in null_result.execution_error
     assert result.status == "ERROR"
-    assert result.execution_error == missing.execution_error
+    assert result.execution_error == null_result.execution_error
 
 
-def test_nonmissing_status_with_execution_error_becomes_attributed_missing() -> None:
+def test_substantive_status_with_execution_error_becomes_attributed_error() -> None:
     adapter_result = _adapter_result()
     context = _context()
     evidence = adapter_result.intake_bundle.provenance[0]
@@ -400,19 +634,19 @@ def test_nonmissing_status_with_execution_error_becomes_attributed_missing() -> 
 
     result = evaluator.evaluate_initial(adapter_result, context)
 
-    missing = result.check_results[0]
-    assert missing.status is CharterCheckStatus.MISSING
-    assert missing.findings == ("diagnostic finding",)
-    assert missing.supporting_evaluation_findings == (supporting,)
-    assert missing.evidence_references == (evidence,)
-    assert missing.provenance == (evidence,)
-    assert missing.execution_error is not None
-    assert "caller-reported execution failure" in missing.execution_error
+    error_result = result.check_results[0]
+    assert error_result.status is CharterCheckStatus.ERROR
+    assert error_result.findings == ("diagnostic finding",)
+    assert error_result.supporting_evaluation_findings == (supporting,)
+    assert error_result.evidence_references == (evidence,)
+    assert error_result.provenance == (evidence,)
+    assert error_result.execution_error is not None
+    assert "caller-reported execution failure" in error_result.execution_error
     assert result.status == "ERROR"
-    assert result.execution_error == missing.execution_error
+    assert result.execution_error == error_result.execution_error
 
 
-def test_wrong_check_identities_become_missing_integrity_results() -> None:
+def test_wrong_check_identities_become_error_integrity_results() -> None:
     adapter_result = _adapter_result()
     context = _context()
     calls: list[str] = []
@@ -450,8 +684,8 @@ def test_wrong_check_identities_become_missing_integrity_results() -> None:
     )
     assert tuple(check.status for check in result.check_results) == (
         CharterCheckStatus.PASS,
-        CharterCheckStatus.MISSING,
-        CharterCheckStatus.MISSING,
+        CharterCheckStatus.ERROR,
+        CharterCheckStatus.ERROR,
     )
     assert result.status == "ERROR"
     assert result.execution_error is not None
@@ -463,7 +697,7 @@ def test_wrong_check_identities_become_missing_integrity_results() -> None:
     assert result.check_results[2].evidence_references == ()
 
 
-def test_integrated_malformed_result_is_recorded_as_missing_and_error() -> None:
+def test_integrated_malformed_result_is_recorded_as_error() -> None:
     adapter_result = _adapter_result()
     context = _context()
     engine_result = _engine_result(adapter_result, _evaluator([]), context)
@@ -510,18 +744,20 @@ def test_integrated_malformed_result_is_recorded_as_missing_and_error() -> None:
     assert executed_ids == list(context.required_check_ids)
     assert tuple(check.status for check in result.check_results) == (
         CharterCheckStatus.PASS,
-        CharterCheckStatus.MISSING,
+        CharterCheckStatus.ERROR,
         CharterCheckStatus.PASS,
     )
-    missing = result.check_results[1]
-    assert missing.check_id == "check-2"
-    assert missing.execution_error is not None
-    assert "malformed status" in missing.execution_error
-    assert missing.findings == ("integrated diagnostic",)
-    assert missing.supporting_system_findings == (OpaqueReference("system-finding-1"),)
-    assert missing.evidence_references == adapter_result.intake_bundle.provenance
+    error_result = result.check_results[1]
+    assert error_result.check_id == "check-2"
+    assert error_result.execution_error is not None
+    assert "malformed status" in error_result.execution_error
+    assert error_result.findings == ("integrated diagnostic",)
+    assert error_result.supporting_system_findings == (
+        OpaqueReference("system-finding-1"),
+    )
+    assert error_result.evidence_references == adapter_result.intake_bundle.provenance
     assert result.status == "ERROR"
-    assert result.execution_error == missing.execution_error
+    assert result.execution_error == error_result.execution_error
     assert aggregate_status_called is False
 
 
