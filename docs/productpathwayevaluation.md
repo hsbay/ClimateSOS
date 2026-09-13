@@ -225,7 +225,9 @@ The ClimateSOS Foundational Charter is evaluated at three stages:
 
 Each stage produces a separate immutable result. A later Charter result may reference, but must not overwrite, an earlier result.
 
-Required Charter checks that are absent, null, malformed, overwritten, or unexecuted are recorded as `MISSING`. A `MISSING` check forces the enclosing Charter result to `ERROR` and prevents normal progression.
+Charter checks use the `CharterCheckResult` states and error-handling semantics
+defined in Section 6.4.1. An evaluator- or result-integrity failure forces the
+enclosing Charter result to `ERROR` and prevents normal progression.
 
 Detailed Charter check statuses, blocking behavior, evaluator-integrity requirements, remedy eligibility, and re-evaluation rules are defined in a separate Charter Evaluation Flow document.
 
