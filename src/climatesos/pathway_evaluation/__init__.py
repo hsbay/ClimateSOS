@@ -58,6 +58,13 @@ from .fabric_evaluation import (
     FabricEvaluationInvariantError,
     ValidatedFabricEvaluator,
 )
+from .fossil_displacement import (
+    FossilDisplacementContributionFunction,
+    FossilDisplacementEvaluationInvariantError,
+    FossilDisplacementRuleFunction,
+    FossilFunctionClosureRuleFunction,
+    FossilPersistenceClosureRuleFunction,
+)
 from .identity import IdentityLayer
 from .intake import IntakeLayer
 from .interfaces import (
@@ -140,6 +147,11 @@ __all__ = [
     "FabricEvaluationInvariantError",
     "FabricEvaluator",
     "FabricEvaluatorResult",
+    "FossilDisplacementContributionFunction",
+    "FossilDisplacementEvaluationInvariantError",
+    "FossilDisplacementRuleFunction",
+    "FossilFunctionClosureRuleFunction",
+    "FossilPersistenceClosureRuleFunction",
     "IdentityLayer",
     "IdentityToken",
     "InitialCharterCheckFunction",
