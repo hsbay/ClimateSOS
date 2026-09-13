@@ -97,6 +97,7 @@ class StructuralPathwayEvaluationEngine:
             initial_charter_result,
             queue_bundles,
             fabrics,
+            evaluation_run_id,
         )
         direct = self._validate_comparison_findings(
             self.comparator.compare_direct(
@@ -204,6 +205,7 @@ class StructuralPathwayEvaluationEngine:
             "Documentation findings",
         )
         return PathwayEngineResult(
+            identity_token=pathway.identity_token,
             product_pathway=pathway,
             transition_pathway=transition_pathway,
             initial_charter_result=initial_charter_result,
@@ -213,7 +215,7 @@ class StructuralPathwayEvaluationEngine:
             queue_results=completed_queue_results,
             fabric_results=completed_fabric_results,
             documentation_findings=documentation_findings,
-            evaluation_run_id=evaluation_run_id,
+            evaluation_run_id=pathway.evaluation_run_id,
             system_context=system_context,
             evaluator_versions=self.evaluator_versions,
             rule_set_versions=self.rule_set_versions,
@@ -258,15 +260,31 @@ class StructuralPathwayEvaluationEngine:
         initial_charter_result: InitialCharterResult,
         queue_bundles: tuple[ProductQueueBundle, ...],
         fabrics: tuple[ProductFabric, ...],
+        evaluation_run_id: str,
     ) -> None:
         if initial_charter_result.adapter_result is not adapter_result:
             raise PathwayEvaluationInvariantError(
                 "InitialCharterResult must preserve the ProductAdapterResult reference"
             )
         pathway = adapter_result.product_pathway
-        if adapter_result.intake_bundle.identity_token != pathway.identity_token:
+        token_id = pathway.identity_token.token_id
+        if (
+            adapter_result.intake_bundle.identity_token.token_id != token_id
+            or adapter_result.evaluation_run.identity_token_id != token_id
+            or initial_charter_result.identity_token.token_id != token_id
+        ):
             raise PathwayEvaluationInvariantError(
-                "ProductIntakeBundle attribution must match the ProductPathway"
+                "Engine inputs must share the ProductPathway IdentityToken"
+            )
+        if (
+            adapter_result.evaluation_run.evaluation_run_id
+            != pathway.evaluation_run_id
+            or initial_charter_result.evaluation_run_id
+            != pathway.evaluation_run_id
+            or evaluation_run_id != pathway.evaluation_run_id
+        ):
+            raise PathwayEvaluationInvariantError(
+                "Engine inputs must share the ProductPathway EvaluationRun"
             )
         _require_tuple_of(queue_bundles, ProductQueueBundle, "Queue bundles")
         _require_tuple_of(fabrics, ProductFabric, "Fabrics")

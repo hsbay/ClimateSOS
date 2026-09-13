@@ -296,12 +296,20 @@ def _validate_initial_artifact(adapter_result: ProductAdapterResult) -> None:
         raise CharterEvaluationInvariantError(
             "Initial Charter evaluation requires ProductAdapterResult"
         )
+    pathway = adapter_result.product_pathway
+    intake_bundle = adapter_result.intake_bundle
+    evaluation_run = adapter_result.evaluation_run
+    token_id = pathway.identity_token.token_id
     if (
-        adapter_result.product_pathway.identity_token.token_id
-        != adapter_result.intake_bundle.identity_token.token_id
+        intake_bundle.identity_token.token_id != token_id
+        or evaluation_run.identity_token_id != token_id
     ):
         raise CharterEvaluationInvariantError(
-            "Initial Charter artifact must preserve its canonical IdentityToken"
+            "Initial Charter artifacts must share the canonical IdentityToken"
+        )
+    if pathway.evaluation_run_id != evaluation_run.evaluation_run_id:
+        raise CharterEvaluationInvariantError(
+            "Initial Charter artifacts must share the EvaluationRun"
         )
 
 
@@ -323,13 +331,26 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
             "PathwayEngineResult must preserve the Initial Charter pathway reference"
         )
     if (
-        initial_result.adapter_result.intake_bundle.identity_token.token_id
+        engine_result.identity_token.token_id != token.token_id
+        or initial_result.identity_token.token_id != token.token_id
+        or initial_result.adapter_result.intake_bundle.identity_token.token_id
+        != token.token_id
+        or initial_result.adapter_result.evaluation_run.identity_token_id
         != token.token_id
         or engine_result.user_id != pathway.user_id
         or engine_result.pathway_id != pathway.pathway_id
     ):
         raise CharterEvaluationInvariantError(
             "Integrated Charter artifact attribution must match the ProductPathway"
+        )
+    if (
+        engine_result.evaluation_run_id != pathway.evaluation_run_id
+        or initial_result.evaluation_run_id != pathway.evaluation_run_id
+        or initial_result.adapter_result.evaluation_run.evaluation_run_id
+        != pathway.evaluation_run_id
+    ):
+        raise CharterEvaluationInvariantError(
+            "Integrated Charter artifact EvaluationRun must match the ProductPathway"
         )
 
 
@@ -373,6 +394,8 @@ class ValidatedCharterEvaluator:
         else:
             status = "ERROR"
         return InitialCharterResult(
+            identity_token=adapter_result.product_pathway.identity_token,
+            evaluation_run_id=adapter_result.product_pathway.evaluation_run_id,
             adapter_result=adapter_result,
             check_results=check_results,
             evaluator_version=context.evaluator_version,
@@ -412,6 +435,8 @@ class ValidatedCharterEvaluator:
         else:
             status = "ERROR"
         return IntegratedCharterResult(
+            identity_token=engine_result.identity_token,
+            evaluation_run_id=engine_result.evaluation_run_id,
             pathway_engine_result=engine_result,
             initial_charter_result=engine_result.initial_charter_result,
             check_results=check_results,

@@ -129,6 +129,8 @@ def _initial_result(pathway: ProductPathway) -> InitialCharterResult:
         ),
     )
     return InitialCharterResult(
+        identity_token=pathway.identity_token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
         adapter_result=ProductAdapterResult(pathway, intake, evaluation_run),
         check_results=(),
         evaluator_version="charter-v1",

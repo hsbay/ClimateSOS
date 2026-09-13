@@ -87,6 +87,7 @@ def _engine_result(
     initial = evaluator.evaluate_initial(adapter_result, context)
     pathway = adapter_result.product_pathway
     return PathwayEngineResult(
+        identity_token=pathway.identity_token,
         product_pathway=pathway,
         transition_pathway=TransitionPathway("transition-1"),
         initial_charter_result=initial,
@@ -177,6 +178,8 @@ def test_initial_executes_every_check_and_preserves_context_and_artifact() -> No
         "CLEAR",
     )
     assert result.adapter_result is adapter_result
+    assert result.identity_token is adapter_result.product_pathway.identity_token
+    assert result.evaluation_run_id == adapter_result.evaluation_run.evaluation_run_id
     assert result.evaluator_version is context.evaluator_version
     assert result.rule_set_version is context.rule_set_version
     assert result.status == "CALLER-DEFINED-INITIAL"
@@ -203,6 +206,8 @@ def test_integrated_reruns_complete_set_without_reusing_initial_checks() -> None
     assert all(call[1] is engine_result and call[3] is context for call in check_calls)
     assert result.pathway_engine_result is engine_result
     assert result.initial_charter_result is initial_result
+    assert result.identity_token is engine_result.identity_token
+    assert result.evaluation_run_id == engine_result.evaluation_run_id
     assert result.evaluator_version is context.evaluator_version
     assert result.rule_set_version is context.rule_set_version
     assert result.status == "CALLER-DEFINED-INTEGRATED"
@@ -586,4 +591,94 @@ def test_charter_identity_validation_uses_durable_token_id() -> None:
     calls.clear()
     with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
         evaluator.evaluate_integrated(different_token_engine_result, context)
+    assert calls == []
+
+
+def test_initial_and_integrated_reject_mismatched_lineage_or_run() -> None:
+    calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
+    evaluator = _evaluator(calls)
+    adapter_result = _adapter_result()
+    context = _context()
+    mismatched_run_adapter = replace(
+        adapter_result,
+        evaluation_run=replace(
+            adapter_result.evaluation_run,
+            identity_token_id="token-2",
+        ),
+    )
+
+    with pytest.raises(CharterEvaluationInvariantError, match="IdentityToken"):
+        evaluator.evaluate_initial(mismatched_run_adapter, context)
+    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
+        evaluator.evaluate_initial(
+            replace(
+                adapter_result,
+                evaluation_run=replace(
+                    adapter_result.evaluation_run,
+                    evaluation_run_id="run-2",
+                ),
+            ),
+            context,
+        )
+
+    engine_result = _engine_result(adapter_result, evaluator, context)
+    calls.clear()
+    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
+        evaluator.evaluate_integrated(
+            replace(engine_result, identity_token=IdentityToken("token-2")),
+            context,
+        )
+    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
+        evaluator.evaluate_integrated(
+            replace(engine_result, evaluation_run_id="run-2"),
+            context,
+        )
+    assert calls == []
+
+
+def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
+    calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
+    evaluator = _evaluator(calls)
+    adapter_result = _adapter_result()
+    context = _context()
+    engine_result = _engine_result(adapter_result, evaluator, context)
+
+    calls.clear()
+    mismatched_token_initial = replace(
+        engine_result.initial_charter_result,
+        adapter_result=replace(
+            adapter_result,
+            evaluation_run=replace(
+                adapter_result.evaluation_run,
+                identity_token_id="token-2",
+            ),
+        ),
+    )
+    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=mismatched_token_initial,
+            ),
+            context,
+        )
+
+    mismatched_run_initial = replace(
+        engine_result.initial_charter_result,
+        adapter_result=replace(
+            adapter_result,
+            evaluation_run=replace(
+                adapter_result.evaluation_run,
+                evaluation_run_id="run-2",
+            ),
+        ),
+    )
+    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
+        evaluator.evaluate_integrated(
+            replace(
+                engine_result,
+                initial_charter_result=mismatched_run_initial,
+            ),
+            context,
+        )
     assert calls == []

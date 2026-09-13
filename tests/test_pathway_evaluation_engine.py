@@ -113,6 +113,8 @@ def _foundation() -> tuple[
         evaluation_run=evaluation_run,
     )
     initial = InitialCharterResult(
+        identity_token=token,
+        evaluation_run_id=evaluation_run.evaluation_run_id,
         adapter_result=adapter,
         check_results=(),
         evaluator_version="charter-v1",
@@ -336,6 +338,7 @@ def test_engine_routes_context_and_preserves_results_by_reference() -> None:
     )
 
     assert result.product_pathway is adapter.product_pathway
+    assert result.identity_token is adapter.product_pathway.identity_token
     assert result.initial_charter_result is initial
     assert result.transition_pathway is transition
     assert result.system_context is system_context
@@ -383,6 +386,73 @@ def test_engine_routes_context_and_preserves_results_by_reference() -> None:
     assert documentation.calls[0][3] == (
         comparator.direct + comparator.substitution + comparator.downstream
     )
+
+
+def test_engine_accepts_reconstructed_identity_token_with_same_id() -> None:
+    adapter, initial, bundles, fabrics = _foundation()
+    engine, comparator, _, _, _ = _engine()
+    reconstructed_token = IdentityToken(adapter.product_pathway.identity_token.token_id)
+    reconstructed_adapter = replace(
+        adapter,
+        intake_bundle=replace(
+            adapter.intake_bundle,
+            identity_token=reconstructed_token,
+        ),
+    )
+    reconstructed_initial = replace(
+        initial,
+        adapter_result=reconstructed_adapter,
+    )
+
+    result = engine.evaluate(
+        reconstructed_adapter,
+        reconstructed_initial,
+        bundles,
+        fabrics,
+        TransitionPathway("transition-1"),
+        None,
+        "run-1",
+    )
+
+    assert reconstructed_token is not adapter.product_pathway.identity_token
+    assert result.identity_token is adapter.product_pathway.identity_token
+    assert comparator.direct_input is not None
+
+
+def test_engine_rejects_mismatched_lineage_and_caller_run_before_evaluation() -> None:
+    adapter, initial, bundles, fabrics = _foundation()
+    engine, comparator, _, _, _ = _engine()
+    transition = TransitionPathway("transition-1")
+    mismatched_adapter = replace(
+        adapter,
+        evaluation_run=replace(
+            adapter.evaluation_run,
+            identity_token_id="token-2",
+        ),
+    )
+    mismatched_initial = replace(initial, adapter_result=mismatched_adapter)
+
+    with pytest.raises(PathwayEvaluationInvariantError, match="IdentityToken"):
+        engine.evaluate(
+            mismatched_adapter,
+            mismatched_initial,
+            bundles,
+            fabrics,
+            transition,
+            None,
+            "run-1",
+        )
+    with pytest.raises(PathwayEvaluationInvariantError, match="EvaluationRun"):
+        engine.evaluate(
+            adapter,
+            initial,
+            bundles,
+            fabrics,
+            transition,
+            None,
+            "run-2",
+        )
+    assert comparator.direct_input is None
 
 
 def test_queue_failure_prevents_result_and_is_not_sent_downstream(

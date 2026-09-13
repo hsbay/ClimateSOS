@@ -182,6 +182,8 @@ class CharterEvaluationContext:
 class InitialCharterResult:
     """Complete immutable result of the initial Charter pass."""
 
+    identity_token: IdentityToken
+    evaluation_run_id: str
     adapter_result: ProductAdapterResult
     check_results: tuple[CharterCheckResult, ...]
     evaluator_version: str
@@ -348,6 +350,7 @@ class FabricEvaluatorResult:
 class PathwayEngineResult:
     """Consolidated result through the specified pathway-engine boundary."""
 
+    identity_token: IdentityToken
     product_pathway: ProductPathway
     transition_pathway: TransitionPathway
     initial_charter_result: InitialCharterResult
@@ -374,6 +377,8 @@ class PathwayEngineResult:
 class IntegratedCharterResult:
     """Complete immutable Charter pass over a PathwayEngineResult."""
 
+    identity_token: IdentityToken
+    evaluation_run_id: str
     pathway_engine_result: PathwayEngineResult
     initial_charter_result: InitialCharterResult
     check_results: tuple[CharterCheckResult, ...]
