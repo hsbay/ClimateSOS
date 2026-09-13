@@ -38,6 +38,13 @@ from .documentation_evaluation import (
     DocumentationEvaluationInvariantError,
     ValidatedDocumentationEvaluator,
 )
+from .emissions_cdr_biosphere import (
+    BiosphereContributionRuleFunction,
+    CarbonRemovalRuleFunction,
+    EmissionsCdrBiosphereEvaluationInvariantError,
+    EmissionsCdrBiosphereFindingFunction,
+    SourceEmissionsRuleFunction,
+)
 from .enabling_demand_burden import (
     DependencyBottleneckRuleFunction,
     EnablingDemandBurdenEvaluationInvariantError,
@@ -137,6 +144,8 @@ __all__ = [
     "AdapterInvariantError",
     "AssemblyInvariantError",
     "Attribute",
+    "BiosphereContributionRuleFunction",
+    "CarbonRemovalRuleFunction",
     "CharterCheckResult",
     "CharterCheckStatus",
     "CharterEvaluationContext",
@@ -156,6 +165,8 @@ __all__ = [
     "DocumentationEvaluator",
     "DocumentationFinding",
     "DownstreamPropagationFunction",
+    "EmissionsCdrBiosphereEvaluationInvariantError",
+    "EmissionsCdrBiosphereFindingFunction",
     "EnablingDemandBurdenEvaluationInvariantError",
     "EnablingDemandBurdenFindingFunction",
     "EvaluationExecutionStatus",
@@ -218,6 +229,7 @@ __all__ = [
     "ReliabilityAdequacyRuleFunction",
     "ReliabilityDeliveryTimingEvaluationInvariantError",
     "ReliabilityDeliveryTimingFindingFunction",
+    "SourceEmissionsRuleFunction",
     "SourceReference",
     "StructuralPathwayEvaluationEngine",
     "StructuralProductAssembly",
