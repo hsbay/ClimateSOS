@@ -11,7 +11,7 @@
 ## 1. Purpose
 
 This specification defines the ClimateSOS Product Pathway Evaluation Flow
-used for both global and local pathway evaluations within the broader
+used for both global and user-submitted pathway evaluations within the broader
 ClimateSOS execution architecture.
 
 ClimateSOS must support evaluation of real-world product, company, technology,
@@ -171,7 +171,9 @@ The principal stages are:
 * initial Charter evaluation;
 * assembly of pathway objects into `ProductQueueBundle` and `ProductFabric` groupings, as applicable;
 * comparison of the pathway with the global `TransitionPathway`;
-* pathway, documentation, contribution, scale, and system-risk evaluation;
+* pathway and documentation evaluation;
+* integrated Charter evaluation;
+* contribution, scale, candidate-transition, and system-risk evaluation;
 * final Charter evaluation;
 * system-side determination of the applicable `[Foo]Bound` state;
 * binding of the completed `FinalPathwayResult` and applicable bound state
