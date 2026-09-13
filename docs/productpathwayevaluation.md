@@ -1092,7 +1092,12 @@ QueueBundler
 
 `ProductAssembly` orchestrates pathway assembly.
 
-It receives a valid completed `InitialCharterResult` and follows its reference to the evaluated `ProductAdapterResult`, associated immutable `ProductPathway`, and `EvaluationRun`.
+It receives a valid completed `InitialCharterResult` and follows its reference
+to the evaluated `ProductAdapterResult`, associated immutable `ProductPathway`,
+and `EvaluationRun`. Before assembly begins, `ProductAssembly` verifies that
+the `InitialCharterResult`, `ProductPathway`, and `EvaluationRun` belong to the
+same evaluation lineage and `EvaluationRun` through their `IdentityToken` and
+`evaluation_run_id`.
 
 `ProductAssembly`:
 
@@ -1599,6 +1604,11 @@ The `PathwayEvaluationEngine`:
 * preserves relationships among results and findings produced by the individual evaluators; and
 * produces one consolidated immutable `PathwayEngineResult`.
 
+Before evaluation begins, the `PathwayEvaluationEngine` verifies that the
+`ProductPathway`, `InitialCharterResult`, and `EvaluationRun` identify the same
+evaluation lineage and `EvaluationRun` through their `IdentityToken` and
+`evaluation_run_id`.
+
 The engine does not modify any input or assembly object. It does not perform the Integrated Charter Evaluation, determine net overall system contribution, perform the Scale Diagnostic, construct a candidate `TransitionPathway`, evaluate net overall system risk, assign a bound state, or construct the final `PathwayAssessment`.
 
 An adverse, constrained, blocked, unresolved, or otherwise unsuccessful pathway finding produced by valid evaluator execution remains a valid evaluation finding. An evaluator execution failure occurs when a required evaluation cannot execute or cannot produce a valid required result.
@@ -2080,8 +2090,10 @@ The `PathwayEngineResult` contains or references, as applicable:
 * unresolved evaluation conditions;
 * applicable transition and system context;
 * evaluator version and applicable rule-set version;
-* evidence and provenance references; and
-* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
+* evidence and provenance references;
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`; and
+* `user_id` and `pathway_id` attribution.
 
 Applicable `QueueExecutionResult` and `QueueProgressRecord` objects remain reachable through their associated `QueueEvaluatorResult` objects. `PathwayEngineResult` does not duplicate queue execution results or queue-progress history.
 
@@ -2132,6 +2144,8 @@ The `CharterEvaluator` receives the completed immutable `PathwayEngineResult` an
 Its inputs include:
 
 * the immutable `PathwayEngineResult`;
+  * the canonical `IdentityToken` reference for the evaluation lineage;
+  * the `evaluation_run_id` of the `EvaluationRun`;
   * the evaluated `ProductPathway`;
   * the authoritative `TransitionPathway` used during pathway evaluation;
   * the completed `InitialCharterResult`;
@@ -2150,7 +2164,14 @@ Its inputs include:
 * the evaluator version and Charter rule-set version; and
 * any runtime configuration required to perform the Integrated Charter Evaluation.
 
-The `CharterEvaluator` follows references preserved by the `PathwayEngineResult` when a Charter check requires the underlying pathway structure, evaluation result, source documentation, evidence, provenance, or system-side finding.
+Before running the Integrated Charter checks, the `CharterEvaluator` verifies
+that the `PathwayEngineResult`, `InitialCharterResult`, and evaluated
+`ProductPathway` belong to the same evaluation lineage and `EvaluationRun`
+through their `IdentityToken` and `evaluation_run_id`.
+
+The `CharterEvaluator` follows references preserved by the `PathwayEngineResult`
+when a Charter check requires the underlying pathway structure, evaluation
+result, source documentation, evidence, provenance, or system-side finding.
 
 The `CharterEvaluator` evaluates the pathway against the Foundational Charter by running every Charter check against the completed `PathwayEngineResult` and its referenced evaluation results. It does not add missing pathway facts, convert unresolved conditions into established facts, or treat an unsupported possible effect as an established pathway condition.
 
@@ -2162,6 +2183,8 @@ The `IntegratedCharterResult` records the complete outcome of the Integrated Cha
 
 The `IntegratedCharterResult` contains:
 
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
 * a reference to the evaluated `PathwayEngineResult`;
 * a reference to the associated `InitialCharterResult`;
 * the result of every Charter check;
@@ -2909,7 +2932,8 @@ Its inputs include:
 * conditions, dependencies, assumptions, and uncertainties required to
   preserve the evaluated findings;
 * evidence and provenance references required to trace the compiled changes;
-  and
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`; and
 * `user_id` and `pathway_id` attribution.
 
 The compiler uses the completed contribution and scale findings to determine
@@ -3008,7 +3032,9 @@ user-evaluation artifacts outside the privileged global commitment path.
 ### 13.6 Candidate Immutability, Identity, and Provenance
 
 Each candidate or prospective candidate `TransitionPathway` is immutable once
-constructed.
+constructed and preserves the canonical `IdentityToken` reference for the
+evaluation lineage and the `evaluation_run_id` of the `EvaluationRun` that
+produced it.
 
 The candidate preserves the identity of the evaluated pathway, the
 authoritative `TransitionPathway` used as its reference state, and the
@@ -3360,9 +3386,15 @@ by an upstream evaluator remains attributable to that evaluator and is not
 reinterpreted as an assembly finding.
 
 The assembler shall verify structural consistency, identity, attribution,
-provenance, and required relationships among its inputs to construct the
-result. Structural verification does not constitute re-evaluation of the
-pathway or its findings.
+provenance, and required relationships among its inputs. It verifies that the
+current-run load-bearing inputs carry the same canonical `IdentityToken`
+reference for the evaluation lineage and the same `evaluation_run_id`. The
+authoritative `TransitionPathway` is verified against its preserved reference
+identity and provenance rather than against the current evaluation's lineage
+or run.
+
+Structural verification does not constitute re-evaluation of the pathway or
+its findings.
 
 ### 15.2 Assembly Inputs
 
@@ -3374,7 +3406,9 @@ Its primary assembly inputs include:
 * the `ProductPathway` under evaluation;
 * a reference to the authoritative `TransitionPathway` used during evaluation;
 * the candidate or prospective candidate `TransitionPathway`;
-* the completed `NetOverallSystemRiskResult`; and
+* the completed `NetOverallSystemRiskResult`;
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`; and
 * `user_id` and `pathway_id` attribution.
 
 The assembler also receives the completed upstream evaluation artifacts required
@@ -3447,8 +3481,10 @@ The result exposes semantically primary references to:
 * the authoritative `TransitionPathway` used as the evaluation reference;
 * the candidate or prospective candidate `TransitionPathway`;
 * the completed `NetOverallSystemRiskResult`;
-* the `FinalPathwayAssembly` version and applicable assembly-rule version; and
-* `user_id`, `pathway_id`, and `evaluation_run_id` attribution.
+* the `FinalPathwayAssembly` version and applicable assembly-rule version;
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`; and
+* `user_id` and `pathway_id` attribution.
 
 The result also contains the `evaluation_trace`, which preserves immutable
 artifact references to completed upstream evaluation results that remain
@@ -3533,6 +3569,18 @@ most complete evaluation state available before binding. This state includes
 the completed system-risk evaluation and the upstream evaluation artifacts
 preserved by the `evaluation_trace`.
 
+Before producing `FinalCharterResult`, the `CharterEvaluator` verifies that the
+`FinalPathwayResult`, `InitialCharterResult`, `PathwayEngineResult`, and
+`IntegratedCharterResult` carry the same canonical `IdentityToken` reference
+for the evaluation lineage and the same `evaluation_run_id`.
+
+The authoritative `TransitionPathway` is verified separately. The
+`CharterEvaluator` verifies that the `FinalPathwayResult` references the same
+immutable global authoritative `TransitionPathway` used throughout the current
+evaluation. That authoritative pathway retains the `IdentityToken` and
+`evaluation_run_id` of the evaluation that produced it. Those values may or
+may not match the current evaluation.
+
 As all Charter checks are required, the `CharterEvaluator` reruns every Charter
 check using the information available at the Final Charter stage. Each check
 executes independently. Findings from the Initial or Integrated Charter
@@ -3551,6 +3599,8 @@ and the Charter resources required to perform the Final Charter Evaluation.
 
 The `FinalPathwayResult` provides direct access to:
 
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
 * the `ProductPathway` under evaluation;
 * the authoritative `TransitionPathway` used as the evaluation reference;
 * the candidate or prospective candidate `TransitionPathway`;
@@ -3597,6 +3647,8 @@ risk, and other evaluation state available after `FinalPathwayAssembly`.
 
 The `FinalCharterResult` contains or references, as applicable:
 
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
 * the evaluated `FinalPathwayResult`;
 * the associated `InitialCharterResult`;
 * the associated `IntegratedCharterResult`;
@@ -3770,8 +3822,7 @@ evidence, provenance, restrictions, and other conditions already established
 upstream.
 
 `BindingHandler` shall verify that the bound state belongs to the same
-evaluation lineage represented by the `FinalPathwayResult` and
-`FinalCharterResult`.
+evaluation lineage and `EvaluationRun` identified by the `FinalPathwayResult`.
 
 The handler does not decide whether a Charter condition is valid, whether a
 pathway finding is correct, or whether a substantive bound state would be more
@@ -3796,7 +3847,9 @@ A successfully bound `BoundPathway` is consumed by the later
 * the completed immutable `FinalPathwayResult`;
 * the applicable bound state returned from runtime evaluation;
 * the identity and version of the rule or mechanism that determined the bound
-  state; and
+  state;
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`; and
 * `user_id` and `pathway_id` attribution.
 
 Where the runtime does not return a usable result, `BindingHandler` produces a
@@ -3809,9 +3862,9 @@ artifact.
 `BindingHandler` creates a new immutable `BoundPathway` that references the
 `FinalPathwayResult` and records the applicable bound state.
 
-`BindingHandler` shall validate that the `FinalPathwayResult`, applicable bound
-state, and any required evaluation-lineage references identify the same
-pathway and evaluation state before constructing the `BoundPathway`.
+`BindingHandler` shall verify that the `FinalPathwayResult` and applicable
+bound state identify the same evaluation lineage and `EvaluationRun` before
+constructing the `BoundPathway`.
 
 A missing, malformed, stale, mismatched, or otherwise invalid binding input does
 not create permission to proceed.
@@ -3827,7 +3880,9 @@ At minimum, `BoundPathway` preserves:
 
 * a reference to the completed `FinalPathwayResult`;
 * the applicable bound state;
-* `user_id`, `pathway_id`, and `evaluation_run_id` attribution; and
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
+* `user_id` and `pathway_id` attribution; and
 * the binding-rule or mechanism identity and version required to identify how
   the state was attached.
 
@@ -4112,7 +4167,10 @@ whether the candidate `TransitionPathway` is fit to replace the authoritative
 
 It receives the completed immutable `BoundPathway`, the applicable
 `FinalCharterResult`, and the identity and lineage information required to
-evaluate the completed pathway state.
+evaluate the completed pathway state. Before producing a `PathwayAssessment`,
+the evaluator verifies that the `BoundPathway` and `FinalCharterResult` carry
+the same canonical `IdentityToken` reference for the evaluation lineage and
+the same `evaluation_run_id`.
 
 The evaluator may follow references through the `BoundPathway`,
 `FinalPathwayResult`, `evaluation_trace`, Charter results, and other upstream
@@ -4199,6 +4257,8 @@ one `EvaluationRun`.
 
 At minimum, it shall include or reference, as applicable:
 
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
 * `pathway_assessment_id`;
 * `user_id`;
 * a reference to the assessed `ProductPathway`;
@@ -4518,7 +4578,8 @@ the existing authoritative `TransitionPathway`.
 completed global-context pathway evaluation and updating the authoritative
 global transition state. It receives the candidate `TransitionPathway`,
 completed `PathwayAssessment`, current authoritative `TransitionPathway`,
-`IdentityToken`, `user_id`, `pathway_id`, `evaluation_run_id`, and the global
+the canonical `IdentityToken` reference for the current evaluation lineage,
+the current `evaluation_run_id`, `user_id`, `pathway_id`, and the global
 validation context.
 
 The validator checks that the proposed candidate is the same candidate produced
@@ -4557,17 +4618,21 @@ does not change the validator's functional scope of transition-pathway integrity
 * the immutable candidate `TransitionPathway`;
 * the completed immutable `PathwayAssessment`;
 * the current authoritative `TransitionPathway`;
-* the current `IdentityToken`;
+* the canonical `IdentityToken` reference for the current evaluation lineage;
+* the `evaluation_run_id` of the current `EvaluationRun`;
 * `user_id`;
-* `pathway_id`;
-* `evaluation_run_id`; and
+* `pathway_id`; and
 * the global validation context.
 
-The `IdentityToken`, `user_id`, `pathway_id`, and `evaluation_run_id` are
-supplied explicitly at the validation boundary so the validator can verify them
-against the identities and references preserved by the completed evaluation
-chain. Their presence here does not require every upstream result to duplicate
-those identifiers.
+The validator uses the supplied `IdentityToken` and `evaluation_run_id` to
+confirm that the candidate and the load-bearing results, except the current
+authoritative `TransitionPathway`, belong to the same evaluation lineage and
+execution. It uses `user_id` and `pathway_id` to confirm the applicable user
+and pathway attribution recorded by the evaluation chain.
+
+Load-bearing results preserve the canonical `IdentityToken` reference for their
+evaluation lineage and the `evaluation_run_id` that produced them. Other
+attribution fields remain with the objects that own them.
 
 The global validation context contains or references the current state required
 for validation, including:
@@ -4631,9 +4696,12 @@ successful validation.
 
 #### 20.4.1 Identity, Lineage, and Reference Integrity
 
-The validator checks that the candidate, completed `PathwayAssessment`, current
-authoritative `TransitionPathway`, and required upstream results belong to the
-same applicable evaluation lineage.
+The validator checks that the candidate, completed `PathwayAssessment`, and
+required upstream results belong to the same evaluation lineage and
+`EvaluationRun`. The current authoritative `TransitionPathway` retains the
+identity and run provenance of the evaluation that produced it and is verified
+against that preserved identity, lineage, and reference state, not against the
+current `evaluation_run_id` or the candidate's `IdentityToken`.
 
 Validation confirms that:
 
@@ -4641,9 +4709,8 @@ Validation confirms that:
   the user attribution, assessed `ProductPathway`, and `EvaluationRun`
   established by the completed evaluation chain, including the run that
   produced the candidate;
-* the supplied `IdentityToken` matches the `IdentityToken` associated with the
-  assessed `ProductPathway` and `EvaluationRun`, and the `PathwayAssessment`
-  resolves to that same lineage through its assessed `ProductPathway`;
+* the supplied `IdentityToken` and `evaluation_run_id` match those recorded by
+  the `PathwayAssessment`, assessed `ProductPathway`, and `EvaluationRun`;
 * the assessed `ProductPathway` belongs to the `EvaluationRun` identified by
   the supplied `evaluation_run_id`;
 * referenced upstream results resolve to the expected immutable objects;
@@ -4908,6 +4975,7 @@ The validation record must identify:
 * the candidate `TransitionPathway` that was validated;
 * the authoritative `TransitionPathway` used as its reference;
 * the user who submitted the originating pathway;
+* the canonical `IdentityToken` reference for the evaluation lineage;
 * the `pathway_id` and `evaluation_run_id`;
 * the completed `PathwayAssessment` that allowed progression;
 * the applicable source, rule, runtime, and validator context; and
@@ -4934,9 +5002,9 @@ evaluation record and its upstream results rather than copying them.
 At minimum, `TransitionPathwayValidatorResult` contains or references:
 
 * a validator-result identity;
-* `user_id`;
-* `pathway_id`;
-* `evaluation_run_id`;
+* the canonical `IdentityToken` reference for the evaluation lineage;
+* the `evaluation_run_id` of the `EvaluationRun`;
+* `user_id` and `pathway_id` attribution;
 * the candidate `TransitionPathway` identity and version;
 * the candidate `TransitionPathway` content fingerprint;
 * the current authoritative `TransitionPathway` identity and version used for
@@ -4977,6 +5045,11 @@ candidate and result return to the ClimateSOS runtime.
 The runtime promotes the exact immutable candidate identified by the
 `TransitionPathwayValidatorResult`. The candidate identity, version, and content
 fingerprint must match the candidate that was validated before promotion.
+
+The candidate's canonical `IdentityToken` reference for the evaluation lineage
+and its `evaluation_run_id` must also match the values recorded by the
+`TransitionPathwayValidatorResult` and are preserved unchanged when the
+candidate becomes authoritative.
 
 The runtime owns the privileged atomic promotion:
 
@@ -5376,6 +5449,17 @@ or archival handling rather than silently discarding retained evaluation
 history.
 
 ### 23.4 Identity and Attribution Requirements
+
+A result is load-bearing when a later stage consumes it to complete or finalize
+a product-pathway stage or result, or when it must remain directly identifiable
+to preserve evaluation provenance.
+
+Each load-bearing result preserves the canonical `IdentityToken` reference for
+its evaluation lineage, the `evaluation_run_id` of the `EvaluationRun` that
+produced it, and its own immutable artifact identity or reference. The
+authoritative `TransitionPathway` preserves the lineage and run that produced
+that authoritative state. Later evaluations are not required to match its
+lineage or `evaluation_run_id`.
 
 ### 23.5 Error and Missing-Result Requirements
 
