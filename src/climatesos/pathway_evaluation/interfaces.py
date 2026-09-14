@@ -15,6 +15,7 @@ from .models import (
     InitialCharterResult,
     IntegratedCharterResult,
     NetOverallSystemContribution,
+    NetOverallSystemRiskResult,
     OpaqueReference,
     PathwayEngineResult,
     ProductAdapterResult,
@@ -212,3 +213,22 @@ class TransitionPathwayCompiler(Protocol):
         user_id: str,
         pathway_id: str,
     ) -> TransitionPathway: ...
+
+
+class NetOverallSystemRiskEvaluator(Protocol):
+    """Evaluate systemic risk in a completed candidate transition mapping."""
+
+    def evaluate(
+        self,
+        candidate_transition_pathway: TransitionPathway,
+        authoritative_transition_pathway: TransitionPathway,
+        transition_context: OpaqueReference | None,
+        system_context: OpaqueReference | None,
+        assumptions: tuple[str, ...],
+        uncertainties: tuple[str, ...],
+        evidence_references: tuple[SourceReference, ...],
+        provenance: tuple[SourceReference, ...],
+        user_id: str,
+        pathway_id: str,
+        evaluation_run_id: str,
+    ) -> NetOverallSystemRiskResult: ...

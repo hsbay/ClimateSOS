@@ -525,3 +525,58 @@ class ScaleDiagnosticResult:
     uncertainties: tuple[str, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
     provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class SystemRiskFinding:
+    """One traceable, open-ended candidate transition system-risk finding."""
+
+    finding_id: str
+    description: str
+    risk_scope: str | None = None
+    risk_type: str | None = None
+    risk_states: tuple[str, ...] = ()
+    causes: tuple[str, ...] = ()
+    transition_function_references: tuple[OpaqueReference, ...] = ()
+    transition_relationships: tuple[PathwayRelationship, ...] = ()
+    timeline_effects: tuple[str, ...] = ()
+    sequencing_effects: tuple[str, ...] = ()
+    bottlenecks: tuple[str, ...] = ()
+    pitfalls: tuple[str, ...] = ()
+    failure_modes: tuple[str, ...] = ()
+    fossil_fallback_risks: tuple[str, ...] = ()
+    fossil_persistence_risks: tuple[str, ...] = ()
+    infrastructure_constraints: tuple[str, ...] = ()
+    finance_constraints: tuple[str, ...] = ()
+    workforce_constraints: tuple[str, ...] = ()
+    adequacy_constraints: tuple[str, ...] = ()
+    delivery_constraints: tuple[str, ...] = ()
+    supply_chain_constraints: tuple[str, ...] = ()
+    other_transition_constraints: tuple[str, ...] = ()
+    propagation_relationships: tuple[PathwayRelationship, ...] = ()
+    charter_style_findings: tuple[str, ...] = ()
+    conditions: tuple[str, ...] = ()
+    unresolved_conditions: tuple[str, ...] = ()
+    supporting_contribution_findings: tuple[ContributionFinding, ...] = ()
+    supporting_scale_findings: tuple[ScaleFinding, ...] = ()
+    supporting_system_references: tuple[OpaqueReference, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class NetOverallSystemRiskResult:
+    """Immutable result of evaluating one candidate transition system state."""
+
+    candidate_transition_pathway: TransitionPathway
+    authoritative_transition_pathway: TransitionPathway
+    risk_findings: tuple[SystemRiskFinding, ...]
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    evaluator_version: str
+    rule_set_version: str
+    assumptions: tuple[str, ...] = ()
+    uncertainties: tuple[str, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    provenance: tuple[SourceReference, ...] = ()
