@@ -158,12 +158,17 @@ from .transition_compilation import (
     TransitionPathwayCompilationInvariantError,
     ValidatedTransitionPathwayCompiler,
 )
+from .transition_composition import (
+    CandidateTransitionRuleFunction,
+    CompleteTransitionPathwayCompilationFunction,
+)
 
 __all__ = [
     "AdapterInvariantError",
     "AssemblyInvariantError",
     "Attribute",
     "BiosphereContributionRuleFunction",
+    "CandidateTransitionRuleFunction",
     "CarbonRemovalRuleFunction",
     "CharterCheckResult",
     "CharterCheckStatus",
@@ -175,6 +180,7 @@ __all__ = [
     "ComparisonInvariantError",
     "CompleteNetOverallSystemContributionFunction",
     "CompleteScaleDiagnosticFunction",
+    "CompleteTransitionPathwayCompilationFunction",
     "ContributionEvaluationFunction",
     "ContributionEvaluationInvariantError",
     "ContributionFinding",
