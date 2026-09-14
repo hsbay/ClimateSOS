@@ -580,3 +580,31 @@ class NetOverallSystemRiskResult:
     uncertainties: tuple[str, ...] = ()
     evidence_references: tuple[SourceReference, ...] = ()
     provenance: tuple[SourceReference, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class EvaluationTrace:
+    """Exact immutable upstream references retained by final pathway assembly."""
+
+    initial_charter_result: InitialCharterResult
+    pathway_engine_result: PathwayEngineResult
+    integrated_charter_result: IntegratedCharterResult
+    net_overall_system_contribution: NetOverallSystemContribution
+    scale_diagnostic_result: ScaleDiagnosticResult
+
+
+@dataclass(frozen=True, slots=True)
+class FinalPathwayResult:
+    """Immutable completed pathway-evaluation state before Final Charter."""
+
+    product_pathway: ProductPathway
+    authoritative_transition_pathway: TransitionPathway
+    candidate_transition_pathway: TransitionPathway
+    net_overall_system_risk_result: NetOverallSystemRiskResult
+    evaluation_trace: EvaluationTrace
+    identity_token: IdentityToken
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    assembly_version: str
+    assembly_rule_version: str

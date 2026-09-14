@@ -11,6 +11,7 @@ from .models import (
     ComparisonFinding,
     DocumentationFinding,
     FabricEvaluatorResult,
+    FinalPathwayResult,
     IdentityToken,
     InitialCharterResult,
     IntegratedCharterResult,
@@ -232,3 +233,24 @@ class NetOverallSystemRiskEvaluator(Protocol):
         pathway_id: str,
         evaluation_run_id: str,
     ) -> NetOverallSystemRiskResult: ...
+
+
+class FinalPathwayAssembly(Protocol):
+    """Assemble completed evaluation state without re-evaluating findings."""
+
+    def assemble(
+        self,
+        product_pathway: ProductPathway,
+        authoritative_transition_pathway: TransitionPathway,
+        candidate_transition_pathway: TransitionPathway,
+        net_overall_system_risk_result: NetOverallSystemRiskResult,
+        initial_charter_result: InitialCharterResult,
+        pathway_engine_result: PathwayEngineResult,
+        integrated_charter_result: IntegratedCharterResult,
+        net_overall_system_contribution: NetOverallSystemContribution,
+        scale_diagnostic_result: ScaleDiagnosticResult,
+        identity_token: IdentityToken,
+        evaluation_run_id: str,
+        user_id: str,
+        pathway_id: str,
+    ) -> FinalPathwayResult: ...
