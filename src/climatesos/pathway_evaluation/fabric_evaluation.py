@@ -38,7 +38,7 @@ def _same_references(left: tuple[object, ...], right: tuple[object, ...]) -> boo
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedFabricEvaluator:
+class FabricEvaluator:
     """Route fabric context and validate caller-supplied coordination output."""
 
     evaluation_function: FabricEvaluationFunction

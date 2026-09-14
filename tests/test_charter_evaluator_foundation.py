@@ -10,6 +10,7 @@ from climatesos.pathway_evaluation import (
     CharterCheckStatus,
     CharterEvaluationContext,
     CharterEvaluationInvariantError,
+    CharterEvaluator,
     CharterStatus,
     EvaluationRun,
     IdentityToken,
@@ -22,7 +23,6 @@ from climatesos.pathway_evaluation import (
     ProductPathway,
     SourceReference,
     TransitionPathway,
-    ValidatedCharterEvaluator,
 )
 
 
@@ -83,7 +83,7 @@ def _context() -> CharterEvaluationContext:
 
 def _engine_result(
     adapter_result: ProductAdapterResult,
-    evaluator: ValidatedCharterEvaluator,
+    evaluator: CharterEvaluator,
     context: CharterEvaluationContext,
 ) -> PathwayEngineResult:
     initial = evaluator.evaluate_initial(adapter_result, context)
@@ -110,7 +110,7 @@ def _engine_result(
 
 def _evaluator(
     calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]],
-) -> ValidatedCharterEvaluator:
+) -> CharterEvaluator:
     def initial_check(
         artifact: ProductAdapterResult,
         definition: OpaqueReference,
@@ -164,7 +164,7 @@ def _evaluator(
         )
         return "CALLER-DEFINED-INTEGRATED"
 
-    return ValidatedCharterEvaluator(
+    return CharterEvaluator(
         initial_check,
         integrated_check,
         initial_status,
@@ -301,7 +301,7 @@ def test_arbitrary_charter_check_status_is_structurally_rejected(
         aggregate_status_called = True
         return "SHOULD-NOT-BE-USED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         invalid_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -351,7 +351,7 @@ def test_exception_null_and_malformed_outputs_remain_distinct_and_ordered() -> N
         aggregate_status_called = True
         return "SHOULD-NOT-BE-USED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         mixed_failures,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -415,7 +415,7 @@ def test_malformed_charter_status_payload_becomes_error() -> None:
         aggregate_status_called = True
         return "SHOULD-NOT-BE-USED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         malformed_status_payload,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -479,7 +479,7 @@ def test_returned_integrity_status_is_preserved_and_bypasses_aggregate(
         aggregate_status_called = True
         return "SHOULD-NOT-BE-USED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         integrity_result,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -540,7 +540,7 @@ def test_substantive_outcomes_are_not_integrity_failures(
         aggregate_status_called = True
         return "AGGREGATED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         completed_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -573,7 +573,7 @@ def test_initial_null_result_is_recorded_as_null_integrity_failure() -> None:
             return None  # type: ignore[return-value]
         return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         malformed_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -622,7 +622,7 @@ def test_substantive_status_with_execution_error_becomes_attributed_error() -> N
             )
         return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         incoherent_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -664,7 +664,7 @@ def test_wrong_check_identities_become_error_integrity_results() -> None:
             evidence_references=(adapter_result.intake_bundle.provenance[0],),
         )
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         duplicate_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
@@ -729,7 +729,7 @@ def test_integrated_malformed_result_is_recorded_as_error() -> None:
         aggregate_status_called = True
         return "SHOULD-NOT-BE-USED"
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,
             CharterCheckStatus.PASS,
@@ -774,7 +774,7 @@ def test_stage_status_failures_return_error_results_with_completed_checks() -> N
         check_calls.append(definition.reference_id)
         return CharterCheckResult(definition.reference_id, CharterCheckStatus.PASS)
 
-    evaluator = ValidatedCharterEvaluator(
+    evaluator = CharterEvaluator(
         initial_check,
         lambda _artifact, definition, _context: CharterCheckResult(
             definition.reference_id,

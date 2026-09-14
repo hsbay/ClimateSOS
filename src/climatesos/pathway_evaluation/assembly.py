@@ -4,7 +4,6 @@ from collections.abc import Callable
 from dataclasses import dataclass
 
 from .enums import CharterCheckStatus
-from .interfaces import FabricAssembler, QueueBundler
 from .models import (
     InitialCharterResult,
     ProductFabric,
@@ -41,7 +40,7 @@ def _contains_reference(values: tuple[object, ...], candidate: object) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedQueueBundler:
+class QueueBundler:
     """Delegate grouping decisions and enforce pathway-owned structure."""
 
     grouping_function: QueueGroupingFunction
@@ -82,7 +81,7 @@ class ValidatedQueueBundler:
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedFabricAssembler:
+class FabricAssembler:
     """Delegate fabric membership and enforce bundle ownership."""
 
     assembly_function: FabricAssemblyFunction
@@ -133,7 +132,7 @@ class ValidatedFabricAssembler:
 
 
 @dataclass(frozen=True, slots=True)
-class StructuralProductAssembly:
+class ProductAssembly:
     """Coordinate structural assembly after the Charter-stage precondition."""
 
     queue_bundler: QueueBundler

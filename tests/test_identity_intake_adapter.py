@@ -14,10 +14,10 @@ from climatesos.pathway_evaluation import (
     IntakeLayer,
     PathwayObject,
     PathwayRelationship,
+    ProductAdapter,
     ProductIntakeBundle,
     ProductPathway,
     SourceReference,
-    ValidatedProductAdapter,
 )
 
 
@@ -80,7 +80,7 @@ def test_flow_preserves_canonical_objects() -> None:
         seen_bundles.append(received)
         return _pathway(received)
 
-    result = ValidatedProductAdapter(normalize).adapt(bundle)
+    result = ProductAdapter(normalize).adapt(bundle)
 
     assert seen_bundles[0] is bundle
     assert result.intake_bundle is bundle
@@ -144,14 +144,14 @@ def test_adapter_rejects_different_identity_token_id() -> None:
         return replace(_pathway(received), identity_token=IdentityToken("token-2"))
 
     with pytest.raises(AdapterInvariantError, match="preserve"):
-        ValidatedProductAdapter(replace_token).adapt(bundle)
+        ProductAdapter(replace_token).adapt(bundle)
 
 
 def test_adapter_accepts_reconstructed_token_with_same_token_id() -> None:
     bundle = _bundle()
     reconstructed_token = IdentityToken(bundle.identity_token.token_id)
 
-    result = ValidatedProductAdapter(
+    result = ProductAdapter(
         lambda received: replace(
             _pathway(received), identity_token=reconstructed_token
         )
@@ -165,7 +165,7 @@ def test_adapter_rejects_mismatched_evaluation_run_id() -> None:
     bundle = _bundle()
 
     with pytest.raises(AdapterInvariantError, match="evaluation_run_id"):
-        ValidatedProductAdapter(
+        ProductAdapter(
             lambda received: replace(
                 _pathway(received), evaluation_run_id="different-run"
             )
@@ -188,7 +188,7 @@ def test_adapter_rejects_cross_pathway_attribution(atomic_kind: str) -> None:
         )
 
     with pytest.raises(AdapterInvariantError, match=f"Pathway{atomic_kind.title()}"):
-        ValidatedProductAdapter(lambda _: changed).adapt(bundle)
+        ProductAdapter(lambda _: changed).adapt(bundle)
 
 
 @pytest.mark.parametrize(
@@ -217,7 +217,7 @@ def test_adapter_rejects_invalid_graph_structure(failure: str) -> None:
         )
 
     with pytest.raises(AdapterInvariantError):
-        ValidatedProductAdapter(lambda _: changed).adapt(bundle)
+        ProductAdapter(lambda _: changed).adapt(bundle)
 
 
 def test_evaluation_run_is_immutable() -> None:
@@ -228,7 +228,7 @@ def test_evaluation_run_is_immutable() -> None:
 
 
 def test_adapter_exposes_no_downstream_execution_behavior() -> None:
-    adapter = ValidatedProductAdapter(_pathway)
+    adapter = ProductAdapter(_pathway)
 
     assert not hasattr(adapter, "assemble")
     assert not hasattr(adapter, "bundle")

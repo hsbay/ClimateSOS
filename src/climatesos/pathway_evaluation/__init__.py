@@ -3,15 +3,15 @@
 from .adapter import (
     AdapterInvariantError,
     PathwayNormalizer,
-    ValidatedProductAdapter,
+    ProductAdapter,
 )
 from .assembly import (
     AssemblyInvariantError,
+    FabricAssembler,
     FabricAssemblyFunction,
+    ProductAssembly,
+    QueueBundler,
     QueueGroupingFunction,
-    StructuralProductAssembly,
-    ValidatedFabricAssembler,
-    ValidatedQueueBundler,
 )
 from .binding import (
     BindingHandler,
@@ -19,20 +19,20 @@ from .binding import (
 )
 from .charter_evaluation import (
     CharterEvaluationInvariantError,
+    CharterEvaluator,
     FinalCharterCheckFunction,
     FinalCharterStatusFunction,
     InitialCharterCheckFunction,
     InitialCharterStatusFunction,
     IntegratedCharterCheckFunction,
     IntegratedCharterStatusFunction,
-    ValidatedCharterEvaluator,
 )
 from .comparison import (
     ComparisonInvariantError,
     DirectComparisonFunction,
     DownstreamPropagationFunction,
+    PathwayComparator,
     SubstitutionCombinationFunction,
-    ValidatedPathwayComparator,
 )
 from .contribution_composition import CompleteNetOverallSystemContributionFunction
 from .contribution_evaluation import (
@@ -43,7 +43,7 @@ from .contribution_evaluation import (
 from .documentation_evaluation import (
     DocumentationEvaluationFunction,
     DocumentationEvaluationInvariantError,
-    ValidatedDocumentationEvaluator,
+    DocumentationEvaluator,
 )
 from .emissions_cdr_biosphere import (
     BiosphereContributionRuleFunction,
@@ -61,9 +61,9 @@ from .enabling_demand_burden import (
     TransitionEnablingCapacityRuleFunction,
 )
 from .engine import (
+    PathwayEvaluationEngine,
     PathwayEvaluationIncompleteError,
     PathwayEvaluationInvariantError,
-    StructuralPathwayEvaluationEngine,
 )
 from .enums import (
     BoundState,
@@ -79,7 +79,7 @@ from .enums import (
 from .fabric_evaluation import (
     FabricEvaluationFunction,
     FabricEvaluationInvariantError,
-    ValidatedFabricEvaluator,
+    FabricEvaluator,
 )
 from .final_charter_progression import (
     FinalCharterIntegrityFailure,
@@ -107,19 +107,9 @@ from .fossil_displacement import (
 from .identity import IdentityLayer
 from .intake import IntakeLayer
 from .interfaces import (
-    CharterEvaluator,
-    DocumentationEvaluator,
-    FabricAssembler,
-    FabricEvaluator,
     FinalPathwayAssembly,
     NetOverallSystemContributionEvaluator,
     NetOverallSystemRiskEvaluator,
-    PathwayComparator,
-    PathwayEvaluationEngine,
-    ProductAdapter,
-    ProductAssembly,
-    QueueBundler,
-    QueueEvaluator,
     ScaleDiagnosticEvaluator,
     TransitionPathwayCompiler,
 )
@@ -166,7 +156,7 @@ from .models import (
 from .queue_evaluation import (
     QueueEvaluationFunction,
     QueueEvaluationInvariantError,
-    ValidatedQueueEvaluator,
+    QueueEvaluator,
 )
 from .reliability_delivery_timing import (
     DeliverabilitySynchronizationRuleFunction,
@@ -328,8 +318,6 @@ __all__ = [
     "ScaleFinding",
     "SourceEmissionsRuleFunction",
     "SourceReference",
-    "StructuralPathwayEvaluationEngine",
-    "StructuralProductAssembly",
     "SubstitutionCombinationFunction",
     "SystemRiskFinding",
     "SystemRiskFindingFunction",
@@ -341,17 +329,9 @@ __all__ = [
     "TransitionPathwayCompilationInvariantError",
     "TransitionPathwayCompiler",
     "TransitionTimingRuleFunction",
-    "ValidatedCharterEvaluator",
-    "ValidatedDocumentationEvaluator",
-    "ValidatedFabricAssembler",
-    "ValidatedFabricEvaluator",
     "ValidatedFinalPathwayAssembly",
     "ValidatedNetOverallSystemContributionEvaluator",
     "ValidatedNetOverallSystemRiskEvaluator",
-    "ValidatedPathwayComparator",
-    "ValidatedProductAdapter",
-    "ValidatedQueueBundler",
-    "ValidatedQueueEvaluator",
     "ValidatedScaleDiagnosticEvaluator",
     "ValidatedTransitionPathwayCompiler",
 ]

@@ -8,6 +8,7 @@ from climatesos.pathway_evaluation import (
     CharterCheckStatus,
     CharterEvaluationContext,
     CharterEvaluationInvariantError,
+    CharterEvaluator,
     EvaluationTrace,
     FinalCharterResult,
     FinalPathwayResult,
@@ -22,7 +23,6 @@ from climatesos.pathway_evaluation import (
     ProductPathway,
     ScaleDiagnosticResult,
     TransitionPathway,
-    ValidatedCharterEvaluator,
 )
 
 
@@ -185,8 +185,8 @@ def _context() -> CharterEvaluationContext:
 def _evaluator(
     final_check: object,
     final_status: object,
-) -> ValidatedCharterEvaluator:
-    return ValidatedCharterEvaluator(
+) -> CharterEvaluator:
+    return CharterEvaluator(
         lambda artifact, definition, context: CharterCheckResult(
             definition.reference_id, CharterCheckStatus.PASS
         ),
@@ -406,7 +406,7 @@ def test_structural_validation_does_not_generate_pass_or_downstream_state() -> N
         lambda artifact, results, context: "UNRESOLVED",
     )
     result = evaluator.evaluate_final(fixture.final_pathway, _context())
-    source = inspect.getsource(ValidatedCharterEvaluator.evaluate_final).lower()
+    source = inspect.getsource(CharterEvaluator.evaluate_final).lower()
 
     assert check_calls == 2
     assert result.status == "UNRESOLVED"

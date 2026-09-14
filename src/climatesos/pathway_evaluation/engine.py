@@ -3,14 +3,14 @@
 from dataclasses import dataclass
 from typing import TypeVar
 
-from .comparison import ComparisonInvariantError, validate_comparison_findings
-from .enums import CharterCheckStatus
-from .interfaces import (
-    DocumentationEvaluator,
-    FabricEvaluator,
+from .comparison import (
+    ComparisonInvariantError,
     PathwayComparator,
-    QueueEvaluator,
+    validate_comparison_findings,
 )
+from .documentation_evaluation import DocumentationEvaluator
+from .enums import CharterCheckStatus
+from .fabric_evaluation import FabricEvaluator
 from .models import (
     Attribute,
     ComparisonFinding,
@@ -28,6 +28,7 @@ from .models import (
     SourceReference,
     TransitionPathway,
 )
+from .queue_evaluation import QueueEvaluator
 
 T = TypeVar("T")
 
@@ -79,7 +80,7 @@ def _require_tuple_of(
 
 
 @dataclass(frozen=True, slots=True)
-class StructuralPathwayEvaluationEngine:
+class PathwayEvaluationEngine:
     """Coordinate caller-supplied evaluators without adding conclusions."""
 
     comparator: PathwayComparator

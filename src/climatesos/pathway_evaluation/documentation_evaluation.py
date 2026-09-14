@@ -35,7 +35,7 @@ def _same_reference_in(values: tuple[object, ...], candidate: object) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedDocumentationEvaluator:
+class DocumentationEvaluator:
     """Route existing artifacts without defining documentation policy."""
 
     evaluation_function: DocumentationEvaluationFunction
@@ -89,7 +89,10 @@ class ValidatedDocumentationEvaluator:
                 "Documentation evaluation requires ProductAdapterResult"
             )
         pathway = adapter_result.product_pathway
-        if adapter_result.intake_bundle.identity_token != pathway.identity_token:
+        if (
+            adapter_result.intake_bundle.identity_token.token_id
+            != pathway.identity_token.token_id
+        ):
             raise DocumentationEvaluationInvariantError(
                 "ProductIntakeBundle attribution must match the ProductPathway"
             )

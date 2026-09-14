@@ -39,7 +39,7 @@ def _contains_reference(values: tuple[object, ...], candidate: object) -> bool:
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedQueueEvaluator:
+class QueueEvaluator:
     """Route queue context and validate caller-supplied evaluation output."""
 
     evaluation_function: QueueEvaluationFunction

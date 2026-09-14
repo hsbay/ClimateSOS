@@ -11,7 +11,9 @@ from climatesos.pathway_evaluation import (
     CharterStatus,
     ComparisonFinding,
     EvaluationRun,
+    FabricAssembler,
     FabricEvaluationInvariantError,
+    FabricEvaluator,
     FabricEvaluatorResult,
     IdentityToken,
     InitialCharterResult,
@@ -20,26 +22,24 @@ from climatesos.pathway_evaluation import (
     PathwayObject,
     PathwayRelationship,
     ProductAdapterResult,
+    ProductAssembly,
     ProductFabric,
     ProductIntakeBundle,
     ProductPathway,
     ProductQueueBundle,
+    QueueBundler,
     QueueCategory,
     QueueElement,
     QueueEvaluationFailure,
     QueueEvaluationInvariantError,
+    QueueEvaluator,
     QueueEvaluatorResult,
     QueueExecutionResult,
     QueueLifecycleState,
     QueueOperationalStatus,
     QueueProgressRecord,
     SourceReference,
-    StructuralProductAssembly,
     TransitionPathway,
-    ValidatedFabricAssembler,
-    ValidatedFabricEvaluator,
-    ValidatedQueueBundler,
-    ValidatedQueueEvaluator,
 )
 
 
@@ -213,9 +213,9 @@ def test_assembly_preserves_pathway_owned_references_without_evaluation() -> Non
         seen.extend((received_pathway, received_bundles))
         return (fabric,)
 
-    assembly = StructuralProductAssembly(
-        queue_bundler=ValidatedQueueBundler(group),
-        fabric_assembler=ValidatedFabricAssembler(assemble_fabric),
+    assembly = ProductAssembly(
+        queue_bundler=QueueBundler(group),
+        fabric_assembler=FabricAssembler(assemble_fabric),
     )
     bundles, fabrics = assembly.assemble(_initial_result(pathway))
 
@@ -230,8 +230,8 @@ def test_assembly_preserves_pathway_owned_references_without_evaluation() -> Non
 def test_product_assembly_omits_fabrics_when_none_are_applicable() -> None:
     pathway, first_queue, second_queue, relationship = _pathway()
     expected_bundles = _bundles(pathway, first_queue, second_queue, relationship)
-    assembly = StructuralProductAssembly(
-        queue_bundler=ValidatedQueueBundler(lambda _: expected_bundles)
+    assembly = ProductAssembly(
+        queue_bundler=QueueBundler(lambda _: expected_bundles)
     )
 
     assert assembly.assemble(_initial_result(pathway)) == (expected_bundles, ())
@@ -268,9 +268,9 @@ def test_product_assembly_rejects_initial_integrity_failure_before_work(
         calls.append("fabric")
         return ()
 
-    assembly = StructuralProductAssembly(
-        queue_bundler=ValidatedQueueBundler(bundle),
-        fabric_assembler=ValidatedFabricAssembler(assemble_fabric),
+    assembly = ProductAssembly(
+        queue_bundler=QueueBundler(bundle),
+        fabric_assembler=FabricAssembler(assemble_fabric),
     )
 
     with pytest.raises(AssemblyInvariantError, match="integrity failure"):
@@ -356,9 +356,9 @@ def test_product_assembly_rejects_lineage_run_or_reference_mismatch_before_work(
         calls.append("fabric")
         return ()
 
-    assembly = StructuralProductAssembly(
-        queue_bundler=ValidatedQueueBundler(bundle),
-        fabric_assembler=ValidatedFabricAssembler(assemble_fabric),
+    assembly = ProductAssembly(
+        queue_bundler=QueueBundler(bundle),
+        fabric_assembler=FabricAssembler(assemble_fabric),
     )
 
     with pytest.raises(AssemblyInvariantError):
@@ -399,7 +399,7 @@ def test_product_assembly_accepts_reconstructed_tokens_with_same_id() -> None:
         seen.append(received)
         return expected_bundles
 
-    assembly = StructuralProductAssembly(queue_bundler=ValidatedQueueBundler(bundle))
+    assembly = ProductAssembly(queue_bundler=QueueBundler(bundle))
 
     assert assembly.assemble(reconstructed_initial) == (expected_bundles, ())
     assert seen == [reconstructed_pathway]
@@ -436,8 +436,8 @@ def test_product_assembly_allows_completed_substantive_charter_outcomes(
         charter_statuses=charter_statuses,
     )
     initial = replace(_initial_result(pathway), check_results=(check_result,))
-    assembly = StructuralProductAssembly(
-        queue_bundler=ValidatedQueueBundler(lambda _pathway: expected_bundles)
+    assembly = ProductAssembly(
+        queue_bundler=QueueBundler(lambda _pathway: expected_bundles)
     )
 
     assert assembly.assemble(initial) == (expected_bundles, ())
@@ -464,7 +464,7 @@ def test_queue_bundler_rejects_elements_not_owned_by_pathway() -> None:
     )
 
     with pytest.raises(AssemblyInvariantError, match="pathway queue elements"):
-        ValidatedQueueBundler(lambda _: (invalid,)).bundle(pathway)
+        QueueBundler(lambda _: (invalid,)).bundle(pathway)
 
 
 def test_fabric_assembler_rejects_unsupplied_or_single_bundle_membership() -> None:
@@ -489,11 +489,11 @@ def test_fabric_assembler_rejects_unsupplied_or_single_bundle_membership() -> No
     )
 
     with pytest.raises(AssemblyInvariantError, match="supplied queue bundles"):
-        ValidatedFabricAssembler(lambda _pathway, _bundles: (foreign_fabric,)).assemble(
+        FabricAssembler(lambda _pathway, _bundles: (foreign_fabric,)).assemble(
             pathway, bundles
         )
     with pytest.raises(AssemblyInvariantError, match="multiple queue bundles"):
-        ValidatedFabricAssembler(lambda _pathway, _bundles: (single_fabric,)).assemble(
+        FabricAssembler(lambda _pathway, _bundles: (single_fabric,)).assemble(
             pathway, bundles
         )
 
@@ -530,7 +530,7 @@ def test_queue_evaluator_routes_context_and_accepts_completed_result() -> None:
         )
         return expected
 
-    result = ValidatedQueueEvaluator(evaluate_queue).evaluate(
+    result = QueueEvaluator(evaluate_queue).evaluate(
         queue,
         pathway,
         direct,
@@ -557,7 +557,7 @@ def test_queue_evaluator_accepts_completion_without_progress_records() -> None:
     queue = _bundles(pathway, first_queue, second_queue, relationship)[0]
     transition = TransitionPathway(reference_id="transition-1")
     expected = _queue_result(queue, transition, None, include_progress=False)
-    evaluator = ValidatedQueueEvaluator(
+    evaluator = QueueEvaluator(
         lambda _queue, _pathway, _direct, _downstream, _transition, _system, _run: (
             expected
         )
@@ -581,7 +581,7 @@ def test_queue_evaluation_failure_remains_distinct_from_completion() -> None:
         user_id=pathway.user_id,
         pathway_id=pathway.pathway_id,
     )
-    evaluator = ValidatedQueueEvaluator(
+    evaluator = QueueEvaluator(
         lambda _queue, _pathway, _direct, _downstream, _transition, _system, _run: (
             failure
         )
@@ -625,7 +625,7 @@ def test_queue_evaluator_rejects_malformed_completed_result() -> None:
     )
 
     with pytest.raises(QueueEvaluationInvariantError, match="evaluation run"):
-        ValidatedQueueEvaluator(
+        QueueEvaluator(
             lambda _queue, _pathway, _direct, _downstream, _transition, _system, _run: (
                 malformed
             )
@@ -688,7 +688,7 @@ def test_fabric_evaluator_preserves_all_supplied_context() -> None:
         )
         return expected
 
-    result = ValidatedFabricEvaluator(evaluate_fabric).evaluate(
+    result = FabricEvaluator(evaluate_fabric).evaluate(
         fabric,
         queue_results,
         direct,
@@ -740,7 +740,7 @@ def test_fabric_evaluator_rejects_missing_participating_queue_result() -> None:
         pytest.fail("evaluation function must not run for invalid inputs")
 
     with pytest.raises(FabricEvaluationInvariantError, match="one result"):
-        ValidatedFabricEvaluator(fail_if_called).evaluate(
+        FabricEvaluator(fail_if_called).evaluate(
             fabric,
             one_result,
             (),

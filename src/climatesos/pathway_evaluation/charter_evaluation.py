@@ -677,7 +677,7 @@ def _replace_reused_final_checks(
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedCharterEvaluator:
+class CharterEvaluator:
     """Run complete independent Charter passes at each evaluation stage."""
 
     initial_check_function: InitialCharterCheckFunction

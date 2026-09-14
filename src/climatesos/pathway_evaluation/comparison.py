@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from .models import (
     ComparisonFinding,
     OpaqueReference,
+    PathwayObject,
+    PathwayRelationship,
     ProductPathway,
     SourceReference,
     TransitionPathway,
@@ -33,7 +35,12 @@ class ComparisonInvariantError(ValueError):
 
 def _require_reference_tuple(
     value: object,
-    expected_type: type[OpaqueReference] | type[SourceReference],
+    expected_type: (
+        type[PathwayObject]
+        | type[PathwayRelationship]
+        | type[OpaqueReference]
+        | type[SourceReference]
+    ),
     description: str,
 ) -> None:
     if not isinstance(value, tuple) or not all(
@@ -64,12 +71,12 @@ def validate_comparison_findings(
         reference_fields = (
             (
                 finding.pathway_object_references,
-                OpaqueReference,
+                PathwayObject,
                 "Pathway object references",
             ),
             (
                 finding.pathway_relationship_references,
-                OpaqueReference,
+                PathwayRelationship,
                 "Pathway relationship references",
             ),
             (
@@ -89,39 +96,49 @@ def validate_comparison_findings(
             _require_reference_tuple(values, expected_type, field_description)
 
         for reference in finding.pathway_object_references:
-            pathway_object = objects_by_id.get(reference.reference_id)
+            pathway_object = objects_by_id.get(reference.object_id)
             if pathway_object is None:
                 raise ComparisonInvariantError(
                     "ComparisonFinding references an object outside the ProductPathway"
                 )
             if (
-                pathway_object.user_id != pathway.user_id
-                or pathway_object.pathway_id != pathway.pathway_id
+                reference.user_id != pathway.user_id
+                or reference.pathway_id != pathway.pathway_id
             ):
                 raise ComparisonInvariantError(
                     "Referenced pathway object attribution must match the "
                     "ProductPathway"
                 )
+            if reference != pathway_object:
+                raise ComparisonInvariantError(
+                    "Referenced pathway object must match the ProductPathway object"
+                )
+
         for reference in finding.pathway_relationship_references:
-            relationship = relationships_by_id.get(reference.reference_id)
+            relationship = relationships_by_id.get(reference.relationship_id)
             if relationship is None:
                 raise ComparisonInvariantError(
                     "ComparisonFinding references a relationship outside the "
                     "ProductPathway"
                 )
             if (
-                relationship.user_id != pathway.user_id
-                or relationship.pathway_id != pathway.pathway_id
+                reference.user_id != pathway.user_id
+                or reference.pathway_id != pathway.pathway_id
             ):
                 raise ComparisonInvariantError(
                     "Referenced pathway relationship attribution must match the "
                     "ProductPathway"
                 )
+            if reference != relationship:
+                raise ComparisonInvariantError(
+                    "Referenced pathway relationship must match the "
+                    "ProductPathway relationship"
+                )
     return findings
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedPathwayComparator:
+class PathwayComparator:
     """Coordinate comparison phases without supplying comparison semantics."""
 
     direct_comparison_function: DirectComparisonFunction

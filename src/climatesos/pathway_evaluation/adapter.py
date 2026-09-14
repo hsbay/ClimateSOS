@@ -13,7 +13,7 @@ class AdapterInvariantError(ValueError):
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedProductAdapter:
+class ProductAdapter:
     """Adapt intake using caller-supplied translation semantics.
 
     The specification does not define a source-artifact schema or parsing

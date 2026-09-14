@@ -17,6 +17,7 @@ from climatesos.pathway_evaluation import (
     IdentityToken,
     InitialCharterResult,
     OpaqueReference,
+    PathwayEvaluationEngine,
     PathwayEvaluationIncompleteError,
     PathwayEvaluationInvariantError,
     PathwayObject,
@@ -32,7 +33,6 @@ from climatesos.pathway_evaluation import (
     QueueExecutionResult,
     QueueLifecycleState,
     QueueOperationalStatus,
-    StructuralPathwayEvaluationEngine,
     TransitionPathway,
 )
 
@@ -301,7 +301,7 @@ class RecordingDocumentationEvaluator:
 
 
 def _engine() -> tuple[
-    StructuralPathwayEvaluationEngine,
+    PathwayEvaluationEngine,
     RecordingComparator,
     RecordingQueueEvaluator,
     RecordingFabricEvaluator,
@@ -313,7 +313,7 @@ def _engine() -> tuple[
     documentation = RecordingDocumentationEvaluator()
     evaluator_versions = (Attribute("engine", "v1"),)
     rule_versions = (Attribute("engine", "rules-v1"),)
-    engine = StructuralPathwayEvaluationEngine(
+    engine = PathwayEvaluationEngine(
         comparator,
         queues,
         fabrics,

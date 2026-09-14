@@ -8,12 +8,14 @@ from climatesos.pathway_evaluation import (
     ComparisonFinding,
     ComparisonInvariantError,
     DocumentationEvaluationInvariantError,
+    DocumentationEvaluator,
     DocumentationFinding,
     EvaluationRun,
     FabricEvaluatorResult,
     IdentityToken,
     IntakeArtifact,
     OpaqueReference,
+    PathwayComparator,
     PathwayObject,
     PathwayRelationship,
     ProductAdapterResult,
@@ -29,8 +31,6 @@ from climatesos.pathway_evaluation import (
     QueueOperationalStatus,
     SourceReference,
     TransitionPathway,
-    ValidatedDocumentationEvaluator,
-    ValidatedPathwayComparator,
 )
 
 
@@ -164,12 +164,13 @@ def _foundation() -> tuple[
 
 def _traceable_finding(adapter_result: ProductAdapterResult) -> ComparisonFinding:
     source = adapter_result.intake_bundle.evidence[0]
+    pathway = adapter_result.product_pathway
     return ComparisonFinding(
         finding_id="comparison-1",
         finding_type="caller-defined",
         description="caller-supplied conclusion",
-        pathway_object_references=(OpaqueReference("object-1"),),
-        pathway_relationship_references=(OpaqueReference("relationship-1"),),
+        pathway_object_references=(pathway.objects[0],),
+        pathway_relationship_references=(pathway.relationships[0],),
         transition_object_references=(OpaqueReference("transition-object-1"),),
         transition_relationship_references=(
             OpaqueReference("transition-relationship-1"),
@@ -231,7 +232,7 @@ def test_comparator_routes_each_caller_boundary_and_preserves_findings() -> None
         )
         return downstream
 
-    comparator = ValidatedPathwayComparator(
+    comparator = PathwayComparator(
         compare_direct,
         evaluate_substitution,
         propagate,
@@ -267,11 +268,13 @@ def test_comparator_routes_each_caller_boundary_and_preserves_findings() -> None
 def test_comparator_rejects_foreign_pathway_references_and_attribution() -> None:
     adapter, _, _, _, transition, context = _foundation()
     pathway = adapter.product_pathway
+
+    foreign_object = replace(pathway.objects[0], object_id="foreign-object")
     foreign_reference = replace(
         _traceable_finding(adapter),
-        pathway_object_references=(OpaqueReference("foreign-object"),),
+        pathway_object_references=(foreign_object,),
     )
-    comparator = ValidatedPathwayComparator(
+    comparator = PathwayComparator(
         lambda _pathway, _transition, _context: (foreign_reference,),
         lambda _pathway, _transition, _context: (),
         lambda _pathway, _transition, _findings, _context: (),
@@ -281,22 +284,63 @@ def test_comparator_rejects_foreign_pathway_references_and_attribution() -> None
         comparator.compare_direct(pathway, transition, context)
 
     misattributed_object = replace(pathway.objects[0], user_id="other-user")
-    misattributed_pathway = replace(pathway, objects=(misattributed_object,))
-    attributed_finding = _traceable_finding(adapter)
+    misattributed_finding = replace(
+        _traceable_finding(adapter),
+        pathway_object_references=(misattributed_object,),
+    )
     comparator = replace(
         comparator,
         direct_comparison_function=(
-            lambda _pathway, _transition, _context: (attributed_finding,)
+            lambda _pathway, _transition, _context: (misattributed_finding,)
         ),
     )
 
     with pytest.raises(ComparisonInvariantError, match="attribution"):
-        comparator.compare_direct(misattributed_pathway, transition, context)
+        comparator.compare_direct(pathway, transition, context)
+
+
+def test_comparator_rejects_changed_pathway_values_with_reused_ids() -> None:
+    adapter, _, _, _, transition, context = _foundation()
+    pathway = adapter.product_pathway
+
+    changed_object = replace(pathway.objects[0], object_type="changed-type")
+    changed_object_finding = replace(
+        _traceable_finding(adapter),
+        pathway_object_references=(changed_object,),
+    )
+    comparator = PathwayComparator(
+        lambda _pathway, _transition, _context: (changed_object_finding,),
+        lambda _pathway, _transition, _context: (),
+        lambda _pathway, _transition, _findings, _context: (),
+    )
+
+    with pytest.raises(ComparisonInvariantError, match="must match"):
+        comparator.compare_direct(pathway, transition, context)
+
+    changed_relationship = replace(
+        pathway.relationships[0],
+        relationship_type="changed-relationship",
+    )
+    changed_relationship_finding = replace(
+        _traceable_finding(adapter),
+        pathway_relationship_references=(changed_relationship,),
+    )
+    comparator = replace(
+        comparator,
+        direct_comparison_function=(
+            lambda _pathway, _transition, _context: (
+                changed_relationship_finding,
+            )
+        ),
+    )
+
+    with pytest.raises(ComparisonInvariantError, match="must match"):
+        comparator.compare_direct(pathway, transition, context)
 
 
 def test_comparator_rejects_non_tuple_results_without_inventing_an_outcome() -> None:
     adapter, _, _, _, transition, context = _foundation()
-    comparator = ValidatedPathwayComparator(
+    comparator = PathwayComparator(
         lambda _pathway, _transition, _context: [],  # type: ignore[arg-type,return-value]
         lambda _pathway, _transition, _context: (),
         lambda _pathway, _transition, _findings, _context: (),
@@ -339,7 +383,7 @@ def test_documentation_routes_existing_artifacts_and_preserves_caller_findings()
         )
         return findings
 
-    evaluator = ValidatedDocumentationEvaluator(evaluate)
+    evaluator = DocumentationEvaluator(evaluate)
     queue_results = (queue_result,)
     fabric_results = (fabric_result,)
 
@@ -362,7 +406,7 @@ def test_documentation_routes_existing_artifacts_and_preserves_caller_findings()
 
 def test_documentation_rejects_foreign_or_reconstructed_evaluation_artifacts() -> None:
     adapter, _, queue_result, fabric_result, _, _ = _foundation()
-    evaluator = ValidatedDocumentationEvaluator(
+    evaluator = DocumentationEvaluator(
         lambda _adapter, _queues, _fabrics, _comparisons: (),
     )
     wrong_attribution = replace(queue_result, user_id="other-user")
@@ -387,7 +431,7 @@ def test_documentation_rejects_foreign_or_reconstructed_evaluation_artifacts() -
 
 def test_documentation_rejects_non_tuple_caller_findings() -> None:
     adapter, _, queue_result, fabric_result, _, _ = _foundation()
-    evaluator = ValidatedDocumentationEvaluator(
+    evaluator = DocumentationEvaluator(
         lambda _adapter, _queues, _fabrics, _comparisons: [],  # type: ignore[arg-type,return-value]
     )
 

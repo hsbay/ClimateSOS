@@ -339,8 +339,8 @@ class ComparisonFinding:
     finding_id: str
     finding_type: str
     description: str
-    pathway_object_references: tuple[OpaqueReference, ...] = ()
-    pathway_relationship_references: tuple[OpaqueReference, ...] = ()
+    pathway_object_references: tuple[PathwayObject, ...] = ()
+    pathway_relationship_references: tuple[PathwayRelationship, ...] = ()
     transition_object_references: tuple[OpaqueReference, ...] = ()
     transition_relationship_references: tuple[OpaqueReference, ...] = ()
     system_model_basis: tuple[OpaqueReference, ...] = ()
