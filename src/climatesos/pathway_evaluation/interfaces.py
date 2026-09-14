@@ -11,6 +11,7 @@ from .models import (
     ComparisonFinding,
     DocumentationFinding,
     FabricEvaluatorResult,
+    FinalCharterResult,
     FinalPathwayResult,
     IdentityToken,
     InitialCharterResult,
@@ -40,7 +41,7 @@ class ProductAdapter(Protocol):
 
 
 class CharterEvaluator(Protocol):
-    """Run complete, independent Initial and Integrated Charter passes."""
+    """Run complete, independent Charter passes at each evaluation stage."""
 
     def evaluate_initial(
         self,
@@ -53,6 +54,12 @@ class CharterEvaluator(Protocol):
         engine_result: PathwayEngineResult,
         context: CharterEvaluationContext,
     ) -> IntegratedCharterResult: ...
+
+    def evaluate_final(
+        self,
+        final_pathway_result: FinalPathwayResult,
+        context: CharterEvaluationContext,
+    ) -> FinalCharterResult: ...
 
 
 class QueueBundler(Protocol):

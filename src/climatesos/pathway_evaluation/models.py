@@ -608,3 +608,19 @@ class FinalPathwayResult:
     pathway_id: str
     assembly_version: str
     assembly_rule_version: str
+
+
+@dataclass(frozen=True, slots=True)
+class FinalCharterResult:
+    """Complete immutable result of the fresh Final Charter pass."""
+
+    identity_token: IdentityToken
+    evaluation_run_id: str
+    final_pathway_result: FinalPathwayResult
+    initial_charter_result: InitialCharterResult
+    integrated_charter_result: IntegratedCharterResult
+    check_results: tuple[CharterCheckResult, ...]
+    evaluator_version: str
+    rule_set_version: str
+    status: str
+    execution_error: str | None = None
