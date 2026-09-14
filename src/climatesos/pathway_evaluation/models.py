@@ -635,8 +635,6 @@ class ApplicableBoundState:
     state: DeterminedBoundState
     identity_token: IdentityToken
     evaluation_run_id: str
-    determination_rule_id: str
-    determination_rule_version: str
 
 
 @dataclass(frozen=True, slots=True)

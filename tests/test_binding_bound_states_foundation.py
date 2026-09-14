@@ -32,8 +32,6 @@ def _applicable_state(state: DeterminedBoundState) -> ApplicableBoundState:
         state=state,
         identity_token=IdentityToken("lineage-1"),
         evaluation_run_id="run-1",
-        determination_rule_id="bound-state-rule",
-        determination_rule_version="bound-state-rule-v1",
     )
 
 
@@ -221,8 +219,6 @@ def test_foundation_contains_no_determination_or_later_assessment_surface() -> N
         "state",
         "identity_token",
         "evaluation_run_id",
-        "determination_rule_id",
-        "determination_rule_version",
     }
     assert bound_fields == {
         "final_pathway_result",

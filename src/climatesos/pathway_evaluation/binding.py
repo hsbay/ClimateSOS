@@ -176,13 +176,6 @@ class ValidatedBindingHandler:
                 and applicable_bound_state.identity_token.token_id
                 == identity_token.token_id
                 and applicable_bound_state.evaluation_run_id == evaluation_run_id
-                and isinstance(applicable_bound_state.determination_rule_id, str)
-                and bool(applicable_bound_state.determination_rule_id)
-                and isinstance(
-                    applicable_bound_state.determination_rule_version,
-                    str,
-                )
-                and bool(applicable_bound_state.determination_rule_version)
             )
         except AttributeError:
             determination_is_usable = False

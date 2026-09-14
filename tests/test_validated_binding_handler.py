@@ -161,8 +161,6 @@ def _determination(
         state=state,
         identity_token=final_pathway.identity_token,
         evaluation_run_id=final_pathway.evaluation_run_id,
-        determination_rule_id="determination-rule",
-        determination_rule_version="determination-rule-v1",
     )
 
 
@@ -237,7 +235,7 @@ def test_valid_unbound_remains_successful_determination_not_no_ack() -> None:
 
 @pytest.mark.parametrize(
     "malformation",
-    ["lineage", "run", "rule-id", "rule-version", "state"],
+    ["lineage", "run", "state"],
 )
 def test_unusable_present_determination_fails_closed_to_no_ack(
     malformation: str,
@@ -251,10 +249,6 @@ def test_unusable_present_determination_fails_closed_to_no_ack(
         )
     elif malformation == "run":
         determination = replace(determination, evaluation_run_id="stale-run")
-    elif malformation == "rule-id":
-        determination = replace(determination, determination_rule_id="")
-    elif malformation == "rule-version":
-        determination = replace(determination, determination_rule_version="")
     else:
         determination = replace(
             determination,
