@@ -143,6 +143,10 @@ from .reliability_delivery_timing import (
     ReliabilityDeliveryTimingFindingFunction,
     TransitionTimingRuleFunction,
 )
+from .scale_composition import (
+    CompleteScaleDiagnosticFunction,
+    ScaleDiagnosticFindingFunction,
+)
 from .scale_evaluation import (
     ScaleDiagnosticEvaluationFunction,
     ScaleDiagnosticEvaluationInvariantError,
@@ -164,6 +168,7 @@ __all__ = [
     "ComparisonFinding",
     "ComparisonInvariantError",
     "CompleteNetOverallSystemContributionFunction",
+    "CompleteScaleDiagnosticFunction",
     "ContributionEvaluationFunction",
     "ContributionEvaluationInvariantError",
     "ContributionFinding",
@@ -242,6 +247,7 @@ __all__ = [
     "ScaleDiagnosticEvaluationFunction",
     "ScaleDiagnosticEvaluationInvariantError",
     "ScaleDiagnosticEvaluator",
+    "ScaleDiagnosticFindingFunction",
     "ScaleDiagnosticResult",
     "ScaleFinding",
     "SourceEmissionsRuleFunction",
