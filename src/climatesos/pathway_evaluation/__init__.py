@@ -74,6 +74,11 @@ from .fabric_evaluation import (
     FabricEvaluationInvariantError,
     ValidatedFabricEvaluator,
 )
+from .final_pathway_assembly import (
+    FinalPathwayAssemblyFunction,
+    FinalPathwayAssemblyInvariantError,
+    ValidatedFinalPathwayAssembly,
+)
 from .fossil_displacement import (
     FossilDisplacementContributionFunction,
     FossilDisplacementEvaluationInvariantError,
@@ -222,6 +227,8 @@ __all__ = [
     "FabricEvaluator",
     "FabricEvaluatorResult",
     "FinalPathwayAssembly",
+    "FinalPathwayAssemblyFunction",
+    "FinalPathwayAssemblyInvariantError",
     "FinalPathwayResult",
     "FossilDisplacementContributionFunction",
     "FossilDisplacementEvaluationInvariantError",
@@ -304,6 +311,7 @@ __all__ = [
     "ValidatedDocumentationEvaluator",
     "ValidatedFabricAssembler",
     "ValidatedFabricEvaluator",
+    "ValidatedFinalPathwayAssembly",
     "ValidatedNetOverallSystemContributionEvaluator",
     "ValidatedNetOverallSystemRiskEvaluator",
     "ValidatedPathwayComparator",
