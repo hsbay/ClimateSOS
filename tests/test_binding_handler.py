@@ -1,16 +1,14 @@
 import inspect
-from dataclasses import fields, replace
-from typing import Any, cast
+from dataclasses import fields
+from typing import cast
 
 import pytest
 
 from climatesos.pathway_evaluation import (
-    ApplicableBoundState,
+    BindingHandler,
     BindingInvariantError,
-    BoundPathwayProgressionError,
-    BoundPathwayProgressionPrecondition,
+    BoundPathway,
     BoundState,
-    DeterminedBoundState,
     EvaluationTrace,
     FinalPathwayResult,
     IdentityToken,
@@ -23,7 +21,6 @@ from climatesos.pathway_evaluation import (
     ProductPathway,
     ScaleDiagnosticResult,
     TransitionPathway,
-    ValidatedBindingHandler,
 )
 
 
@@ -153,24 +150,13 @@ def _final_pathway() -> FinalPathwayResult:
     )
 
 
-def _determination(
-    state: DeterminedBoundState,
-    final_pathway: FinalPathwayResult,
-) -> ApplicableBoundState:
-    return ApplicableBoundState(
-        state=state,
-        identity_token=final_pathway.identity_token,
-        evaluation_run_id=final_pathway.evaluation_run_id,
-    )
-
-
 def _bind(
     final_pathway: FinalPathwayResult,
-    determination: ApplicableBoundState | None,
-) -> Any:
-    return ValidatedBindingHandler().bind(
+    state: BoundState | None,
+) -> BoundPathway:
+    return BindingHandler().bind(
         final_pathway,
-        determination,
+        state,
         final_pathway.identity_token,
         "run-1",
         "user-1",
@@ -181,39 +167,33 @@ def _bind(
 
 
 @pytest.mark.parametrize(
-    ("determined", "bound"),
+    "state",
     [
-        (DeterminedBoundState.CLEAN_BOUND, BoundState.CLEAN_BOUND),
-        (DeterminedBoundState.MIXED_BOUND, BoundState.MIXED_BOUND),
-        (DeterminedBoundState.FOSSIL_BOUND, BoundState.FOSSIL_BOUND),
-        (DeterminedBoundState.UNBOUND, BoundState.UNBOUND),
-        (DeterminedBoundState.HARM_BOUND, BoundState.HARM_BOUND),
-        (DeterminedBoundState.BOUNDARY_STRESS, BoundState.BOUNDARY_STRESS),
-        (DeterminedBoundState.BIO_BOUND, BoundState.BIO_BOUND),
-        (DeterminedBoundState.RESTORATION_BOUND, BoundState.RESTORATION_BOUND),
+        BoundState.CLEAN_BOUND,
+        BoundState.MIXED_BOUND,
+        BoundState.FOSSIL_BOUND,
+        BoundState.UNBOUND,
+        BoundState.HARM_BOUND,
+        BoundState.BOUNDARY_STRESS,
+        BoundState.BIO_BOUND,
+        BoundState.RESTORATION_BOUND,
     ],
 )
-def test_each_valid_determined_state_maps_exactly_once(
-    determined: DeterminedBoundState,
-    bound: BoundState,
-) -> None:
+def test_each_ordinary_runtime_state_is_preserved_exactly(state: BoundState) -> None:
     final_pathway = _final_pathway()
-    determination = _determination(determined, final_pathway)
 
-    result = _bind(final_pathway, determination)
+    result = _bind(final_pathway, state)
 
-    assert result.bound_state is bound
-    assert result.bound_state_determination is determination
+    assert result.bound_state is state
     assert result.final_pathway_result is final_pathway
 
 
-def test_none_produces_no_ack_without_determination_provenance() -> None:
+def test_none_produces_handler_owned_no_ack() -> None:
     final_pathway = _final_pathway()
 
     result = _bind(final_pathway, None)
 
     assert result.bound_state is BoundState.NO_ACK
-    assert result.bound_state_determination is None
     assert result.final_pathway_result is final_pathway
     assert result.identity_token is final_pathway.identity_token
     assert result.evaluation_run_id == "run-1"
@@ -223,65 +203,32 @@ def test_none_produces_no_ack_without_determination_provenance() -> None:
     assert result.binding_mechanism_version == "binding-mechanism-v1"
 
 
-def test_valid_unbound_remains_successful_determination_not_no_ack() -> None:
+def test_direct_runtime_no_ack_remains_handler_owned_no_ack() -> None:
     final_pathway = _final_pathway()
-    determination = _determination(DeterminedBoundState.UNBOUND, final_pathway)
 
-    result = _bind(final_pathway, determination)
+    result = _bind(final_pathway, BoundState.NO_ACK)
+
+    assert result.bound_state is BoundState.NO_ACK
+    assert result.final_pathway_result is final_pathway
+
+
+def test_valid_unbound_remains_runtime_selected_unbound() -> None:
+    final_pathway = _final_pathway()
+
+    result = _bind(final_pathway, BoundState.UNBOUND)
 
     assert result.bound_state is BoundState.UNBOUND
-    assert result.bound_state_determination is determination
 
 
-@pytest.mark.parametrize(
-    "malformation",
-    ["lineage", "run", "state"],
-)
-def test_unusable_present_determination_fails_closed_to_no_ack(
-    malformation: str,
+@pytest.mark.parametrize("invalid_state", [object(), "CleanBound", 1])
+def test_wrong_type_runtime_state_fails_closed_to_no_ack(
+    invalid_state: object,
 ) -> None:
     final_pathway = _final_pathway()
-    determination = _determination(DeterminedBoundState.CLEAN_BOUND, final_pathway)
-    if malformation == "lineage":
-        determination = replace(
-            determination,
-            identity_token=IdentityToken("stale-lineage"),
-        )
-    elif malformation == "run":
-        determination = replace(determination, evaluation_run_id="stale-run")
-    else:
-        determination = replace(
-            determination,
-            state=cast(DeterminedBoundState, BoundState.NO_ACK),
-        )
 
-    result = _bind(final_pathway, determination)
+    result = _bind(final_pathway, cast(BoundState, invalid_state))
 
     assert result.bound_state is BoundState.NO_ACK
-    assert result.bound_state_determination is None
-    assert result.final_pathway_result is final_pathway
-    assert result.bound_state not in {
-        BoundState.CLEAN_BOUND,
-        BoundState.MIXED_BOUND,
-        BoundState.UNBOUND,
-    }
-
-
-def test_wrong_top_level_determination_type_is_programmer_error() -> None:
-    final_pathway = _final_pathway()
-
-    with pytest.raises(BindingInvariantError):
-        _bind(final_pathway, cast(ApplicableBoundState, object()))
-
-
-def test_exact_but_incomplete_runtime_determination_produces_no_ack() -> None:
-    final_pathway = _final_pathway()
-    incomplete = object.__new__(ApplicableBoundState)
-
-    result = _bind(final_pathway, incomplete)
-
-    assert result.bound_state is BoundState.NO_ACK
-    assert result.bound_state_determination is None
 
 
 @pytest.mark.parametrize("mismatch", ["lineage", "run", "user", "pathway"])
@@ -303,7 +250,7 @@ def test_invalid_final_pathway_binding_input_rejects_before_binding(
         pathway_id = "other-pathway"
 
     with pytest.raises(BindingInvariantError):
-        ValidatedBindingHandler().bind(
+        BindingHandler().bind(
             final_pathway,
             None,
             token,
@@ -315,21 +262,9 @@ def test_invalid_final_pathway_binding_input_rejects_before_binding(
         )
 
 
-def test_no_ack_is_rejected_by_downstream_progression_guard() -> None:
-    final_pathway = _final_pathway()
-    no_ack = _bind(final_pathway, None)
-
-    with pytest.raises(BoundPathwayProgressionError):
-        BoundPathwayProgressionPrecondition().require(no_ack)
-
-    determination = _determination(DeterminedBoundState.CLEAN_BOUND, final_pathway)
-    ordinary = _bind(final_pathway, determination)
-    assert BoundPathwayProgressionPrecondition().require(ordinary) is ordinary
-
-
 def test_handler_has_no_determiner_or_evaluator_callback_and_no_later_logic() -> None:
-    handler_fields = {field.name for field in fields(ValidatedBindingHandler)}
-    source = inspect.getsource(ValidatedBindingHandler).lower()
+    handler_fields = {field.name for field in fields(BindingHandler)}
+    source = inspect.getsource(BindingHandler).lower()
 
     assert handler_fields == set()
     assert "boundstatedeterminer" not in source

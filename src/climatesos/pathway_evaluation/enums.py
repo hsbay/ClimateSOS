@@ -100,16 +100,3 @@ class BoundState(_StringEnum):
     BOUNDARY_STRESS = "BoundaryStress"
     BIO_BOUND = "BioBound"
     RESTORATION_BOUND = "RestorationBound"
-
-
-class DeterminedBoundState(_StringEnum):
-    """Usable system-determined states, excluding handler-owned NoAck."""
-
-    CLEAN_BOUND = "CleanBound"
-    MIXED_BOUND = "MixedBound"
-    FOSSIL_BOUND = "FossilBound"
-    UNBOUND = "Unbound"
-    HARM_BOUND = "HarmBound"
-    BOUNDARY_STRESS = "BoundaryStress"
-    BIO_BOUND = "BioBound"
-    RESTORATION_BOUND = "RestorationBound"

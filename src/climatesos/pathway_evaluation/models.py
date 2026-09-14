@@ -10,7 +10,6 @@ from typing import Literal, TypeAlias
 from .enums import (
     BoundState,
     CharterCheckStatus,
-    DeterminedBoundState,
     EvaluationExecutionStatus,
     QueueCategory,
     QueueEvaluationState,
@@ -629,21 +628,11 @@ class FinalCharterResult:
 
 
 @dataclass(frozen=True, slots=True)
-class ApplicableBoundState:
-    """One usable system determination attributed to an evaluation lineage."""
-
-    state: DeterminedBoundState
-    identity_token: IdentityToken
-    evaluation_run_id: str
-
-
-@dataclass(frozen=True, slots=True)
 class BoundPathway:
     """Immutable association of completed evaluation state with a bound state."""
 
     final_pathway_result: FinalPathwayResult
     bound_state: BoundState
-    bound_state_determination: ApplicableBoundState | None
     identity_token: IdentityToken
     evaluation_run_id: str
     user_id: str
