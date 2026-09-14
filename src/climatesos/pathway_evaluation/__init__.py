@@ -79,6 +79,10 @@ from .final_pathway_assembly import (
     FinalPathwayAssemblyInvariantError,
     ValidatedFinalPathwayAssembly,
 )
+from .final_pathway_composition import (
+    CompleteFinalPathwayAssemblyFunction,
+    FinalPathwayVersionFunction,
+)
 from .fossil_displacement import (
     FossilDisplacementContributionFunction,
     FossilDisplacementEvaluationInvariantError,
@@ -198,6 +202,7 @@ __all__ = [
     "CharterStatus",
     "ComparisonFinding",
     "ComparisonInvariantError",
+    "CompleteFinalPathwayAssemblyFunction",
     "CompleteNetOverallSystemContributionFunction",
     "CompleteNetOverallSystemRiskFunction",
     "CompleteScaleDiagnosticFunction",
@@ -230,6 +235,7 @@ __all__ = [
     "FinalPathwayAssemblyFunction",
     "FinalPathwayAssemblyInvariantError",
     "FinalPathwayResult",
+    "FinalPathwayVersionFunction",
     "FossilDisplacementContributionFunction",
     "FossilDisplacementEvaluationInvariantError",
     "FossilDisplacementRuleFunction",
