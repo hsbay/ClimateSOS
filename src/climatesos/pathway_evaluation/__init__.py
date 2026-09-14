@@ -15,6 +15,8 @@ from .assembly import (
 )
 from .charter_evaluation import (
     CharterEvaluationInvariantError,
+    FinalCharterCheckFunction,
+    FinalCharterStatusFunction,
     InitialCharterCheckFunction,
     InitialCharterStatusFunction,
     IntegratedCharterCheckFunction,
@@ -232,7 +234,9 @@ __all__ = [
     "FabricEvaluationInvariantError",
     "FabricEvaluator",
     "FabricEvaluatorResult",
+    "FinalCharterCheckFunction",
     "FinalCharterResult",
+    "FinalCharterStatusFunction",
     "FinalPathwayAssembly",
     "FinalPathwayAssemblyFunction",
     "FinalPathwayAssemblyInvariantError",

@@ -1,4 +1,4 @@
-"""Structural execution boundary for Initial and Integrated Charter passes."""
+"""Structural execution boundary for all three Charter evaluation passes."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -10,12 +10,21 @@ from .models import (
     CharterCheckResult,
     CharterEvaluationContext,
     CharterStatus,
+    EvaluationTrace,
+    FinalCharterResult,
+    FinalPathwayResult,
+    IdentityToken,
     InitialCharterResult,
     IntegratedCharterResult,
+    NetOverallSystemContribution,
+    NetOverallSystemRiskResult,
     OpaqueReference,
     PathwayEngineResult,
     ProductAdapterResult,
+    ProductPathway,
+    ScaleDiagnosticResult,
     SourceReference,
+    TransitionPathway,
 )
 
 InitialCharterCheckFunction = Callable[
@@ -37,6 +46,18 @@ InitialCharterStatusFunction = Callable[
 IntegratedCharterStatusFunction = Callable[
     [
         PathwayEngineResult,
+        tuple[CharterCheckResult, ...],
+        CharterEvaluationContext,
+    ],
+    str,
+]
+FinalCharterCheckFunction = Callable[
+    [FinalPathwayResult, OpaqueReference, CharterEvaluationContext],
+    CharterCheckResult,
+]
+FinalCharterStatusFunction = Callable[
+    [
+        FinalPathwayResult,
         tuple[CharterCheckResult, ...],
         CharterEvaluationContext,
     ],
@@ -464,14 +485,207 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
         )
 
 
+def _validate_provenance(value: object, artifact_name: str) -> None:
+    if not isinstance(value, tuple) or not all(
+        isinstance(reference, SourceReference) for reference in value
+    ):
+        raise CharterEvaluationInvariantError(
+            f"{artifact_name} provenance must contain SourceReference objects"
+        )
+
+
+def _validate_historical_charter_result(
+    result: InitialCharterResult | IntegratedCharterResult,
+    stage_name: str,
+) -> None:
+    if not isinstance(result.check_results, tuple) or not all(
+        isinstance(check, CharterCheckResult) for check in result.check_results
+    ):
+        raise CharterEvaluationInvariantError(
+            f"{stage_name} Charter checks must preserve CharterCheckResult objects"
+        )
+    for check in result.check_results:
+        if not isinstance(check.check_id, str) or _malformed_result_error(
+            check, check.check_id
+        ) is not None:
+            raise CharterEvaluationInvariantError(
+                f"{stage_name} Charter check structure is malformed"
+            )
+    if not all(
+        isinstance(value, str)
+        for value in (result.evaluator_version, result.rule_set_version, result.status)
+    ) or not _is_optional_string(result.execution_error):
+        raise CharterEvaluationInvariantError(
+            f"{stage_name} Charter result fields are malformed"
+        )
+
+
+def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
+    if type(final_result) is not FinalPathwayResult:
+        raise CharterEvaluationInvariantError(
+            "Final Charter evaluation requires exactly FinalPathwayResult"
+        )
+    trace = final_result.evaluation_trace
+    if type(trace) is not EvaluationTrace:
+        raise CharterEvaluationInvariantError(
+            "FinalPathwayResult must preserve exactly EvaluationTrace"
+        )
+    product = final_result.product_pathway
+    authoritative = final_result.authoritative_transition_pathway
+    candidate = final_result.candidate_transition_pathway
+    risk = final_result.net_overall_system_risk_result
+    initial = trace.initial_charter_result
+    engine = trace.pathway_engine_result
+    integrated = trace.integrated_charter_result
+    contribution = trace.net_overall_system_contribution
+    scale = trace.scale_diagnostic_result
+    required_types = (
+        (product, ProductPathway),
+        (authoritative, TransitionPathway),
+        (candidate, TransitionPathway),
+        (risk, NetOverallSystemRiskResult),
+        (initial, InitialCharterResult),
+        (engine, PathwayEngineResult),
+        (integrated, IntegratedCharterResult),
+        (contribution, NetOverallSystemContribution),
+        (scale, ScaleDiagnosticResult),
+        (final_result.identity_token, IdentityToken),
+    )
+    if any(type(value) is not expected for value, expected in required_types):
+        raise CharterEvaluationInvariantError(
+            "Final Charter inputs must preserve exact upstream artifact types"
+        )
+
+    relationships = (
+        candidate is not authoritative,
+        candidate.product_pathway is product,
+        candidate.authoritative_transition_pathway is authoritative,
+        candidate.net_overall_system_contribution is contribution,
+        candidate.scale_diagnostic_result is scale,
+        risk.candidate_transition_pathway is candidate,
+        risk.authoritative_transition_pathway is authoritative,
+        engine.product_pathway is product,
+        engine.transition_pathway is authoritative,
+        engine.initial_charter_result is initial,
+        integrated.pathway_engine_result is engine,
+        integrated.initial_charter_result is initial,
+        contribution.product_pathway is product,
+        contribution.pathway_engine_result is engine,
+        contribution.integrated_charter_result is integrated,
+        contribution.transition_pathway is authoritative,
+        scale.product_pathway is product,
+        scale.net_overall_system_contribution is contribution,
+        scale.transition_pathway is authoritative,
+    )
+    if not all(relationships):
+        raise CharterEvaluationInvariantError(
+            "Final Charter inputs must preserve exact upstream relationships"
+        )
+    if (
+        type(initial.adapter_result) is not ProductAdapterResult
+        or initial.adapter_result.product_pathway is not product
+    ):
+        raise CharterEvaluationInvariantError(
+            "Initial Charter result must preserve the current ProductPathway"
+        )
+
+    token_id = final_result.identity_token.token_id
+    current_tokens = (
+        product.identity_token,
+        candidate.identity_token,
+        initial.identity_token,
+        engine.identity_token,
+        integrated.identity_token,
+    )
+    if not isinstance(token_id, str) or any(
+        type(token) is not IdentityToken or token.token_id != token_id
+        for token in current_tokens
+    ):
+        raise CharterEvaluationInvariantError(
+            "Final Charter inputs must share current IdentityToken lineage"
+        )
+    current_run_id = final_result.evaluation_run_id
+    current_artifacts = (
+        product,
+        candidate,
+        risk,
+        initial,
+        engine,
+        integrated,
+        contribution,
+        scale,
+    )
+    if not isinstance(current_run_id, str) or any(
+        artifact.evaluation_run_id != current_run_id
+        for artifact in current_artifacts
+    ):
+        raise CharterEvaluationInvariantError(
+            "Final Charter inputs must share current evaluation_run_id"
+        )
+    attributed_artifacts = (product, candidate, risk, engine, contribution, scale)
+    if any(
+        artifact.user_id != final_result.user_id
+        or artifact.pathway_id != final_result.pathway_id
+        for artifact in attributed_artifacts
+    ):
+        raise CharterEvaluationInvariantError(
+            "Final Charter inputs must share current user and pathway attribution"
+        )
+    if not all(
+        isinstance(value, str)
+        for value in (
+            final_result.user_id,
+            final_result.pathway_id,
+            final_result.assembly_version,
+            final_result.assembly_rule_version,
+        )
+    ):
+        raise CharterEvaluationInvariantError(
+            "FinalPathwayResult attribution and versions must be strings"
+        )
+
+    _validate_historical_charter_result(initial, "Initial")
+    _validate_historical_charter_result(integrated, "Integrated")
+    for artifact, name in (
+        (authoritative, "Authoritative transition"),
+        (candidate, "Candidate transition"),
+        (risk, "System-risk result"),
+        (engine, "Pathway-engine result"),
+        (contribution, "Contribution result"),
+        (scale, "Scale result"),
+    ):
+        _validate_provenance(artifact.provenance, name)
+
+
+def _replace_reused_final_checks(
+    check_results: tuple[CharterCheckResult, ...],
+    initial: InitialCharterResult,
+    integrated: IntegratedCharterResult,
+) -> tuple[CharterCheckResult, ...]:
+    historical_checks = initial.check_results + integrated.check_results
+    return tuple(
+        _integrity_failure_result(
+            result.check_id,
+            CharterCheckStatus.ERROR,
+            f"Required Final Charter check {result.check_id} reused prior-stage result",
+            result,
+        )
+        if any(result is historical for historical in historical_checks)
+        else result
+        for result in check_results
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class ValidatedCharterEvaluator:
-    """Run complete independent Initial and Integrated Charter passes."""
+    """Run complete independent Charter passes at each evaluation stage."""
 
     initial_check_function: InitialCharterCheckFunction
     integrated_check_function: IntegratedCharterCheckFunction
     initial_status_function: InitialCharterStatusFunction
     integrated_status_function: IntegratedCharterStatusFunction
+    final_check_function: FinalCharterCheckFunction | None = None
+    final_status_function: FinalCharterStatusFunction | None = None
 
     def evaluate_initial(
         self,
@@ -549,6 +763,62 @@ class ValidatedCharterEvaluator:
             evaluation_run_id=engine_result.evaluation_run_id,
             pathway_engine_result=engine_result,
             initial_charter_result=engine_result.initial_charter_result,
+            check_results=check_results,
+            evaluator_version=context.evaluator_version,
+            rule_set_version=context.rule_set_version,
+            status=status,
+            execution_error=execution_error,
+        )
+
+    def evaluate_final(
+        self,
+        final_pathway_result: FinalPathwayResult,
+        context: CharterEvaluationContext,
+    ) -> FinalCharterResult:
+        """Rerun all checks independently with Final-stage information."""
+
+        final_check_function = self.final_check_function
+        final_status_function = self.final_status_function
+        if final_check_function is None or final_status_function is None:
+            raise CharterEvaluationInvariantError(
+                "Final Charter evaluation requires Final-stage check and "
+                "status functions"
+            )
+        _validate_final_artifact(final_pathway_result)
+        definitions = _validate_context(context)
+        check_results = _execute_required_checks(
+            context.required_check_ids,
+            definitions,
+            lambda definition: final_check_function(
+                final_pathway_result,
+                definition,
+                context,
+            ),
+        )
+        trace = final_pathway_result.evaluation_trace
+        check_results = _replace_reused_final_checks(
+            check_results,
+            trace.initial_charter_result,
+            trace.integrated_charter_result,
+        )
+        execution_error = _integrity_error(check_results)
+        if execution_error is None:
+            status, execution_error = _stage_status(
+                "Final",
+                lambda: final_status_function(
+                    final_pathway_result,
+                    check_results,
+                    context,
+                ),
+            )
+        else:
+            status = "ERROR"
+        return FinalCharterResult(
+            identity_token=final_pathway_result.identity_token,
+            evaluation_run_id=final_pathway_result.evaluation_run_id,
+            final_pathway_result=final_pathway_result,
+            initial_charter_result=trace.initial_charter_result,
+            integrated_charter_result=trace.integrated_charter_result,
             check_results=check_results,
             evaluator_version=context.evaluator_version,
             rule_set_version=context.rule_set_version,
