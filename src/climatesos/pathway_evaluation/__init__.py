@@ -147,6 +147,11 @@ from .reliability_delivery_timing import (
     ReliabilityDeliveryTimingFindingFunction,
     TransitionTimingRuleFunction,
 )
+from .risk_evaluation import (
+    NetOverallSystemRiskEvaluationFunction,
+    NetOverallSystemRiskEvaluationInvariantError,
+    ValidatedNetOverallSystemRiskEvaluator,
+)
 from .scale_composition import (
     CompleteScaleDiagnosticFunction,
     ScaleDiagnosticFindingFunction,
@@ -224,6 +229,8 @@ __all__ = [
     "IntegratedCharterStatusFunction",
     "NetOverallSystemContribution",
     "NetOverallSystemContributionEvaluator",
+    "NetOverallSystemRiskEvaluationFunction",
+    "NetOverallSystemRiskEvaluationInvariantError",
     "NetOverallSystemRiskEvaluator",
     "NetOverallSystemRiskResult",
     "OpaqueReference",
@@ -286,6 +293,7 @@ __all__ = [
     "ValidatedFabricAssembler",
     "ValidatedFabricEvaluator",
     "ValidatedNetOverallSystemContributionEvaluator",
+    "ValidatedNetOverallSystemRiskEvaluator",
     "ValidatedPathwayComparator",
     "ValidatedProductAdapter",
     "ValidatedQueueBundler",
