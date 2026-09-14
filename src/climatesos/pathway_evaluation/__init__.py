@@ -153,6 +153,11 @@ from .scale_evaluation import (
     ScaleDiagnosticEvaluationInvariantError,
     ValidatedScaleDiagnosticEvaluator,
 )
+from .transition_compilation import (
+    TransitionPathwayCompilationFunction,
+    TransitionPathwayCompilationInvariantError,
+    ValidatedTransitionPathwayCompiler,
+)
 
 __all__ = [
     "AdapterInvariantError",
@@ -260,6 +265,8 @@ __all__ = [
     "TransitionDemandEffectRuleFunction",
     "TransitionEnablingCapacityRuleFunction",
     "TransitionPathway",
+    "TransitionPathwayCompilationFunction",
+    "TransitionPathwayCompilationInvariantError",
     "TransitionPathwayCompiler",
     "TransitionTimingRuleFunction",
     "ValidatedCharterEvaluator",
@@ -272,4 +279,5 @@ __all__ = [
     "ValidatedQueueBundler",
     "ValidatedQueueEvaluator",
     "ValidatedScaleDiagnosticEvaluator",
+    "ValidatedTransitionPathwayCompiler",
 ]
