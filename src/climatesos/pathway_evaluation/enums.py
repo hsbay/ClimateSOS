@@ -86,3 +86,30 @@ class EvaluationExecutionStatus(_StringEnum):
 
     COMPLETED = "completed"
     EVALUATION_FAILED = "evaluation_failed"
+
+
+class BoundState(_StringEnum):
+    """Implemented, materially distinct Section 17 runtime states."""
+
+    CLEAN_BOUND = "CleanBound"
+    MIXED_BOUND = "MixedBound"
+    FOSSIL_BOUND = "FossilBound"
+    NO_ACK = "NoAck"
+    UNBOUND = "Unbound"
+    HARM_BOUND = "HarmBound"
+    BOUNDARY_STRESS = "BoundaryStress"
+    BIO_BOUND = "BioBound"
+    RESTORATION_BOUND = "RestorationBound"
+
+
+class DeterminedBoundState(_StringEnum):
+    """Usable system-determined states, excluding handler-owned NoAck."""
+
+    CLEAN_BOUND = "CleanBound"
+    MIXED_BOUND = "MixedBound"
+    FOSSIL_BOUND = "FossilBound"
+    UNBOUND = "Unbound"
+    HARM_BOUND = "HarmBound"
+    BOUNDARY_STRESS = "BoundaryStress"
+    BIO_BOUND = "BioBound"
+    RESTORATION_BOUND = "RestorationBound"

@@ -8,7 +8,9 @@ from dataclasses import dataclass
 from typing import Literal, TypeAlias
 
 from .enums import (
+    BoundState,
     CharterCheckStatus,
+    DeterminedBoundState,
     EvaluationExecutionStatus,
     QueueCategory,
     QueueEvaluationState,
@@ -624,3 +626,29 @@ class FinalCharterResult:
     rule_set_version: str
     status: str
     execution_error: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ApplicableBoundState:
+    """One usable system determination attributed to an evaluation lineage."""
+
+    state: DeterminedBoundState
+    identity_token: IdentityToken
+    evaluation_run_id: str
+    determination_rule_id: str
+    determination_rule_version: str
+
+
+@dataclass(frozen=True, slots=True)
+class BoundPathway:
+    """Immutable association of completed evaluation state with a bound state."""
+
+    final_pathway_result: FinalPathwayResult
+    bound_state: BoundState
+    bound_state_determination: ApplicableBoundState | None
+    identity_token: IdentityToken
+    evaluation_run_id: str
+    user_id: str
+    pathway_id: str
+    binding_mechanism_id: str
+    binding_mechanism_version: str

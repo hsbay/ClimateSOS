@@ -4,9 +4,11 @@ These protocols define ownership boundaries only. Concrete evaluation rules are
 absent until their semantics are specified.
 """
 
-from typing import Protocol
+from typing import Protocol, TypeAlias
 
 from .models import (
+    ApplicableBoundState,
+    BoundPathway,
     CharterEvaluationContext,
     ComparisonFinding,
     DocumentationFinding,
@@ -32,6 +34,8 @@ from .models import (
     SourceReference,
     TransitionPathway,
 )
+
+BoundStateDeterminationResult: TypeAlias = ApplicableBoundState | None
 
 
 class ProductAdapter(Protocol):
@@ -261,3 +265,28 @@ class FinalPathwayAssembly(Protocol):
         user_id: str,
         pathway_id: str,
     ) -> FinalPathwayResult: ...
+
+
+class BoundStateDeterminer(Protocol):
+    """Determine one applicable state without attaching it to the pathway."""
+
+    def determine(
+        self,
+        final_charter_result: FinalCharterResult,
+    ) -> BoundStateDeterminationResult: ...
+
+
+class BindingHandler(Protocol):
+    """Attach an already-determined state without choosing or revising it."""
+
+    def bind(
+        self,
+        final_pathway_result: FinalPathwayResult,
+        applicable_bound_state: BoundStateDeterminationResult,
+        identity_token: IdentityToken,
+        evaluation_run_id: str,
+        user_id: str,
+        pathway_id: str,
+        binding_mechanism_id: str,
+        binding_mechanism_version: str,
+    ) -> BoundPathway: ...
