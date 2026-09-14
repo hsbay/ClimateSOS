@@ -76,6 +76,13 @@ from .fabric_evaluation import (
     FabricEvaluationInvariantError,
     ValidatedFabricEvaluator,
 )
+from .final_charter_progression import (
+    FinalCharterIntegrityFailure,
+    FinalCharterProgressionError,
+    FinalCharterProgressionPrecondition,
+    FinalCharterProgressionProhibited,
+    FinalCharterProgressionRuleFunction,
+)
 from .final_pathway_assembly import (
     FinalPathwayAssemblyFunction,
     FinalPathwayAssemblyInvariantError,
@@ -235,6 +242,11 @@ __all__ = [
     "FabricEvaluator",
     "FabricEvaluatorResult",
     "FinalCharterCheckFunction",
+    "FinalCharterIntegrityFailure",
+    "FinalCharterProgressionError",
+    "FinalCharterProgressionPrecondition",
+    "FinalCharterProgressionProhibited",
+    "FinalCharterProgressionRuleFunction",
     "FinalCharterResult",
     "FinalCharterStatusFunction",
     "FinalPathwayAssembly",
