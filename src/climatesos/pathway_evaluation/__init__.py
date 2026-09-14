@@ -13,6 +13,12 @@ from .assembly import (
     ValidatedFabricAssembler,
     ValidatedQueueBundler,
 )
+from .binding import (
+    BindingInvariantError,
+    BoundPathwayProgressionError,
+    BoundPathwayProgressionPrecondition,
+    ValidatedBindingHandler,
+)
 from .charter_evaluation import (
     CharterEvaluationInvariantError,
     FinalCharterCheckFunction,
@@ -210,8 +216,11 @@ __all__ = [
     "AssemblyInvariantError",
     "Attribute",
     "BindingHandler",
+    "BindingInvariantError",
     "BiosphereContributionRuleFunction",
     "BoundPathway",
+    "BoundPathwayProgressionError",
+    "BoundPathwayProgressionPrecondition",
     "BoundState",
     "BoundStateDeterminationResult",
     "BoundStateDeterminer",
@@ -345,6 +354,7 @@ __all__ = [
     "TransitionPathwayCompilationInvariantError",
     "TransitionPathwayCompiler",
     "TransitionTimingRuleFunction",
+    "ValidatedBindingHandler",
     "ValidatedCharterEvaluator",
     "ValidatedDocumentationEvaluator",
     "ValidatedFabricAssembler",
