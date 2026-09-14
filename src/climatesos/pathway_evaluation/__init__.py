@@ -147,6 +147,10 @@ from .reliability_delivery_timing import (
     ReliabilityDeliveryTimingFindingFunction,
     TransitionTimingRuleFunction,
 )
+from .risk_composition import (
+    CompleteNetOverallSystemRiskFunction,
+    SystemRiskFindingFunction,
+)
 from .risk_evaluation import (
     NetOverallSystemRiskEvaluationFunction,
     NetOverallSystemRiskEvaluationInvariantError,
@@ -187,6 +191,7 @@ __all__ = [
     "ComparisonFinding",
     "ComparisonInvariantError",
     "CompleteNetOverallSystemContributionFunction",
+    "CompleteNetOverallSystemRiskFunction",
     "CompleteScaleDiagnosticFunction",
     "CompleteTransitionPathwayCompilationFunction",
     "ContributionEvaluationFunction",
@@ -280,6 +285,7 @@ __all__ = [
     "StructuralProductAssembly",
     "SubstitutionCombinationFunction",
     "SystemRiskFinding",
+    "SystemRiskFindingFunction",
     "TransitionBurdenRuleFunction",
     "TransitionDemandEffectRuleFunction",
     "TransitionEnablingCapacityRuleFunction",
