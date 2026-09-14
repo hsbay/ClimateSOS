@@ -11,6 +11,7 @@ from .models import (
     ComparisonFinding,
     DocumentationFinding,
     FabricEvaluatorResult,
+    IdentityToken,
     InitialCharterResult,
     IntegratedCharterResult,
     NetOverallSystemContribution,
@@ -187,3 +188,27 @@ class ScaleDiagnosticEvaluator(Protocol):
         pathway_id: str,
         evaluation_run_id: str,
     ) -> ScaleDiagnosticResult: ...
+
+
+class TransitionPathwayCompiler(Protocol):
+    """Compile completed evaluation into a non-authoritative transition mapping."""
+
+    def compile(
+        self,
+        product_pathway: ProductPathway,
+        net_overall_system_contribution: NetOverallSystemContribution,
+        scale_diagnostic_result: ScaleDiagnosticResult,
+        authoritative_transition_pathway: TransitionPathway,
+        transition_context: OpaqueReference | None,
+        system_context: OpaqueReference | None,
+        conditions: tuple[str, ...],
+        dependencies: tuple[OpaqueReference, ...],
+        assumptions: tuple[str, ...],
+        uncertainties: tuple[str, ...],
+        evidence_references: tuple[SourceReference, ...],
+        provenance: tuple[SourceReference, ...],
+        identity_token: IdentityToken,
+        evaluation_run_id: str,
+        user_id: str,
+        pathway_id: str,
+    ) -> TransitionPathway: ...

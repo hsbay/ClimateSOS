@@ -226,10 +226,34 @@ class ProductFabric:
 
 @dataclass(frozen=True, slots=True)
 class TransitionPathway:
-    """Immutable authoritative reference snapshot used during evaluation."""
+    """Immutable authoritative, candidate, or prospective transition mapping."""
 
     reference_id: str
     provenance: tuple[SourceReference, ...] = ()
+    identity_token: IdentityToken | None = None
+    evaluation_run_id: str | None = None
+    user_id: str | None = None
+    pathway_id: str | None = None
+    authoritative_transition_pathway: "TransitionPathway | None" = None
+    product_pathway: ProductPathway | None = None
+    net_overall_system_contribution: "NetOverallSystemContribution | None" = None
+    scale_diagnostic_result: "ScaleDiagnosticResult | None" = None
+    incorporated_transition_references: tuple[OpaqueReference, ...] = ()
+    affected_relationships: tuple[PathwayRelationship, ...] = ()
+    dependencies: tuple[OpaqueReference, ...] = ()
+    conditions: tuple[str, ...] = ()
+    timing_conditions: tuple[str, ...] = ()
+    sequencing_conditions: tuple[str, ...] = ()
+    contribution_conditions: tuple[str, ...] = ()
+    scale_conditions: tuple[str, ...] = ()
+    unchanged_transition_references: tuple[OpaqueReference, ...] = ()
+    unresolved_conditions: tuple[str, ...] = ()
+    assumptions: tuple[str, ...] = ()
+    uncertainties: tuple[str, ...] = ()
+    evidence_references: tuple[SourceReference, ...] = ()
+    compiler_version: str | None = None
+    model_version: str | None = None
+    rule_set_version: str | None = None
 
 
 QueueSubject: TypeAlias = QueueElement | ProductQueueBundle

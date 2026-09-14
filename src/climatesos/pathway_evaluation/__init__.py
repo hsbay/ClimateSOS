@@ -96,6 +96,7 @@ from .interfaces import (
     QueueBundler,
     QueueEvaluator,
     ScaleDiagnosticEvaluator,
+    TransitionPathwayCompiler,
 )
 from .models import (
     Attribute,
@@ -259,6 +260,7 @@ __all__ = [
     "TransitionDemandEffectRuleFunction",
     "TransitionEnablingCapacityRuleFunction",
     "TransitionPathway",
+    "TransitionPathwayCompiler",
     "TransitionTimingRuleFunction",
     "ValidatedCharterEvaluator",
     "ValidatedDocumentationEvaluator",
