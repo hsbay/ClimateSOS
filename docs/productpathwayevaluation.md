@@ -3990,7 +3990,8 @@ A successfully bound `BoundPathway` is consumed by the later
 
 * the completed immutable `FinalPathwayResult`;
 * the applicable bound state returned from runtime evaluation;
-* the identity and version of the rule or mechanism that determined the bound
+* the system-side determination identity and version information required to
+  identify the rule, mechanism, or composite process that produced the bound
   state;
 * the canonical `IdentityToken` reference for the evaluation lineage;
 * the `evaluation_run_id` of the `EvaluationRun`; and
@@ -4027,8 +4028,9 @@ At minimum, `BoundPathway` preserves:
 * the canonical `IdentityToken` reference for the evaluation lineage;
 * the `evaluation_run_id` of the `EvaluationRun`;
 * `user_id` and `pathway_id` attribution; and
-* the binding-rule or mechanism identity and version required to identify how
-  the state was attached.
+* the system-side determination identity and version information required to
+  identify the rule, mechanism, or composite process that produced the bound
+  state.
 
 `BoundPathway` does not copy or modify the findings contained in the
 `FinalPathwayResult`. Binding adds the runtime state association while leaving
