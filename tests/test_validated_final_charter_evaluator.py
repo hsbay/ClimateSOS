@@ -7,7 +7,6 @@ from climatesos.pathway_evaluation import (
     CharterCheckResult,
     CharterCheckStatus,
     CharterEvaluationContext,
-    CharterEvaluationInvariantError,
     CharterEvaluator,
     EvaluationTrace,
     FinalCharterResult,
@@ -253,8 +252,7 @@ def test_final_result_preserves_exact_upstream_references_and_older_authority() 
     assert fixture.authoritative.evaluation_run_id == "older-run"
     assert fixture.authoritative.identity_token != result.identity_token
     assert all(
-        check.status is CharterCheckStatus.UNRESOLVED
-        for check in result.check_results
+        check.status is CharterCheckStatus.UNRESOLVED for check in result.check_results
     )
 
 
@@ -360,10 +358,13 @@ def test_current_lineage_mismatch_rejects_before_check_execution(
     else:
         final_pathway = replace(fixture.final_pathway, evaluation_run_id="other-run")
 
-    with pytest.raises(CharterEvaluationInvariantError):
-        _evaluator(final_check, lambda *args: "PASS").evaluate_final(
-            final_pathway, _context()
-        )
+    result = _evaluator(final_check, lambda *args: "PASS").evaluate_final(
+        final_pathway, _context()
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == 0
 
 
@@ -411,8 +412,7 @@ def test_structural_validation_does_not_generate_pass_or_downstream_state() -> N
     assert check_calls == 2
     assert result.status == "UNRESOLVED"
     assert all(
-        check.status is not CharterCheckStatus.PASS
-        for check in result.check_results
+        check.status is not CharterCheckStatus.PASS for check in result.check_results
     )
     assert all(
         term not in source

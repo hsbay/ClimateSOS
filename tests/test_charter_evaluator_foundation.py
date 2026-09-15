@@ -9,7 +9,6 @@ from climatesos.pathway_evaluation import (
     CharterCheckResult,
     CharterCheckStatus,
     CharterEvaluationContext,
-    CharterEvaluationInvariantError,
     CharterEvaluator,
     CharterStatus,
     EvaluationRun,
@@ -252,16 +251,22 @@ def test_context_must_define_exactly_the_complete_required_check_set() -> None:
         applicable_check_definitions=context.applicable_check_definitions[:-1],
     )
 
-    with pytest.raises(CharterEvaluationInvariantError, match="missing required"):
-        evaluator.evaluate_initial(adapter_result, missing_definition)
+    result = evaluator.evaluate_initial(adapter_result, missing_definition)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
     duplicate_required_id = replace(
         context,
         required_check_ids=("check-1", "check-1", "check-3"),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="must be unique"):
-        evaluator.evaluate_initial(adapter_result, duplicate_required_id)
+    result = evaluator.evaluate_initial(adapter_result, duplicate_required_id)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
     empty_context = replace(
@@ -269,8 +274,11 @@ def test_context_must_define_exactly_the_complete_required_check_set() -> None:
         applicable_check_definitions=(),
         required_check_ids=(),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="at least one"):
-        evaluator.evaluate_initial(adapter_result, empty_context)
+    result = evaluator.evaluate_initial(adapter_result, empty_context)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
 
@@ -878,8 +886,11 @@ def test_integrated_rejects_initial_integrity_failure_before_callbacks(
     )
     calls.clear()
 
-    with pytest.raises(CharterEvaluationInvariantError, match="integrity failure"):
-        evaluator.evaluate_integrated(ineligible_engine_result, context)
+    result = evaluator.evaluate_integrated(ineligible_engine_result, context)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
 
@@ -971,8 +982,11 @@ def test_charter_identity_validation_uses_durable_token_id() -> None:
         initial_charter_result=different_token_initial,
     )
     calls.clear()
-    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
-        evaluator.evaluate_integrated(different_token_engine_result, context)
+    result = evaluator.evaluate_integrated(different_token_engine_result, context)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
 
@@ -989,54 +1003,72 @@ def test_initial_and_integrated_reject_mismatched_lineage_or_run() -> None:
         ),
     )
 
-    with pytest.raises(CharterEvaluationInvariantError, match="IdentityToken"):
-        evaluator.evaluate_initial(mismatched_run_adapter, context)
-    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
-        evaluator.evaluate_initial(
-            replace(
-                adapter_result,
-                evaluation_run=replace(
-                    adapter_result.evaluation_run,
-                    evaluation_run_id="run-2",
-                ),
+    result = evaluator.evaluate_initial(mismatched_run_adapter, context)
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
+    result = evaluator.evaluate_initial(
+        replace(
+            adapter_result,
+            evaluation_run=replace(
+                adapter_result.evaluation_run,
+                evaluation_run_id="run-2",
             ),
-            context,
-        )
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
 
     engine_result = _engine_result(adapter_result, evaluator, context)
     calls.clear()
-    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
-        evaluator.evaluate_integrated(
-            replace(engine_result, identity_token=IdentityToken("token-2")),
-            context,
-        )
-    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=replace(
-                    engine_result.initial_charter_result,
-                    identity_token=IdentityToken("token-2"),
-                ),
+    result = evaluator.evaluate_integrated(
+        replace(engine_result, identity_token=IdentityToken("token-2")),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=replace(
+                engine_result.initial_charter_result,
+                identity_token=IdentityToken("token-2"),
             ),
-            context,
-        )
-    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
-        evaluator.evaluate_integrated(
-            replace(engine_result, evaluation_run_id="run-2"),
-            context,
-        )
-    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=replace(
-                    engine_result.initial_charter_result,
-                    evaluation_run_id="run-2",
-                ),
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
+    result = evaluator.evaluate_integrated(
+        replace(engine_result, evaluation_run_id="run-2"),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=replace(
+                engine_result.initial_charter_result,
+                evaluation_run_id="run-2",
             ),
-            context,
-        )
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
 
@@ -1063,14 +1095,17 @@ def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
             evaluation_run=mismatched_token_run,
         ),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="attribution"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=mismatched_token_initial,
-            ),
-            context,
-        )
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=mismatched_token_initial,
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
 
     mismatched_evaluation_run = replace(
         adapter_result.evaluation_run,
@@ -1087,14 +1122,17 @@ def test_integrated_rejects_preserved_adapter_evaluation_run_mismatch() -> None:
             evaluation_run=mismatched_evaluation_run,
         ),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="EvaluationRun"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=mismatched_run_initial,
-            ),
-            context,
-        )
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=mismatched_run_initial,
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
 
 
@@ -1117,14 +1155,17 @@ def test_integrated_enforces_exact_upstream_artifact_references() -> None:
             ),
         ),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="reference"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=reconstructed_run_initial,
-            ),
-            context,
-        )
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=reconstructed_run_initial,
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
 
     reconstructed_pathway_initial = replace(
         initial_result,
@@ -1133,12 +1174,56 @@ def test_integrated_enforces_exact_upstream_artifact_references() -> None:
             product_pathway=replace(adapter_result.product_pathway),
         ),
     )
-    with pytest.raises(CharterEvaluationInvariantError, match="pathway reference"):
-        evaluator.evaluate_integrated(
-            replace(
-                engine_result,
-                initial_charter_result=reconstructed_pathway_initial,
-            ),
-            context,
-        )
+    result = evaluator.evaluate_integrated(
+        replace(
+            engine_result,
+            initial_charter_result=reconstructed_pathway_initial,
+        ),
+        context,
+    )
+    assert result.status == "ERROR"
+    assert result.check_results == ()
+    assert result.execution_error is not None
+    assert "precondition failure" in result.execution_error
     assert calls == []
+
+
+def test_changed_charter_context_reexecutes_checks_and_records_current_versions() -> (
+    None
+):
+    adapter_result = _adapter_result()
+    context = _context()
+    calls: list[tuple[str, object, OpaqueReference, CharterEvaluationContext]] = []
+    evaluator = _evaluator(calls)
+
+    first_context = replace(
+        context,
+        evaluator_version="evaluator-v1",
+        rule_set_version="rules-v1",
+    )
+    second_context = replace(
+        context,
+        evaluator_version="evaluator-v2",
+        rule_set_version="rules-v2",
+    )
+
+    first = evaluator.evaluate_initial(adapter_result, first_context)
+    first_calls = tuple(calls)
+
+    calls.clear()
+
+    second = evaluator.evaluate_initial(adapter_result, second_context)
+
+    assert first.status != "ERROR"
+    assert first.evaluator_version == "evaluator-v1"
+    assert first.rule_set_version == "rules-v1"
+
+    assert second.status != "ERROR"
+    assert second.evaluator_version == "evaluator-v2"
+    assert second.rule_set_version == "rules-v2"
+
+    assert second is not first
+    assert len(calls) == len(first_calls)
+    assert calls
+    assert tuple(call[0] for call in calls) == tuple(call[0] for call in first_calls)
+    assert all(call[3] is second_context for call in calls)

@@ -83,7 +83,11 @@ _INTEGRITY_FAILURE_STATUSES = frozenset(
 
 
 class CharterEvaluationInvariantError(ValueError):
-    """Raised when a Charter pass is structurally incomplete or incoherent."""
+    """Raised when a Charter evaluation call cannot be structurally accepted."""
+
+
+class _CharterPreconditionError(CharterEvaluationInvariantError):
+    """Raised when Charter evaluation preconditions cannot be established."""
 
 
 def _is_string(value: object) -> bool:
@@ -152,57 +156,63 @@ def _charter_status_tuple_or_empty(value: object) -> tuple[CharterStatus, ...]:
     return ()
 
 
-def _validate_context(
-    context: CharterEvaluationContext,
-) -> dict[str, OpaqueReference]:
+def _validate_result_context(context: CharterEvaluationContext) -> None:
     if not isinstance(context, CharterEvaluationContext):
         raise CharterEvaluationInvariantError(
             "Charter evaluation requires CharterEvaluationContext"
         )
-    if not isinstance(context.foundational_charter, OpaqueReference):
+    if (
+        not isinstance(context.evaluator_version, str)
+        or not context.evaluator_version
+        or not isinstance(context.rule_set_version, str)
+        or not context.rule_set_version
+    ):
         raise CharterEvaluationInvariantError(
+            "Charter result construction requires non-empty evaluator and "
+            "rule-set versions"
+        )
+
+
+def _validate_context(
+    context: CharterEvaluationContext,
+) -> dict[str, OpaqueReference]:
+    _validate_result_context(context)
+    if not isinstance(context.foundational_charter, OpaqueReference):
+        raise _CharterPreconditionError(
             "Foundational Charter must be an OpaqueReference"
         )
     if not isinstance(context.applicable_check_definitions, tuple) or not all(
         isinstance(definition, OpaqueReference)
         for definition in context.applicable_check_definitions
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Applicable check definitions must be OpaqueReference objects"
         )
     if not isinstance(context.required_check_ids, tuple) or not all(
         isinstance(check_id, str) for check_id in context.required_check_ids
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Required check identities must be an immutable tuple of strings"
         )
     if not isinstance(context.runtime_configuration, tuple) or not all(
         isinstance(item, Attribute) for item in context.runtime_configuration
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Runtime configuration must be an immutable tuple of Attribute objects"
         )
-    if not isinstance(context.evaluator_version, str) or not isinstance(
-        context.rule_set_version,
-        str,
-    ):
-        raise CharterEvaluationInvariantError(
-            "Evaluator and rule-set versions must be strings"
-        )
-
     required_ids = context.required_check_ids
     if not required_ids:
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Charter evaluation requires at least one required check"
         )
     if len(set(required_ids)) != len(required_ids):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Required Charter check identities must be unique"
         )
     definitions: dict[str, OpaqueReference] = {}
     for definition in context.applicable_check_definitions:
         if definition.reference_id in definitions:
-            raise CharterEvaluationInvariantError(
+            raise _CharterPreconditionError(
                 "Applicable Charter check definition identities must be unique"
             )
         definitions[definition.reference_id] = definition
@@ -213,11 +223,11 @@ def _validate_context(
         missing = required_set - definition_set
         unexpected = definition_set - required_set
         if missing:
-            raise CharterEvaluationInvariantError(
+            raise _CharterPreconditionError(
                 "Evaluation context is missing required Charter check definitions: "
                 + ", ".join(sorted(missing))
             )
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Evaluation context contains unexpected Charter check definitions: "
             + ", ".join(sorted(unexpected))
         )
@@ -418,11 +428,11 @@ def _validate_initial_artifact(adapter_result: ProductAdapterResult) -> None:
         intake_bundle.identity_token.token_id != token_id
         or evaluation_run.identity_token_id != token_id
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Initial Charter artifacts must share the canonical IdentityToken"
         )
     if pathway.evaluation_run_id != evaluation_run.evaluation_run_id:
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Initial Charter artifacts must share the EvaluationRun"
         )
 
@@ -443,19 +453,19 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
             for result in initial_result.check_results
         )
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Integrated Charter evaluation cannot consume an Initial Charter "
             "evaluator-integrity failure"
         )
     if initial_result.adapter_result.product_pathway is not pathway:
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "PathwayEngineResult must preserve the Initial Charter pathway reference"
         )
     if (
         initial_result.adapter_result.evaluation_run
         is not initial_result.adapter_result.intake_bundle.evaluation_run
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "ProductAdapterResult must preserve the ProductIntakeBundle "
             "EvaluationRun reference"
         )
@@ -469,7 +479,7 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
         or engine_result.user_id != pathway.user_id
         or engine_result.pathway_id != pathway.pathway_id
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Integrated Charter artifact attribution must match the ProductPathway"
         )
     if (
@@ -480,7 +490,7 @@ def _validate_integrated_artifact(engine_result: PathwayEngineResult) -> None:
         or initial_result.adapter_result.intake_bundle.evaluation_run.evaluation_run_id
         != pathway.evaluation_run_id
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Integrated Charter artifact EvaluationRun must match the ProductPathway"
         )
 
@@ -489,7 +499,7 @@ def _validate_provenance(value: object, artifact_name: str) -> None:
     if not isinstance(value, tuple) or not all(
         isinstance(reference, SourceReference) for reference in value
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             f"{artifact_name} provenance must contain SourceReference objects"
         )
 
@@ -501,21 +511,22 @@ def _validate_historical_charter_result(
     if not isinstance(result.check_results, tuple) or not all(
         isinstance(check, CharterCheckResult) for check in result.check_results
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             f"{stage_name} Charter checks must preserve CharterCheckResult objects"
         )
     for check in result.check_results:
-        if not isinstance(check.check_id, str) or _malformed_result_error(
-            check, check.check_id
-        ) is not None:
-            raise CharterEvaluationInvariantError(
+        if (
+            not isinstance(check.check_id, str)
+            or _malformed_result_error(check, check.check_id) is not None
+        ):
+            raise _CharterPreconditionError(
                 f"{stage_name} Charter check structure is malformed"
             )
     if not all(
         isinstance(value, str)
         for value in (result.evaluator_version, result.rule_set_version, result.status)
     ) or not _is_optional_string(result.execution_error):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             f"{stage_name} Charter result fields are malformed"
         )
 
@@ -527,7 +538,7 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         )
     trace = final_result.evaluation_trace
     if type(trace) is not EvaluationTrace:
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "FinalPathwayResult must preserve exactly EvaluationTrace"
         )
     product = final_result.product_pathway
@@ -552,7 +563,7 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         (final_result.identity_token, IdentityToken),
     )
     if any(type(value) is not expected for value, expected in required_types):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Final Charter inputs must preserve exact upstream artifact types"
         )
 
@@ -578,14 +589,14 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         scale.transition_pathway is authoritative,
     )
     if not all(relationships):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Final Charter inputs must preserve exact upstream relationships"
         )
     if (
         type(initial.adapter_result) is not ProductAdapterResult
         or initial.adapter_result.product_pathway is not product
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Initial Charter result must preserve the current ProductPathway"
         )
 
@@ -601,7 +612,7 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         type(token) is not IdentityToken or token.token_id != token_id
         for token in current_tokens
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Final Charter inputs must share current IdentityToken lineage"
         )
     current_run_id = final_result.evaluation_run_id
@@ -616,10 +627,9 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         scale,
     )
     if not isinstance(current_run_id, str) or any(
-        artifact.evaluation_run_id != current_run_id
-        for artifact in current_artifacts
+        artifact.evaluation_run_id != current_run_id for artifact in current_artifacts
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Final Charter inputs must share current evaluation_run_id"
         )
     attributed_artifacts = (product, candidate, risk, engine, contribution, scale)
@@ -628,7 +638,7 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
         or artifact.pathway_id != final_result.pathway_id
         for artifact in attributed_artifacts
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "Final Charter inputs must share current user and pathway attribution"
         )
     if not all(
@@ -640,7 +650,7 @@ def _validate_final_artifact(final_result: FinalPathwayResult) -> None:
             final_result.assembly_rule_version,
         )
     ):
-        raise CharterEvaluationInvariantError(
+        raise _CharterPreconditionError(
             "FinalPathwayResult attribution and versions must be strings"
         )
 
@@ -676,6 +686,121 @@ def _replace_reused_final_checks(
     )
 
 
+def _validate_initial_result_construction(
+    adapter_result: ProductAdapterResult,
+) -> None:
+    if not isinstance(adapter_result, ProductAdapterResult):
+        raise CharterEvaluationInvariantError(
+            "Initial Charter evaluation requires ProductAdapterResult"
+        )
+    pathway = adapter_result.product_pathway
+    if (
+        not isinstance(pathway, ProductPathway)
+        or not isinstance(pathway.identity_token, IdentityToken)
+        or not isinstance(pathway.evaluation_run_id, str)
+    ):
+        raise CharterEvaluationInvariantError(
+            "Initial Charter result construction requires valid "
+            "pathway identity and run"
+        )
+
+
+def _validate_integrated_result_construction(
+    engine_result: PathwayEngineResult,
+) -> None:
+    if not isinstance(engine_result, PathwayEngineResult):
+        raise CharterEvaluationInvariantError(
+            "Integrated Charter evaluation requires PathwayEngineResult"
+        )
+    if (
+        not isinstance(engine_result.identity_token, IdentityToken)
+        or not isinstance(engine_result.evaluation_run_id, str)
+        or not isinstance(engine_result.initial_charter_result, InitialCharterResult)
+    ):
+        raise CharterEvaluationInvariantError(
+            "Integrated Charter result construction requires valid identity, run, "
+            "and Initial Charter result"
+        )
+
+
+def _validate_final_result_construction(
+    final_result: FinalPathwayResult,
+) -> EvaluationTrace:
+    if type(final_result) is not FinalPathwayResult:
+        raise CharterEvaluationInvariantError(
+            "Final Charter evaluation requires exactly FinalPathwayResult"
+        )
+    trace = final_result.evaluation_trace
+    if (
+        type(trace) is not EvaluationTrace
+        or not isinstance(final_result.identity_token, IdentityToken)
+        or not isinstance(final_result.evaluation_run_id, str)
+        or not isinstance(trace.initial_charter_result, InitialCharterResult)
+        or not isinstance(trace.integrated_charter_result, IntegratedCharterResult)
+    ):
+        raise CharterEvaluationInvariantError(
+            "Final Charter result construction requires valid identity, run, "
+            "and Charter trace"
+        )
+    return trace
+
+
+def _initial_precondition_error_result(
+    adapter_result: ProductAdapterResult,
+    context: CharterEvaluationContext,
+    error: _CharterPreconditionError,
+) -> InitialCharterResult:
+    pathway = adapter_result.product_pathway
+    return InitialCharterResult(
+        identity_token=pathway.identity_token,
+        evaluation_run_id=pathway.evaluation_run_id,
+        adapter_result=adapter_result,
+        check_results=(),
+        evaluator_version=context.evaluator_version,
+        rule_set_version=context.rule_set_version,
+        status="ERROR",
+        execution_error=f"Initial Charter precondition failure: {error}",
+    )
+
+
+def _integrated_precondition_error_result(
+    engine_result: PathwayEngineResult,
+    context: CharterEvaluationContext,
+    error: _CharterPreconditionError,
+) -> IntegratedCharterResult:
+    return IntegratedCharterResult(
+        identity_token=engine_result.identity_token,
+        evaluation_run_id=engine_result.evaluation_run_id,
+        pathway_engine_result=engine_result,
+        initial_charter_result=engine_result.initial_charter_result,
+        check_results=(),
+        evaluator_version=context.evaluator_version,
+        rule_set_version=context.rule_set_version,
+        status="ERROR",
+        execution_error=f"Integrated Charter precondition failure: {error}",
+    )
+
+
+def _final_precondition_error_result(
+    final_result: FinalPathwayResult,
+    trace: EvaluationTrace,
+    context: CharterEvaluationContext,
+    error: _CharterPreconditionError,
+) -> FinalCharterResult:
+    return FinalCharterResult(
+        identity_token=final_result.identity_token,
+        evaluation_run_id=final_result.evaluation_run_id,
+        final_pathway_result=final_result,
+        initial_charter_result=trace.initial_charter_result,
+        integrated_charter_result=trace.integrated_charter_result,
+        check_results=(),
+        evaluator_version=context.evaluator_version,
+        rule_set_version=context.rule_set_version,
+        status="ERROR",
+        execution_error=f"Final Charter precondition failure: {error}",
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class CharterEvaluator:
     """Run complete independent Charter passes at each evaluation stage."""
@@ -694,8 +819,13 @@ class CharterEvaluator:
     ) -> InitialCharterResult:
         """Execute all Initial checks and construct one immutable result."""
 
-        _validate_initial_artifact(adapter_result)
-        definitions = _validate_context(context)
+        _validate_initial_result_construction(adapter_result)
+        _validate_result_context(context)
+        try:
+            _validate_initial_artifact(adapter_result)
+            definitions = _validate_context(context)
+        except _CharterPreconditionError as error:
+            return _initial_precondition_error_result(adapter_result, context, error)
         check_results = _execute_required_checks(
             context.required_check_ids,
             definitions,
@@ -735,8 +865,13 @@ class CharterEvaluator:
     ) -> IntegratedCharterResult:
         """Rerun all checks with Integrated-stage information."""
 
-        _validate_integrated_artifact(engine_result)
-        definitions = _validate_context(context)
+        _validate_integrated_result_construction(engine_result)
+        _validate_result_context(context)
+        try:
+            _validate_integrated_artifact(engine_result)
+            definitions = _validate_context(context)
+        except _CharterPreconditionError as error:
+            return _integrated_precondition_error_result(engine_result, context, error)
         check_results = _execute_required_checks(
             context.required_check_ids,
             definitions,
@@ -777,15 +912,25 @@ class CharterEvaluator:
     ) -> FinalCharterResult:
         """Rerun all checks independently with Final-stage information."""
 
+        trace = _validate_final_result_construction(final_pathway_result)
+        _validate_result_context(context)
         final_check_function = self.final_check_function
         final_status_function = self.final_status_function
-        if final_check_function is None or final_status_function is None:
-            raise CharterEvaluationInvariantError(
-                "Final Charter evaluation requires Final-stage check and "
-                "status functions"
+        try:
+            if final_check_function is None or final_status_function is None:
+                raise _CharterPreconditionError(
+                    "Final Charter evaluation requires Final-stage check and "
+                    "status functions"
+                )
+            _validate_final_artifact(final_pathway_result)
+            definitions = _validate_context(context)
+        except _CharterPreconditionError as error:
+            return _final_precondition_error_result(
+                final_pathway_result,
+                trace,
+                context,
+                error,
             )
-        _validate_final_artifact(final_pathway_result)
-        definitions = _validate_context(context)
         check_results = _execute_required_checks(
             context.required_check_ids,
             definitions,
@@ -795,7 +940,6 @@ class CharterEvaluator:
                 context,
             ),
         )
-        trace = final_pathway_result.evaluation_trace
         check_results = _replace_reused_final_checks(
             check_results,
             trace.initial_charter_result,
