@@ -3695,6 +3695,35 @@ A completed `FinalPathwayResult` proceeds unchanged to
 
 ## 16. Final Charter Evaluation
 
+```text
+FinalPathwayResult
+        │
+        ▼
+CharterEvaluator
+    │
+    │  preliminary integrity / lineage / attribution validation
+    │  all Final Charter checks
+    │
+    ▼
+    FinalCharterResult
+           │
+    ┌──────|────────┬──────────────────┐
+    │               │                  │
+    ▼               ▼                  ▼
+progression-    progression-       Evaluator-integrity
+permitted       prohibiting        failure
+result          finding/result         │
+    │               │                  │
+    │               ▼                  ▼
+    │           preserved          evaluation
+    ▼           as completed       cannot proceed
+continues       Charter result     normally
+to ordinary
+runtime flow
+    │
+    ▼
+```
+
 After `FinalPathwayAssembly` completes, the `CharterEvaluator` performs the
 Final Charter Evaluation using the completed immutable `FinalPathwayResult`.
 
