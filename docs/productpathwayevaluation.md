@@ -5621,6 +5621,7 @@ BoundPathway
 PathwayAssessment
 TransitionPathwayValidatorResult
 TransitionPathway
+ProductEvaluationContext
 ```
 
 ### 23.2 Required Evaluators, Assemblers and Services
