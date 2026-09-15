@@ -4458,8 +4458,13 @@ assessment.
 For a candidate `TransitionPathway` evaluated in Global Context Mode,
 replacement fitness is determined from the completed candidate and its
 comparison with the authoritative `TransitionPathway`, including the
-`NetOverallSystemRiskResult`, applicable Charter results, bound state, and other
-material upstream findings.
+`NetOverallSystemRiskResult`, applicable Charter results, bound state, and
+other material upstream findings. To determine which established context
+applies to the current evaluation, `PathwayAssessmentEvaluator` consumes the
+established `ProductEvaluationContext` for the evaluation run.
+`ProductEvaluationContext` is established by the applicable authorized
+submission/runtime interface before entry into the shared Product Pathway
+Evaluation flow.
 
 The `PathwayAssessmentEvaluator` evaluates whether the candidate can complete
 the required net-zero transition within the applicable transition window and
