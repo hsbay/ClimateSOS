@@ -231,6 +231,77 @@ enclosing Charter result to `ERROR` and prevents normal progression.
 
 Detailed Charter check statuses, blocking behavior, evaluator-integrity requirements, remedy eligibility, and re-evaluation rules are defined in a separate Charter Evaluation Flow document.
 
+### 4.4.1 Charter Evaluation Preconditions and False-Green Prevention
+
+Each Charter evaluation stage begins by establishing that the required
+current-stage inputs and referenced upstream artifacts are sufficiently
+intact, attributable, and internally consistent to support substantive
+Charter evaluation.
+
+This precondition validation is distinct from Charter validity evaluation.
+Precondition validation establishes whether the evaluator is operating on the
+intended current-stage inputs and referenced upstream artifacts, with their
+required identity, lineage, attribution, references, Charter-check definitions,
+and other required evaluation conditions present, intact, and sufficiently
+identifiable. It does not determine whether a pathway satisfies or violates a
+Charter safeguard or guardrail.
+
+Precondition validation includes, as applicable to the evaluation stage:
+
+* presence of the required evaluation artifacts and references;
+* consistency of the applicable `IdentityToken`, `evaluation_run_id`,
+  `user_id`, and `pathway_id` attribution;
+* preservation of the required relationships among current-stage and upstream
+  evaluation artifacts;
+* confirmation that a required artifact or result has not been substituted by
+  an artifact from another pathway, evaluation run, or evaluation stage;
+* presence and unique identification of every required Charter check;
+* consistency of the applicable Charter rule-set, evaluator version, and other
+  versioned evaluation inputs and context required for the current Charter
+  stage;
+* preservation of required provenance and traceability relationships;
+* currentness of the required evaluation artifacts, references, and evaluation
+  context where a material change would invalidate previously established
+  state; and
+* confirmation that an unavailable, missing, degraded, or failed required
+  input or evaluation condition has not reduced the requirements for
+  completing the Charter evaluation.
+
+A required artifact, reference, check, input, or attribution that is missing,
+duplicated, substituted, stale, mismatched, malformed, or otherwise not
+established as valid must not be treated as satisfied when no substantive
+Charter violation has been identified.
+
+Loss or failure of a check, artifact, reference, or evaluation condition shall
+not reduce the requirements necessary to complete Charter evaluation.
+
+A precondition failure is an evaluator- or result-integrity failure. It is not a
+substantive Charter finding and must not be converted into `PASS`, `FAIL`,
+`UNRESOLVED`, or `NOT_APPLICABLE`.
+
+The following distinctions are preserved to prevent a false-green Charter
+result in which missing, mismatched, substituted, incomplete, or incorrectly
+attributed evaluation inputs or artifacts are interpreted as permission or
+validity.
+
+```text
+integrity established
+    ≠
+Charter validity established
+
+no integrity failure detected
+    ≠
+integrity established
+
+all returned checks valid
+    ≠
+all required checks executed
+
+missing required state
+    ≠
+substantive Charter failure
+```
+
 ### 4.5 Global and User-Submitted Pathway Outcomes
 
 The two flows share the same architecture until their final outcomes diverge.
