@@ -356,6 +356,12 @@ After global-system-risk evaluation, Final Charter Evaluation, and binding,
 each user-submitted pathway produces an immutable `BoundPathway`, which then
 proceeds to construction of a `PathwayAssessment`.
 
+`ProductEvaluationContext` is the immutable record of the evaluation context
+established for a Product Pathway Evaluation run. It identifies whether the
+run operates in Global Context Mode or User-Submitted Context. Product Pathway
+Evaluation consumes this established context and does not independently
+establish or reinterpret it.
+
 Completion of intake, adaptation, assembly, or an intermediate evaluation does not by itself establish pathway validity.
 
 Together, these principles and the Product Pathway Evaluation Flow support the central evaluation question:
