@@ -302,6 +302,18 @@ missing required state
 substantive Charter failure
 ```
 
+Charter Precondition Implementation Requirements:
+
+* Charter check identifiers must be unique within the applicable Charter
+  stage, and one check result must not satisfy another required check;
+* currentness is determined from the version, provenance, and evaluation
+  relationships carried by the applicable artifacts and evaluation context;
+  a material change requires the affected precondition to be established again;
+  and
+* failure to establish any required precondition is an evaluator- or
+  result-integrity failure and causes the enclosing Charter result to follow the
+  existing `ERROR` handling for that stage.
+
 ### 4.5 Global and User-Submitted Pathway Outcomes
 
 The two flows share the same architecture until their final outcomes diverge.
