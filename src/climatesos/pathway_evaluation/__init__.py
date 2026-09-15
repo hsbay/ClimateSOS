@@ -121,6 +121,7 @@ from .models import (
     NetOverallSystemContribution,
     NetOverallSystemRiskResult,
     OpaqueReference,
+    PathwayAssessment,
     PathwayEngineResult,
     PathwayObject,
     PathwayRelationship,
@@ -140,6 +141,7 @@ from .models import (
     SystemRiskFinding,
     TransitionPathway,
 )
+from .pathway_assessment import PathwayAssessmentEvaluator
 from .queue_evaluation import (
     QueueEvaluationFunction,
     QueueEvaluationInvariantError,
@@ -243,6 +245,8 @@ __all__ = [
     "NetOverallSystemRiskEvaluator",
     "NetOverallSystemRiskResult",
     "OpaqueReference",
+    "PathwayAssessment",
+    "PathwayAssessmentEvaluator",
     "PathwayComparator",
     "PathwayEngineResult",
     "PathwayEvaluationEngine",

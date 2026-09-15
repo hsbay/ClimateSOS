@@ -639,3 +639,30 @@ class BoundPathway:
     pathway_id: str
     binding_mechanism_id: str
     binding_mechanism_version: str
+
+
+@dataclass(frozen=True, slots=True)
+class PathwayAssessment:
+    """Final immutable assessment of one successfully bound pathway run."""
+
+    identity_token: IdentityToken
+    evaluation_run_id: str
+    pathway_assessment_id: str
+    user_id: str
+    product_pathway: ProductPathway
+    initial_charter_result: InitialCharterResult
+    integrated_charter_result: IntegratedCharterResult
+    final_charter_result: FinalCharterResult
+    bound_pathway: BoundPathway
+    assessment_outcome: str
+    replacement_fitness: bool | None
+    material_comparative_findings: tuple[ComparisonFinding, ...]
+    material_improvements: tuple[ComparisonFinding, ...]
+    material_regressions: tuple[ComparisonFinding, ...]
+    progression_preventing_findings: tuple[OpaqueReference, ...]
+    upstream_result_references: tuple[OpaqueReference, ...]
+    correctable: bool | None
+    corrective_requirement: str | None
+    corrective_justification: str | None
+    successor_evaluation_conditions: tuple[str, ...]
+    reference_transition_pathway: TransitionPathway
