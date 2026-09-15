@@ -4536,6 +4536,7 @@ At minimum, it shall include or reference, as applicable:
 * `FinalCharterResult`;
 * `BoundPathway`;
 * the final assessment outcome;
+* the exact `ProductEvaluationContext` of the `EvaluationRun`;
 * for a Global Context Mode candidate, the replacement-fitness determination
   and references to the material comparative findings supporting it;
 * references to material improvements or regressions relative to the
