@@ -1,4 +1,4 @@
-"""Validated boundary for caller-supplied net overall system-risk evaluation."""
+"""Net overall system-risk evaluation and invariant enforcement."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -18,7 +18,9 @@ from .models import (
     TransitionPathway,
 )
 
-NetOverallSystemRiskEvaluationFunction = Callable[
+T = TypeVar("T")
+
+SystemRiskFindingFunction = Callable[
     [
         TransitionPathway,
         TransitionPathway,
@@ -32,10 +34,8 @@ NetOverallSystemRiskEvaluationFunction = Callable[
         str,
         str,
     ],
-    object,
+    tuple[SystemRiskFinding, ...],
 ]
-
-T = TypeVar("T")
 
 
 class NetOverallSystemRiskEvaluationInvariantError(ValueError):
@@ -61,10 +61,20 @@ def _require_tuple_of(
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedNetOverallSystemRiskEvaluator:
-    """Validate inputs and caller-supplied system-risk results."""
+class NetOverallSystemRiskEvaluator:
+    """Evaluate candidate transition risk and construct one completed result."""
 
-    risk_evaluation_function: NetOverallSystemRiskEvaluationFunction
+    candidate_reference_risk_function: SystemRiskFindingFunction
+    system_interaction_risk_function: SystemRiskFindingFunction
+    transition_delivery_risk_function: SystemRiskFindingFunction
+    timing_sequencing_risk_function: SystemRiskFindingFunction
+    bottleneck_failure_risk_function: SystemRiskFindingFunction
+    fossil_persistence_fallback_risk_function: SystemRiskFindingFunction
+    dependency_propagation_risk_function: SystemRiskFindingFunction
+    biosphere_climate_risk_function: SystemRiskFindingFunction
+    charter_unresolved_risk_function: SystemRiskFindingFunction
+    evaluator_version: str
+    rule_set_version: str
 
     def evaluate(
         self,
@@ -80,7 +90,7 @@ class ValidatedNetOverallSystemRiskEvaluator:
         pathway_id: str,
         evaluation_run_id: str,
     ) -> NetOverallSystemRiskResult:
-        """Invoke risk evaluation without supplying substantive risk rules."""
+        """Evaluate the candidate and return one immutable risk result."""
 
         self._validate_inputs(
             candidate_transition_pathway,
@@ -95,7 +105,8 @@ class ValidatedNetOverallSystemRiskEvaluator:
             pathway_id,
             evaluation_run_id,
         )
-        raw_result = self.risk_evaluation_function(
+
+        arguments = (
             candidate_transition_pathway,
             authoritative_transition_pathway,
             transition_context,
@@ -108,19 +119,82 @@ class ValidatedNetOverallSystemRiskEvaluator:
             pathway_id,
             evaluation_run_id,
         )
-        if type(raw_result) is not NetOverallSystemRiskResult:
-            raise NetOverallSystemRiskEvaluationInvariantError(
-                "Risk evaluation must return exactly NetOverallSystemRiskResult"
-            )
+
+        # These functions perform sibling risk analyses over the same
+        # authoritative candidate context. Runtime scheduling is not part of
+        # the architectural contract. Each output is validated independently
+        # before its findings are admitted to the completed result.
+        rule_outputs = (
+            (
+                "Candidate-reference risk findings",
+                self.candidate_reference_risk_function(*arguments),
+            ),
+            (
+                "System-interaction risk findings",
+                self.system_interaction_risk_function(*arguments),
+            ),
+            (
+                "Transition-delivery risk findings",
+                self.transition_delivery_risk_function(*arguments),
+            ),
+            (
+                "Timing and sequencing risk findings",
+                self.timing_sequencing_risk_function(*arguments),
+            ),
+            (
+                "Bottleneck and failure risk findings",
+                self.bottleneck_failure_risk_function(*arguments),
+            ),
+            (
+                "Fossil persistence and fallback risk findings",
+                self.fossil_persistence_fallback_risk_function(*arguments),
+            ),
+            (
+                "Dependency-propagation risk findings",
+                self.dependency_propagation_risk_function(*arguments),
+            ),
+            (
+                "Biosphere and climate risk findings",
+                self.biosphere_climate_risk_function(*arguments),
+            ),
+            (
+                "Charter and unresolved risk findings",
+                self.charter_unresolved_risk_function(*arguments),
+            ),
+        )
+
+        validated_outputs = tuple(
+            _require_tuple_of(output, SystemRiskFinding, description)
+            for description, output in rule_outputs
+        )
+        risk_findings = tuple(
+            finding for findings in validated_outputs for finding in findings
+        )
+
+        result = NetOverallSystemRiskResult(
+            candidate_transition_pathway=candidate_transition_pathway,
+            authoritative_transition_pathway=authoritative_transition_pathway,
+            risk_findings=risk_findings,
+            evaluation_run_id=evaluation_run_id,
+            user_id=user_id,
+            pathway_id=pathway_id,
+            evaluator_version=self.evaluator_version,
+            rule_set_version=self.rule_set_version,
+            assumptions=assumptions,
+            uncertainties=uncertainties,
+            evidence_references=evidence_references,
+            provenance=provenance,
+        )
+
         self._validate_result(
-            raw_result,
+            result,
             candidate_transition_pathway,
             authoritative_transition_pathway,
             evaluation_run_id,
             user_id,
             pathway_id,
         )
-        return raw_result
+        return result
 
     @staticmethod
     def _validate_inputs(
@@ -168,8 +242,7 @@ class ValidatedNetOverallSystemRiskEvaluator:
         )
         _require_tuple_of(provenance, SourceReference, "Risk provenance")
         if not all(
-            isinstance(value, str)
-            for value in (evaluation_run_id, user_id, pathway_id)
+            isinstance(value, str) for value in (evaluation_run_id, user_id, pathway_id)
         ):
             raise NetOverallSystemRiskEvaluationInvariantError(
                 "Risk attribution values must be strings"

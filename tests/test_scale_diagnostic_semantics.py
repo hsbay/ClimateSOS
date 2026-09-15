@@ -1,9 +1,9 @@
+from collections import Counter
 from dataclasses import dataclass
 from typing import TypeVar
 
 from climatesos.pathway_evaluation import (
     ComparisonFinding,
-    CompleteScaleDiagnosticFunction,
     ContributionFinding,
     DocumentationFinding,
     FabricEvaluatorResult,
@@ -13,12 +13,11 @@ from climatesos.pathway_evaluation import (
     PathwayObject,
     ProductPathway,
     QueueEvaluatorResult,
+    ScaleDiagnosticEvaluator,
     ScaleDiagnosticFindingFunction,
-    ScaleDiagnosticResult,
     ScaleFinding,
     SourceReference,
     TransitionPathway,
-    ValidatedScaleDiagnosticEvaluator,
 )
 
 T = TypeVar("T")
@@ -95,10 +94,10 @@ def _context() -> _Context:
         queue_result=queue_result,
         fabric_result=fabric_result,
         documentation_finding=documentation_finding,
-        transition_function=_record(OpaqueReference),
-        system_reference=_record(OpaqueReference),
-        evidence=_record(SourceReference),
-        provenance=_record(SourceReference),
+        transition_function=OpaqueReference("transition-function-1"),
+        system_reference=OpaqueReference("system-1"),
+        evidence=SourceReference("evidence-1"),
+        provenance=SourceReference("provenance-1"),
     )
 
 
@@ -107,17 +106,17 @@ def _rule(
     findings: tuple[ScaleFinding, ...],
     calls: list[str],
 ) -> ScaleDiagnosticFindingFunction:
-    def rule(*args: object) -> tuple[ScaleFinding, ...]:
+    def rule(*_args: object) -> tuple[ScaleFinding, ...]:
         calls.append(name)
         return findings
 
     return rule
 
 
-def _composer(
+def _evaluator(
     rules: tuple[ScaleDiagnosticFindingFunction, ...],
-) -> CompleteScaleDiagnosticFunction:
-    return CompleteScaleDiagnosticFunction(
+) -> ScaleDiagnosticEvaluator:
+    return ScaleDiagnosticEvaluator(
         material_scale_function=rules[0],
         scale_dimensions_function=rules[1],
         scale_progression_function=rules[2],
@@ -135,9 +134,9 @@ def _composer(
 
 def _evaluate(
     context: _Context,
-    composer: CompleteScaleDiagnosticFunction,
-) -> ScaleDiagnosticResult:
-    return ValidatedScaleDiagnosticEvaluator(composer).evaluate(
+    evaluator: ScaleDiagnosticEvaluator,
+):
+    return evaluator.evaluate(
         context.contribution,
         context.product_pathway,
         context.transition_pathway,
@@ -234,7 +233,6 @@ def test_all_section_12_surfaces_compose_with_exact_material_support() -> None:
             unresolved_conditions=("future supply is unknown",),
         ),
     )
-    calls: list[str] = []
     names = (
         "material",
         "dimensions",
@@ -247,18 +245,19 @@ def test_all_section_12_surfaces_compose_with_exact_material_support() -> None:
         "stale",
         "unresolved",
     )
+    calls: list[str] = []
     rules = tuple(
         _rule(name, (finding,), calls)
         for name, finding in zip(names, findings, strict=True)
     )
 
-    result = _evaluate(context, _composer(rules))
+    result = _evaluate(context, _evaluator(rules))
 
+    # Result ordering is deterministic; runtime scheduling is not part
+    # of the ScaleDiagnosticEvaluator contract.
     assert result.scale_findings == findings
-    assert calls == list(names)
-    assert result.product_pathway is context.product_pathway
-    assert result.net_overall_system_contribution is context.contribution
-    assert result.transition_pathway is context.transition_pathway
+    assert Counter(calls) == Counter(names)
+    assert all(count == 1 for count in Counter(calls).values())
     assert result.scale_findings[0].contribution_findings[0] is (
         context.contribution_finding
     )
@@ -273,7 +272,7 @@ def test_all_section_12_surfaces_compose_with_exact_material_support() -> None:
     )
 
 
-def test_composition_preserves_order_duplicates_and_support_subsets() -> None:
+def test_aggregation_preserves_domain_order_duplicates_and_support_subsets() -> None:
     context = _context()
     duplicate = ScaleFinding(
         "duplicate",
@@ -293,13 +292,14 @@ def test_composition_preserves_order_duplicates_and_support_subsets() -> None:
         *empty_rules,
     )
 
-    result = _evaluate(context, _composer(rules))
+    result = _evaluate(context, _evaluator(rules))
 
     assert result.scale_findings[0] is duplicate
     assert result.scale_findings[1] is queue_only
     assert result.scale_findings[2] is duplicate
     assert result.scale_findings[0].supporting_queue_results == ()
     assert result.scale_findings[1].contribution_findings == ()
+    assert len(calls) == 10
 
 
 def test_scale_effects_do_not_rewrite_contribution_semantics() -> None:
@@ -316,7 +316,7 @@ def test_scale_effects_do_not_rewrite_contribution_semantics() -> None:
         for index in range(10)
     )
 
-    result = _evaluate(context, _composer(rules))
+    result = _evaluate(context, _evaluator(rules))
 
     assert result.scale_findings == (scale_effect,)
     assert context.contribution_finding.effect_description == "Established contribution"
@@ -325,12 +325,12 @@ def test_scale_effects_do_not_rewrite_contribution_semantics() -> None:
     assert not hasattr(result, "net_overall_system_risk")
 
 
-def test_composer_preserves_supplied_result_context() -> None:
+def test_evaluator_preserves_supplied_result_context() -> None:
     context = _context()
     calls: list[str] = []
     rules = tuple(_rule(str(index), (), calls) for index in range(10))
 
-    result = _evaluate(context, _composer(rules))
+    result = _evaluate(context, _evaluator(rules))
 
     assert result.evaluation_run_id == "run-1"
     assert result.user_id == "user-1"

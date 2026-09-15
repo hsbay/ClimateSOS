@@ -179,7 +179,7 @@ def test_risk_result_preserves_attribution_versions_evidence_and_provenance() ->
     }
 
 
-def test_risk_evaluator_protocol_matches_section_14() -> None:
+def test_risk_evaluator_matches_section_14() -> None:
     signature = inspect.signature(NetOverallSystemRiskEvaluator.evaluate)
 
     assert tuple(signature.parameters) == (

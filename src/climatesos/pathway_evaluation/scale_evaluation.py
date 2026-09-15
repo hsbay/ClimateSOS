@@ -1,4 +1,4 @@
-"""Validated boundary for caller-supplied scale-diagnostic evaluation."""
+"""Scale diagnostic evaluation, composition, and invariant enforcement."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -20,7 +20,7 @@ from .models import (
     TransitionPathway,
 )
 
-ScaleDiagnosticEvaluationFunction = Callable[
+ScaleDiagnosticFindingFunction = Callable[
     [
         NetOverallSystemContribution,
         ProductPathway,
@@ -34,7 +34,7 @@ ScaleDiagnosticEvaluationFunction = Callable[
         str,
         str,
     ],
-    object,
+    tuple[ScaleFinding, ...],
 ]
 
 T = TypeVar("T")
@@ -63,10 +63,21 @@ def _require_tuple_of(
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedScaleDiagnosticEvaluator:
-    """Validate inputs and caller-supplied scale-diagnostic results."""
+class ScaleDiagnosticEvaluator:
+    """Evaluate scale findings and construct the Section 12 scale result."""
 
-    scale_diagnostic_function: ScaleDiagnosticEvaluationFunction
+    material_scale_function: ScaleDiagnosticFindingFunction
+    scale_dimensions_function: ScaleDiagnosticFindingFunction
+    scale_progression_function: ScaleDiagnosticFindingFunction
+    timing_sequencing_function: ScaleDiagnosticFindingFunction
+    constraint_bottleneck_function: ScaleDiagnosticFindingFunction
+    response_condition_function: ScaleDiagnosticFindingFunction
+    scale_dependent_effect_function: ScaleDiagnosticFindingFunction
+    limited_local_function: ScaleDiagnosticFindingFunction
+    stale_success_function: ScaleDiagnosticFindingFunction
+    unresolved_scale_function: ScaleDiagnosticFindingFunction
+    evaluator_version: str
+    rule_set_version: str
 
     def evaluate(
         self,
@@ -82,7 +93,7 @@ class ValidatedScaleDiagnosticEvaluator:
         pathway_id: str,
         evaluation_run_id: str,
     ) -> ScaleDiagnosticResult:
-        """Invoke scale diagnosis without supplying substantive scale rules."""
+        """Execute scale rules, construct the result, and enforce invariants."""
 
         self._validate_inputs(
             net_overall_system_contribution,
@@ -97,7 +108,8 @@ class ValidatedScaleDiagnosticEvaluator:
             pathway_id,
             evaluation_run_id,
         )
-        raw_result = self.scale_diagnostic_function(
+
+        arguments = (
             net_overall_system_contribution,
             product_pathway,
             transition_pathway,
@@ -110,12 +122,79 @@ class ValidatedScaleDiagnosticEvaluator:
             pathway_id,
             evaluation_run_id,
         )
-        if not isinstance(raw_result, ScaleDiagnosticResult):
-            raise ScaleDiagnosticEvaluationInvariantError(
-                "Scale diagnosis must return ScaleDiagnosticResult"
-            )
+
+        # These checks are sibling analyses over the same authoritative
+        # upstream context. Their execution scheduling is an implementation
+        # detail; no dependency between sibling checks is implied here.
+        rule_outputs = (
+            (
+                "Material scale findings",
+                self.material_scale_function(*arguments),
+            ),
+            (
+                "Scale dimension findings",
+                self.scale_dimensions_function(*arguments),
+            ),
+            (
+                "Scale progression findings",
+                self.scale_progression_function(*arguments),
+            ),
+            (
+                "Timing and sequencing findings",
+                self.timing_sequencing_function(*arguments),
+            ),
+            (
+                "Constraint and bottleneck findings",
+                self.constraint_bottleneck_function(*arguments),
+            ),
+            (
+                "Response condition findings",
+                self.response_condition_function(*arguments),
+            ),
+            (
+                "Scale-dependent effect findings",
+                self.scale_dependent_effect_function(*arguments),
+            ),
+            (
+                "Limited-local findings",
+                self.limited_local_function(*arguments),
+            ),
+            (
+                "Stale-success findings",
+                self.stale_success_function(*arguments),
+            ),
+            (
+                "Unresolved-scale findings",
+                self.unresolved_scale_function(*arguments),
+            ),
+        )
+
+        validated_outputs = tuple(
+            _require_tuple_of(output, ScaleFinding, description)
+            for description, output in rule_outputs
+        )
+        scale_findings = tuple(
+            finding for findings in validated_outputs for finding in findings
+        )
+
+        result = ScaleDiagnosticResult(
+            product_pathway=product_pathway,
+            net_overall_system_contribution=net_overall_system_contribution,
+            transition_pathway=transition_pathway,
+            scale_findings=scale_findings,
+            evaluation_run_id=evaluation_run_id,
+            user_id=user_id,
+            pathway_id=pathway_id,
+            evaluator_version=self.evaluator_version,
+            rule_set_version=self.rule_set_version,
+            assumptions=assumptions,
+            uncertainties=uncertainties,
+            evidence_references=evidence_references,
+            provenance=provenance,
+        )
+
         self._validate_result(
-            raw_result,
+            result,
             net_overall_system_contribution,
             product_pathway,
             transition_pathway,
@@ -123,7 +202,7 @@ class ValidatedScaleDiagnosticEvaluator:
             user_id,
             pathway_id,
         )
-        return raw_result
+        return result
 
     @staticmethod
     def _validate_inputs(
@@ -166,8 +245,7 @@ class ValidatedScaleDiagnosticEvaluator:
         )
         _require_tuple_of(provenance, SourceReference, "Scale provenance")
         if not all(
-            isinstance(value, str)
-            for value in (user_id, pathway_id, evaluation_run_id)
+            isinstance(value, str) for value in (user_id, pathway_id, evaluation_run_id)
         ):
             raise ScaleDiagnosticEvaluationInvariantError(
                 "Scale attribution values must be strings"
@@ -176,10 +254,7 @@ class ValidatedScaleDiagnosticEvaluator:
             raise ScaleDiagnosticEvaluationInvariantError(
                 "Contribution must preserve the supplied ProductPathway"
             )
-        if (
-            net_overall_system_contribution.transition_pathway
-            is not transition_pathway
-        ):
+        if net_overall_system_contribution.transition_pathway is not transition_pathway:
             raise ScaleDiagnosticEvaluationInvariantError(
                 "Contribution must preserve the supplied TransitionPathway"
             )
@@ -339,8 +414,7 @@ class ValidatedScaleDiagnosticEvaluator:
             for contribution_finding in contribution_findings
         ):
             raise ScaleDiagnosticEvaluationInvariantError(
-                "Scale contribution findings must come from the completed "
-                "contribution"
+                "Scale contribution findings must come from the completed contribution"
             )
 
         pathway_engine_result = contribution.pathway_engine_result

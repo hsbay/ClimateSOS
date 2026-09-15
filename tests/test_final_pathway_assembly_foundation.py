@@ -158,7 +158,7 @@ def test_candidate_remains_non_authoritative_and_reference_may_be_older() -> Non
     assert authoritative.identity_token is not result.identity_token
 
 
-def test_final_pathway_assembly_protocol_matches_section_15() -> None:
+def test_final_pathway_assembly_matches_section_15() -> None:
     signature = inspect.signature(FinalPathwayAssembly.assemble)
 
     assert tuple(signature.parameters) == (

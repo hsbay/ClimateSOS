@@ -1,10 +1,11 @@
 import inspect
 from dataclasses import FrozenInstanceError, fields
-from typing import TypeVar
+from typing import TypeVar, get_type_hints
 
 import pytest
 
 from climatesos.pathway_evaluation import (
+    CandidateTransitionRuleFunction,
     IdentityToken,
     NetOverallSystemContribution,
     OpaqueReference,
@@ -36,7 +37,7 @@ def _candidate() -> tuple[
     SourceReference,
 ]:
     provenance = _record(SourceReference)
-    identity_token = _record(IdentityToken)
+    identity_token = _record(IdentityToken, token_id="lineage-1")
     product_pathway = _record(ProductPathway)
     contribution = _record(NetOverallSystemContribution)
     authoritative = TransitionPathway(
@@ -123,8 +124,9 @@ def test_candidate_preserves_required_identity_and_exact_upstream_references() -
     assert candidate.provenance[0] is provenance
 
 
-def test_transition_pathway_compiler_protocol_matches_section_13() -> None:
+def test_transition_pathway_compiler_has_section_13_contract() -> None:
     signature = inspect.signature(TransitionPathwayCompiler.compile)
+    hints = get_type_hints(TransitionPathwayCompiler.compile)
 
     assert tuple(signature.parameters) == (
         "self",
@@ -145,54 +147,46 @@ def test_transition_pathway_compiler_protocol_matches_section_13() -> None:
         "user_id",
         "pathway_id",
     )
-    assert signature.return_annotation is TransitionPathway
+    assert hints["product_pathway"] is ProductPathway
+    assert hints["net_overall_system_contribution"] is NetOverallSystemContribution
+    assert hints["scale_diagnostic_result"] is ScaleDiagnosticResult
+    assert hints["authoritative_transition_pathway"] is TransitionPathway
+    assert hints["transition_context"] == OpaqueReference | None
+    assert hints["system_context"] == OpaqueReference | None
+    assert hints["conditions"] == tuple[str, ...]
+    assert hints["dependencies"] == tuple[OpaqueReference, ...]
+    assert hints["assumptions"] == tuple[str, ...]
+    assert hints["uncertainties"] == tuple[str, ...]
+    assert hints["evidence_references"] == tuple[SourceReference, ...]
+    assert hints["provenance"] == tuple[SourceReference, ...]
+    assert hints["identity_token"] is IdentityToken
+    assert hints["evaluation_run_id"] is str
+    assert hints["user_id"] is str
+    assert hints["pathway_id"] is str
+    assert hints["return"] is TransitionPathway
 
 
-def test_compiler_protocol_accepts_a_structurally_matching_foundation() -> None:
-    candidate, *_ = _candidate()
+def test_compiler_rule_surface_uses_concrete_relationships_and_opaque_boundaries() -> (
+    None
+):
+    hints = get_type_hints(TransitionPathwayCompiler)
 
-    class CompilerFoundation:
-        def compile(
-            self,
-            product_pathway: ProductPathway,
-            net_overall_system_contribution: NetOverallSystemContribution,
-            scale_diagnostic_result: ScaleDiagnosticResult,
-            authoritative_transition_pathway: TransitionPathway,
-            transition_context: OpaqueReference | None,
-            system_context: OpaqueReference | None,
-            conditions: tuple[str, ...],
-            dependencies: tuple[OpaqueReference, ...],
-            assumptions: tuple[str, ...],
-            uncertainties: tuple[str, ...],
-            evidence_references: tuple[SourceReference, ...],
-            provenance: tuple[SourceReference, ...],
-            identity_token: IdentityToken,
-            evaluation_run_id: str,
-            user_id: str,
-            pathway_id: str,
-        ) -> TransitionPathway:
-            return candidate
-
-    compiler: TransitionPathwayCompiler = CompilerFoundation()
-
-    assert compiler.compile(
-        _record(ProductPathway),
-        _record(NetOverallSystemContribution),
-        _record(ScaleDiagnosticResult),
-        _record(TransitionPathway),
-        None,
-        None,
-        (),
-        (),
-        (),
-        (),
-        (),
-        (),
-        _record(IdentityToken),
-        "run-1",
-        "user-1",
-        "pathway-1",
-    ) is candidate
+    assert (
+        hints["incorporated_transition_function"]
+        == (CandidateTransitionRuleFunction[OpaqueReference])
+    )
+    assert (
+        hints["affected_relationship_function"]
+        == (CandidateTransitionRuleFunction[PathwayRelationship])
+    )
+    assert (
+        hints["dependency_function"]
+        == (CandidateTransitionRuleFunction[OpaqueReference])
+    )
+    assert (
+        hints["unchanged_transition_function"]
+        == (CandidateTransitionRuleFunction[OpaqueReference])
+    )
 
 
 def test_candidate_foundation_adds_no_downstream_or_scalar_surfaces() -> None:

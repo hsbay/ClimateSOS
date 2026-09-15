@@ -36,9 +36,7 @@ from climatesos.pathway_evaluation import (
     QueueLifecycleState,
     QueueOperationalStatus,
     QueueProgressRecord,
-    SourceReference,
     TransitionPathway,
-    ValidatedNetOverallSystemContributionEvaluator,
 )
 
 
@@ -56,9 +54,7 @@ class _Artifacts:
 class _Rule:
     def __init__(self, findings: tuple[ContributionFinding, ...]) -> None:
         self.findings = findings
-        self.calls: list[
-            tuple[PathwayEngineResult, IntegratedCharterResult]
-        ] = []
+        self.calls: list[tuple[PathwayEngineResult, IntegratedCharterResult]] = []
 
     def __call__(
         self,
@@ -256,12 +252,6 @@ def _composer(
         displacement_rule=displacement,
         function_closure_rule=function_closure,
         persistence_closure_rule=persistence_closure,
-        evaluator_version="fossil-1",
-        rule_set_version="fossil-rules-1",
-        assumptions=("configured assumption",),
-        uncertainties=("configured uncertainty",),
-        evidence_references=(SourceReference("result-evidence-1"),),
-        provenance=(SourceReference("result-provenance-1"),),
     )
 
 
@@ -285,18 +275,12 @@ def test_rule_types_and_concrete_callable_have_exact_contracts() -> None:
     assert callable_hints == {
         "pathway_engine_result": PathwayEngineResult,
         "integrated_charter_result": IntegratedCharterResult,
-        "return": NetOverallSystemContribution,
+        "return": tuple[ContributionFinding, ...],
     }
     assert {field.name for field in fields(FossilDisplacementContributionFunction)} == {
         "displacement_rule",
         "function_closure_rule",
         "persistence_closure_rule",
-        "evaluator_version",
-        "rule_set_version",
-        "assumptions",
-        "uncertainties",
-        "evidence_references",
-        "provenance",
     }
 
 
@@ -315,35 +299,14 @@ def test_rules_execute_once_with_exact_inputs_and_preserve_order() -> None:
 
     for rule in (displacement, function_closure, persistence_closure):
         assert rule.calls == [(artifacts.engine, artifacts.integrated)]
-    assert result.contribution_findings == (
+    assert result == (
         later_id,
         earlier_id,
         later_id,
         function_finding,
         persistence_finding,
     )
-    assert result.contribution_findings[0] is result.contribution_findings[2]
-
-
-def test_result_preserves_upstream_identity_attribution_and_metadata() -> None:
-    artifacts = _artifacts()
-    composer = _composer(_Rule(()), _Rule(()), _Rule(()))
-
-    result = composer(artifacts.engine, artifacts.integrated)
-
-    assert result.product_pathway is artifacts.pathway
-    assert result.pathway_engine_result is artifacts.engine
-    assert result.integrated_charter_result is artifacts.integrated
-    assert result.transition_pathway is artifacts.engine.transition_pathway
-    assert result.evaluation_run_id == artifacts.engine.evaluation_run_id
-    assert result.user_id == artifacts.engine.user_id
-    assert result.pathway_id == artifacts.engine.pathway_id
-    assert result.evaluator_version == "fossil-1"
-    assert result.rule_set_version == "fossil-rules-1"
-    assert result.assumptions == ("configured assumption",)
-    assert result.uncertainties == ("configured uncertainty",)
-    assert result.evidence_references == (SourceReference("result-evidence-1"),)
-    assert result.provenance == (SourceReference("result-provenance-1"),)
+    assert result[0] is result[2]
 
 
 @pytest.mark.parametrize("empty_rule", ("displacement", "function", "persistence"))
@@ -359,7 +322,7 @@ def test_an_empty_tuple_from_any_rule_is_valid(empty_rule: str) -> None:
         artifacts.integrated,
     )
 
-    assert isinstance(result, NetOverallSystemContribution)
+    assert isinstance(result, tuple)
 
 
 def test_all_empty_rules_produce_empty_contribution_findings() -> None:
@@ -370,7 +333,7 @@ def test_all_empty_rules_produce_empty_contribution_findings() -> None:
         artifacts.integrated,
     )
 
-    assert result.contribution_findings == ()
+    assert result == ()
 
 
 @pytest.mark.parametrize("rule_name", ("displacement", "function", "persistence"))
@@ -404,8 +367,6 @@ def test_malformed_result_from_any_rule_rejects(
         displacement,
         function,
         persistence,
-        "fossil-1",
-        "fossil-rules-1",
     )
 
     with pytest.raises(FossilDisplacementEvaluationInvariantError):
@@ -425,8 +386,6 @@ def test_rule_exception_propagates_without_an_unresolved_result() -> None:
         _Rule(()),
         fail,
         _Rule((_finding("must-not-run"),)),
-        "fossil-1",
-        "fossil-rules-1",
     )
 
     with pytest.raises(RuntimeError, match="rule failed"):
@@ -468,7 +427,7 @@ def test_suggestive_labels_and_descriptions_do_not_generate_findings(
         artifacts.integrated,
     )
 
-    assert result.contribution_findings == ()
+    assert result == ()
 
 
 def test_only_explicit_rule_findings_appear() -> None:
@@ -483,8 +442,8 @@ def test_only_explicit_rule_findings_appear() -> None:
         artifacts.integrated,
     )
 
-    assert result.contribution_findings == (expected,)
-    assert result.contribution_findings[0] is expected
+    assert result == (expected,)
+    assert result[0] is expected
 
 
 def test_open_ended_substantive_findings_are_preserved_unchanged() -> None:
@@ -505,7 +464,7 @@ def test_open_ended_substantive_findings_are_preserved_unchanged() -> None:
 
     result = composer(artifacts.engine, artifacts.integrated)
 
-    assert result.contribution_findings == (
+    assert result == (
         limited,
         conditional,
         function_unresolved,
@@ -515,7 +474,7 @@ def test_open_ended_substantive_findings_are_preserved_unchanged() -> None:
     assert all(
         actual is expected
         for actual, expected in zip(
-            result.contribution_findings,
+            result,
             (
                 limited,
                 conditional,
@@ -552,7 +511,7 @@ def test_rules_preserve_different_material_evidence_subsets() -> None:
 
     result = composer(artifacts.engine, artifacts.integrated)
 
-    assert result.contribution_findings == (displacement, function, persistence)
+    assert result == (displacement, function, persistence)
     assert displacement.supporting_queue_results == ()
     assert function.supporting_comparison_findings == ()
     assert persistence.pathway_output_references == ()
@@ -571,22 +530,3 @@ def test_queue_subordinate_records_and_scalar_fields_are_not_added() -> None:
     assert {"score", "rank", "ranking", "weight", "votes"}.isdisjoint(
         finding_fields | result_fields
     )
-
-
-def test_composer_integrates_with_validated_contribution_boundary() -> None:
-    artifacts = _artifacts()
-    finding = replace(
-        _finding("validated"),
-        pathway_output_references=(artifacts.pathway.objects[0],),
-        supporting_comparison_findings=(artifacts.comparison,),
-        supporting_queue_results=(artifacts.queue_result,),
-        supporting_fabric_results=(artifacts.fabric_result,),
-        supporting_documentation_findings=(artifacts.documentation,),
-    )
-    composer = _composer(_Rule((finding,)), _Rule(()), _Rule(()))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(composer)
-
-    result = evaluator.evaluate(artifacts.engine, artifacts.integrated)
-
-    assert result.contribution_findings == (finding,)
-    assert result.pathway_engine_result is artifacts.engine

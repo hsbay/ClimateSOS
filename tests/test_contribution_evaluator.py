@@ -36,7 +36,6 @@ from climatesos.pathway_evaluation import (
     QueueProgressRecord,
     SourceReference,
     TransitionPathway,
-    ValidatedNetOverallSystemContributionEvaluator,
 )
 
 
@@ -53,12 +52,10 @@ class _Artifacts:
     integrated: IntegratedCharterResult
 
 
-class _RecordingContributionFunction:
+class _RecordingFindingFunction:
     def __init__(self, output: object) -> None:
         self.output = output
-        self.calls: list[
-            tuple[PathwayEngineResult, IntegratedCharterResult]
-        ] = []
+        self.calls: list[tuple[PathwayEngineResult, IntegratedCharterResult]] = []
 
     def __call__(
         self,
@@ -67,6 +64,23 @@ class _RecordingContributionFunction:
     ) -> object:
         self.calls.append((engine, integrated))
         return self.output
+
+
+@dataclass(frozen=True, slots=True)
+class _DomainFunctions:
+    fossil: _RecordingFindingFunction
+    reliability: _RecordingFindingFunction
+    enabling: _RecordingFindingFunction
+    emissions: _RecordingFindingFunction
+
+    @property
+    def all(self) -> tuple[_RecordingFindingFunction, ...]:
+        return (
+            self.fossil,
+            self.reliability,
+            self.enabling,
+            self.emissions,
+        )
 
 
 def _artifacts() -> _Artifacts:
@@ -256,21 +270,24 @@ def _finding(
     )
 
 
-def _result(
-    artifacts: _Artifacts,
-    findings: tuple[ContributionFinding, ...] | None = None,
-) -> NetOverallSystemContribution:
-    return NetOverallSystemContribution(
-        product_pathway=artifacts.pathway,
-        pathway_engine_result=artifacts.engine,
-        integrated_charter_result=artifacts.integrated,
-        transition_pathway=artifacts.transition,
-        contribution_findings=(
-            findings if findings is not None else (_finding(artifacts),)
-        ),
-        evaluation_run_id=artifacts.engine.evaluation_run_id,
-        user_id=artifacts.engine.user_id,
-        pathway_id=artifacts.engine.pathway_id,
+def _evaluator(
+    *,
+    fossil_output: object = (),
+    reliability_output: object = (),
+    enabling_output: object = (),
+    emissions_output: object = (),
+) -> tuple[NetOverallSystemContributionEvaluator, _DomainFunctions]:
+    functions = _DomainFunctions(
+        fossil=_RecordingFindingFunction(fossil_output),
+        reliability=_RecordingFindingFunction(reliability_output),
+        enabling=_RecordingFindingFunction(enabling_output),
+        emissions=_RecordingFindingFunction(emissions_output),
+    )
+    evaluator = NetOverallSystemContributionEvaluator(
+        fossil_contribution_function=cast(object, functions.fossil),
+        reliability_delivery_timing_function=cast(object, functions.reliability),
+        enabling_demand_burden_function=cast(object, functions.enabling),
+        emissions_cdr_biosphere_function=cast(object, functions.emissions),
         evaluator_version="contribution-1",
         rule_set_version="contribution-rules-1",
         assumptions=("system context applies",),
@@ -278,23 +295,30 @@ def _result(
         evidence_references=(SourceReference("evidence-1"),),
         provenance=(SourceReference("provenance-1"),),
     )
+    return evaluator, functions
 
 
 def _evaluate(
     artifacts: _Artifacts,
-    output: object,
+    fossil_output: object = (),
+    *,
+    reliability_output: object = (),
+    enabling_output: object = (),
+    emissions_output: object = (),
     engine: PathwayEngineResult | None = None,
     integrated: IntegratedCharterResult | None = None,
-) -> tuple[object, _RecordingContributionFunction]:
-    function = _RecordingContributionFunction(output)
-    evaluator: NetOverallSystemContributionEvaluator = (
-        ValidatedNetOverallSystemContributionEvaluator(function)
+) -> tuple[NetOverallSystemContribution, _DomainFunctions]:
+    evaluator, functions = _evaluator(
+        fossil_output=fossil_output,
+        reliability_output=reliability_output,
+        enabling_output=enabling_output,
+        emissions_output=emissions_output,
     )
     result = evaluator.evaluate(
         engine if engine is not None else artifacts.engine,
         integrated if integrated is not None else artifacts.integrated,
     )
-    return result, function
+    return result, functions
 
 
 @pytest.mark.parametrize(
@@ -304,28 +328,43 @@ def _evaluate(
 def test_substantive_integrated_charter_statuses_progress(status: str) -> None:
     artifacts = _artifacts()
     integrated = replace(artifacts.integrated, status=status)
-    expected = replace(_result(artifacts), integrated_charter_result=integrated)
 
-    actual, function = _evaluate(artifacts, expected, integrated=integrated)
+    actual, functions = _evaluate(artifacts, integrated=integrated)
 
-    assert actual is expected
-    assert function.calls == [(artifacts.engine, integrated)]
+    assert actual.integrated_charter_result is integrated
+    for function in functions.all:
+        assert function.calls == [(artifacts.engine, integrated)]
 
 
-def test_valid_result_is_returned_unchanged_and_empty_findings_are_valid() -> None:
+def test_evaluator_constructs_result_and_empty_domain_findings_are_valid() -> None:
     artifacts = _artifacts()
-    expected = _result(artifacts, ())
 
-    actual, _ = _evaluate(artifacts, expected)
+    actual, functions = _evaluate(artifacts)
 
-    assert actual is expected
+    assert isinstance(actual, NetOverallSystemContribution)
+    assert actual.product_pathway is artifacts.pathway
+    assert actual.pathway_engine_result is artifacts.engine
+    assert actual.integrated_charter_result is artifacts.integrated
+    assert actual.transition_pathway is artifacts.transition
+    assert actual.contribution_findings == ()
+    assert actual.evaluation_run_id == "run-1"
+    assert actual.user_id == "user-1"
+    assert actual.pathway_id == "pathway-1"
+    assert actual.evaluator_version == "contribution-1"
+    assert actual.rule_set_version == "contribution-rules-1"
+    assert actual.assumptions == ("system context applies",)
+    assert actual.uncertainties == ("propagation uncertain",)
+    assert actual.evidence_references == (SourceReference("evidence-1"),)
+    assert actual.provenance == (SourceReference("provenance-1"),)
+    for function in functions.all:
+        assert function.calls == [(artifacts.engine, artifacts.integrated)]
 
 
 @pytest.mark.parametrize(
     ("status", "execution_error"),
     (("ERROR", None), ("PASS", "integrated evaluator failed")),
 )
-def test_integrated_stage_integrity_failure_rejects_before_callback(
+def test_integrated_stage_integrity_failure_rejects_before_domain_evaluation(
     status: str,
     execution_error: str | None,
 ) -> None:
@@ -335,13 +374,12 @@ def test_integrated_stage_integrity_failure_rejects_before_callback(
         status=status,
         execution_error=execution_error,
     )
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(artifacts.engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
 @pytest.mark.parametrize(
@@ -353,62 +391,60 @@ def test_integrated_stage_integrity_failure_rejects_before_callback(
         CharterCheckStatus.NOACK,
     ),
 )
-def test_integrity_check_status_rejects_before_callback(
+def test_integrity_check_status_rejects_before_domain_evaluation(
     status: CharterCheckStatus,
 ) -> None:
     artifacts = _artifacts()
     check = CharterCheckResult("check-1", status)
     integrated = replace(artifacts.integrated, check_results=(check,))
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(artifacts.engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
-def test_mismatched_engine_reference_rejects_before_callback() -> None:
+def test_mismatched_engine_reference_rejects_before_domain_evaluation() -> None:
     artifacts = _artifacts()
     integrated = replace(
         artifacts.integrated,
         pathway_engine_result=replace(artifacts.engine),
     )
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(artifacts.engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
-def test_mismatched_initial_charter_reference_rejects_before_callback() -> None:
+def test_mismatched_initial_charter_reference_rejects_before_domain_evaluation() -> (
+    None
+):
     artifacts = _artifacts()
     integrated = replace(
         artifacts.integrated,
         initial_charter_result=replace(artifacts.initial),
     )
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(artifacts.engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
-def test_mismatched_token_id_rejects_before_callback() -> None:
+def test_mismatched_token_id_rejects_before_domain_evaluation() -> None:
     artifacts = _artifacts()
     engine = replace(artifacts.engine, identity_token=IdentityToken("token-2"))
     integrated = replace(artifacts.integrated, pathway_engine_result=engine)
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
 def test_distinct_identity_tokens_with_same_token_id_are_accepted() -> None:
@@ -422,26 +458,25 @@ def test_distinct_identity_tokens_with_same_token_id_are_accepted() -> None:
         identity_token=IdentityToken(artifacts.pathway.identity_token.token_id),
         pathway_engine_result=engine,
     )
-    expected = replace(
-        _result(artifacts),
-        pathway_engine_result=engine,
-        integrated_charter_result=integrated,
-    )
 
-    actual, _ = _evaluate(
+    actual, functions = _evaluate(
         artifacts,
-        expected,
         engine=engine,
         integrated=integrated,
     )
 
-    assert actual is expected
+    assert actual.pathway_engine_result is engine
+    assert actual.integrated_charter_result is integrated
     assert engine.identity_token is not artifacts.pathway.identity_token
     assert integrated.identity_token is not engine.identity_token
+    for function in functions.all:
+        assert function.calls == [(engine, integrated)]
 
 
 @pytest.mark.parametrize("source", ("engine", "integrated"))
-def test_mismatched_evaluation_run_rejects_before_callback(source: str) -> None:
+def test_mismatched_evaluation_run_rejects_before_domain_evaluation(
+    source: str,
+) -> None:
     artifacts = _artifacts()
     engine = artifacts.engine
     integrated = artifacts.integrated
@@ -450,20 +485,19 @@ def test_mismatched_evaluation_run_rejects_before_callback(source: str) -> None:
         integrated = replace(integrated, pathway_engine_result=engine)
     else:
         integrated = replace(integrated, evaluation_run_id="run-2")
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
 @pytest.mark.parametrize(
     ("field_name", "value"),
     (("user_id", "user-2"), ("pathway_id", "pathway-2")),
 )
-def test_mismatched_engine_attribution_rejects_before_callback(
+def test_mismatched_engine_attribution_rejects_before_domain_evaluation(
     field_name: str,
     value: str,
 ) -> None:
@@ -473,17 +507,16 @@ def test_mismatched_engine_attribution_rejects_before_callback(
     else:
         engine = replace(artifacts.engine, pathway_id=value)
     integrated = replace(artifacts.integrated, pathway_engine_result=engine)
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(engine, integrated)
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
-@pytest.mark.parametrize("output", (None, "not-a-contribution"))
-def test_none_and_wrong_result_types_reject(output: object) -> None:
+@pytest.mark.parametrize("output", (None, "not-findings", []))
+def test_malformed_domain_output_rejects(output: object) -> None:
     artifacts = _artifacts()
 
     with pytest.raises(ContributionEvaluationInvariantError):
@@ -491,72 +524,41 @@ def test_none_and_wrong_result_types_reject(output: object) -> None:
 
 
 @pytest.mark.parametrize(
-    ("field_name", "foreign_value"),
-    (
-        ("product_pathway", "pathway"),
-        ("pathway_engine_result", "engine"),
-        ("integrated_charter_result", "integrated"),
-        ("transition_pathway", "transition"),
-    ),
+    "domain",
+    ("fossil", "reliability", "enabling", "emissions"),
 )
-def test_wrong_primary_result_reference_rejects(
-    field_name: str,
-    foreign_value: str,
-) -> None:
+def test_each_domain_requires_tuple_of_contribution_findings(domain: str) -> None:
     artifacts = _artifacts()
-    result = _result(artifacts)
-    if field_name == "product_pathway":
-        malformed = replace(result, product_pathway=replace(artifacts.pathway))
-    elif field_name == "pathway_engine_result":
-        malformed = replace(
-            result,
-            pathway_engine_result=replace(artifacts.engine),
-        )
-    elif field_name == "integrated_charter_result":
-        malformed = replace(
-            result,
-            integrated_charter_result=replace(artifacts.integrated),
-        )
-    else:
-        assert foreign_value == "transition"
-        malformed = replace(
-            result,
-            transition_pathway=replace(artifacts.transition),
-        )
+    kwargs: dict[str, object] = {
+        "fossil_output": (),
+        "reliability_output": (),
+        "enabling_output": (),
+        "emissions_output": (),
+    }
+    kwargs[f"{domain}_output"] = ("not-a-finding",)
+
+    evaluator, functions = _evaluator(**kwargs)
 
     with pytest.raises(ContributionEvaluationInvariantError):
-        _evaluate(artifacts, malformed)
+        evaluator.evaluate(artifacts.engine, artifacts.integrated)
 
-
-@pytest.mark.parametrize(
-    ("field_name", "value"),
-    (
-        ("evaluation_run_id", "run-2"),
-        ("user_id", "user-2"),
-        ("pathway_id", "pathway-2"),
-    ),
-)
-def test_wrong_result_attribution_rejects(field_name: str, value: str) -> None:
-    artifacts = _artifacts()
-    result = _result(artifacts)
-    if field_name == "evaluation_run_id":
-        malformed = replace(result, evaluation_run_id=value)
-    elif field_name == "user_id":
-        malformed = replace(result, user_id=value)
-    else:
-        malformed = replace(result, pathway_id=value)
-
-    with pytest.raises(ContributionEvaluationInvariantError):
-        _evaluate(artifacts, malformed)
+    domain_functions = {
+        "fossil": functions.fossil,
+        "reliability": functions.reliability,
+        "enabling": functions.enabling,
+        "emissions": functions.emissions,
+    }
+    assert domain_functions[domain].calls == [(artifacts.engine, artifacts.integrated)]
 
 
 def test_exact_material_summary_references_and_opaque_references_are_valid() -> None:
     artifacts = _artifacts()
-    expected = _result(artifacts)
+    expected_finding = _finding(artifacts)
 
-    actual, _ = _evaluate(artifacts, expected)
-    finding = cast(NetOverallSystemContribution, actual).contribution_findings[0]
+    actual, _ = _evaluate(artifacts, (expected_finding,))
+    finding = actual.contribution_findings[0]
 
+    assert finding is expected_finding
     assert finding.pathway_output_references[0] is artifacts.pathway.objects[0]
     assert finding.supporting_comparison_findings[0] is artifacts.comparison
     assert finding.supporting_queue_results[0] is artifacts.queue_result
@@ -604,10 +606,9 @@ def test_equal_but_nonidentical_material_support_rejects(field_name: str) -> Non
             finding,
             supporting_documentation_findings=(replace(artifacts.documentation),),
         )
-    malformed = _result(artifacts, (malformed_finding,))
 
     with pytest.raises(ContributionEvaluationInvariantError):
-        _evaluate(artifacts, malformed)
+        _evaluate(artifacts, (malformed_finding,))
 
 
 def test_findings_may_preserve_distinct_material_subsets_and_empty_categories() -> None:
@@ -623,11 +624,12 @@ def test_findings_may_preserve_distinct_material_subsets_and_empty_categories() 
         supporting_comparison_findings=(),
         supporting_queue_results=(),
     )
-    expected = _result(artifacts, (first, second))
 
-    actual, _ = _evaluate(artifacts, expected)
+    actual, _ = _evaluate(artifacts, (first, second))
 
-    assert actual is expected
+    assert actual.contribution_findings == (first, second)
+    assert actual.contribution_findings[0] is first
+    assert actual.contribution_findings[1] is second
     assert first.supporting_comparison_findings == (artifacts.comparison,)
     assert first.supporting_fabric_results == ()
     assert second.supporting_comparison_findings == ()
@@ -655,18 +657,33 @@ def test_limited_conditional_and_unresolved_findings_are_valid(
     statuses: tuple[str, ...],
 ) -> None:
     artifacts = _artifacts()
-    expected = _result(artifacts, (_finding(artifacts, statuses),))
+    expected_finding = _finding(artifacts, statuses)
 
-    actual, _ = _evaluate(artifacts, expected)
+    actual, _ = _evaluate(artifacts, (expected_finding,))
 
-    assert actual is expected
+    assert actual.contribution_findings == (expected_finding,)
+    assert actual.contribution_findings[0] is expected_finding
 
 
-def test_malformed_result_and_finding_collections_reject() -> None:
+def test_malformed_evaluator_metadata_and_finding_collections_reject() -> None:
     artifacts = _artifacts()
-    malformed_result = replace(
-        _result(artifacts),
+    functions = _DomainFunctions(
+        fossil=_RecordingFindingFunction(()),
+        reliability=_RecordingFindingFunction(()),
+        enabling=_RecordingFindingFunction(()),
+        emissions=_RecordingFindingFunction(()),
+    )
+    evaluator = NetOverallSystemContributionEvaluator(
+        fossil_contribution_function=cast(object, functions.fossil),
+        reliability_delivery_timing_function=cast(object, functions.reliability),
+        enabling_demand_burden_function=cast(object, functions.enabling),
+        emissions_cdr_biosphere_function=cast(object, functions.emissions),
+        evaluator_version="contribution-1",
+        rule_set_version="contribution-rules-1",
         assumptions=cast(tuple[str, ...], ["mutable"]),
+        uncertainties=("propagation uncertain",),
+        evidence_references=(SourceReference("evidence-1"),),
+        provenance=(SourceReference("provenance-1"),),
     )
     malformed_finding = replace(
         _finding(artifacts),
@@ -674,15 +691,15 @@ def test_malformed_result_and_finding_collections_reject() -> None:
     )
 
     with pytest.raises(ContributionEvaluationInvariantError):
-        _evaluate(artifacts, malformed_result)
+        evaluator.evaluate(artifacts.engine, artifacts.integrated)
+
     with pytest.raises(ContributionEvaluationInvariantError):
-        _evaluate(artifacts, _result(artifacts, (malformed_finding,)))
+        _evaluate(artifacts, (malformed_finding,))
 
 
-def test_exact_input_types_are_required_before_callback() -> None:
+def test_exact_input_types_are_required_before_domain_evaluation() -> None:
     artifacts = _artifacts()
-    function = _RecordingContributionFunction(_result(artifacts))
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(function)
+    evaluator, functions = _evaluator()
 
     with pytest.raises(ContributionEvaluationInvariantError):
         evaluator.evaluate(cast(PathwayEngineResult, object()), artifacts.integrated)
@@ -692,11 +709,12 @@ def test_exact_input_types_are_required_before_callback() -> None:
             cast(IntegratedCharterResult, object()),
         )
 
-    assert function.calls == []
+    assert all(function.calls == [] for function in functions.all)
 
 
-def test_callback_exception_is_not_converted_to_an_unresolved_finding() -> None:
+def test_domain_exception_is_not_converted_to_an_unresolved_finding() -> None:
     artifacts = _artifacts()
+    later_calls: list[str] = []
 
     def fail(
         _engine: PathwayEngineResult,
@@ -704,7 +722,23 @@ def test_callback_exception_is_not_converted_to_an_unresolved_finding() -> None:
     ) -> object:
         raise RuntimeError("substantive evaluator failed")
 
-    evaluator = ValidatedNetOverallSystemContributionEvaluator(fail)
+    def later(
+        _engine: PathwayEngineResult,
+        _integrated: IntegratedCharterResult,
+    ) -> object:
+        later_calls.append("called")
+        return ()
+
+    evaluator = NetOverallSystemContributionEvaluator(
+        fossil_contribution_function=cast(object, fail),
+        reliability_delivery_timing_function=cast(object, later),
+        enabling_demand_burden_function=cast(object, later),
+        emissions_cdr_biosphere_function=cast(object, later),
+        evaluator_version="contribution-1",
+        rule_set_version="contribution-rules-1",
+    )
 
     with pytest.raises(RuntimeError, match="substantive evaluator failed"):
         evaluator.evaluate(artifacts.engine, artifacts.integrated)
+
+    assert later_calls == []

@@ -1,4 +1,4 @@
-"""Validated boundary for caller-supplied final pathway assembly."""
+"""Final pathway assembly and invariant enforcement."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -33,7 +33,7 @@ from .models import (
     TransitionPathway,
 )
 
-FinalPathwayAssemblyFunction = Callable[
+FinalPathwayVersionFunction = Callable[
     [
         ProductPathway,
         TransitionPathway,
@@ -49,7 +49,7 @@ FinalPathwayAssemblyFunction = Callable[
         str,
         str,
     ],
-    object,
+    str,
 ]
 
 T = TypeVar("T")
@@ -79,10 +79,11 @@ def _require_versions(*versions: object) -> None:
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedFinalPathwayAssembly:
-    """Validate structural integrity around final pathway assembly."""
+class FinalPathwayAssembly:
+    """Assemble completed evaluation state without re-evaluating findings."""
 
-    assembly_function: FinalPathwayAssemblyFunction
+    assembly_version_function: FinalPathwayVersionFunction
+    assembly_rule_version_function: FinalPathwayVersionFunction
 
     def assemble(
         self,
@@ -100,7 +101,7 @@ class ValidatedFinalPathwayAssembly:
         user_id: str,
         pathway_id: str,
     ) -> FinalPathwayResult:
-        """Invoke assembly once after validating the completed evaluation state."""
+        """Assemble and validate one immutable final pathway result."""
 
         self._validate_inputs(
             product_pathway,
@@ -117,7 +118,8 @@ class ValidatedFinalPathwayAssembly:
             user_id,
             pathway_id,
         )
-        raw_result = self.assembly_function(
+
+        arguments = (
             product_pathway,
             authoritative_transition_pathway,
             candidate_transition_pathway,
@@ -132,12 +134,36 @@ class ValidatedFinalPathwayAssembly:
             user_id,
             pathway_id,
         )
-        if type(raw_result) is not FinalPathwayResult:
-            raise FinalPathwayAssemblyInvariantError(
-                "Assembly must return exactly FinalPathwayResult"
-            )
+
+        # These callbacks supply assembly metadata only. They do not own final
+        # pathway construction or any downstream evaluation decision.
+        assembly_version = self.assembly_version_function(*arguments)
+        assembly_rule_version = self.assembly_rule_version_function(*arguments)
+
+        evaluation_trace = EvaluationTrace(
+            initial_charter_result=initial_charter_result,
+            pathway_engine_result=pathway_engine_result,
+            integrated_charter_result=integrated_charter_result,
+            net_overall_system_contribution=net_overall_system_contribution,
+            scale_diagnostic_result=scale_diagnostic_result,
+        )
+
+        result = FinalPathwayResult(
+            product_pathway=product_pathway,
+            authoritative_transition_pathway=authoritative_transition_pathway,
+            candidate_transition_pathway=candidate_transition_pathway,
+            net_overall_system_risk_result=net_overall_system_risk_result,
+            evaluation_trace=evaluation_trace,
+            identity_token=identity_token,
+            evaluation_run_id=evaluation_run_id,
+            user_id=user_id,
+            pathway_id=pathway_id,
+            assembly_version=assembly_version,
+            assembly_rule_version=assembly_rule_version,
+        )
+
         self._validate_result(
-            raw_result,
+            result,
             product_pathway,
             authoritative_transition_pathway,
             candidate_transition_pathway,
@@ -152,7 +178,7 @@ class ValidatedFinalPathwayAssembly:
             user_id,
             pathway_id,
         )
-        return raw_result
+        return result
 
     @classmethod
     def _validate_inputs(
@@ -188,8 +214,7 @@ class ValidatedFinalPathwayAssembly:
                 "Assembly inputs must use their exact Packet 11A artifact types"
             )
         if not all(
-            isinstance(value, str)
-            for value in (evaluation_run_id, user_id, pathway_id)
+            isinstance(value, str) for value in (evaluation_run_id, user_id, pathway_id)
         ):
             raise FinalPathwayAssemblyInvariantError(
                 "Assembly attribution values must be strings"

@@ -195,9 +195,9 @@ def test_scale_finding_has_its_own_typed_material_evidence_surface() -> None:
     assert hints["supporting_comparison_findings"] == tuple[ComparisonFinding, ...]
     assert hints["supporting_queue_results"] == tuple[QueueEvaluatorResult, ...]
     assert hints["supporting_fabric_results"] == tuple[FabricEvaluatorResult, ...]
-    assert hints["supporting_documentation_findings"] == tuple[
-        DocumentationFinding, ...
-    ]
+    assert (
+        hints["supporting_documentation_findings"] == tuple[DocumentationFinding, ...]
+    )
     assert hints["supporting_system_references"] == tuple[OpaqueReference, ...]
 
 

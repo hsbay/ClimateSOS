@@ -1,4 +1,4 @@
-"""Validated boundary for caller-supplied candidate transition compilation."""
+"""Candidate TransitionPathway compilation and invariant enforcement."""
 
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -15,7 +15,9 @@ from .models import (
     TransitionPathway,
 )
 
-TransitionPathwayCompilationFunction = Callable[
+T = TypeVar("T")
+
+CandidateTransitionRuleFunction = Callable[
     [
         ProductPathway,
         NetOverallSystemContribution,
@@ -34,10 +36,8 @@ TransitionPathwayCompilationFunction = Callable[
         str,
         str,
     ],
-    object,
+    tuple[T, ...],
 ]
-
-T = TypeVar("T")
 
 
 class TransitionPathwayCompilationInvariantError(ValueError):
@@ -59,10 +59,28 @@ def _require_tuple_of(
 
 
 @dataclass(frozen=True, slots=True)
-class ValidatedTransitionPathwayCompiler:
-    """Validate inputs and a caller-supplied candidate transition mapping."""
+class TransitionPathwayCompiler:
+    """Compile evaluated pathway effects into one non-authoritative candidate."""
 
-    compilation_function: TransitionPathwayCompilationFunction
+    # Transition-function, dependency, and unchanged-state references remain
+    # opaque because the current Product Pathway Evaluation model defines no
+    # concrete TransitionFunction, Dependency, or TransitionElement artifact.
+    # Concrete PathwayRelationship objects are preserved wherever the modeled
+    # artifact exists.
+    incorporated_transition_function: CandidateTransitionRuleFunction[OpaqueReference]
+    affected_relationship_function: CandidateTransitionRuleFunction[PathwayRelationship]
+    dependency_function: CandidateTransitionRuleFunction[OpaqueReference]
+    condition_function: CandidateTransitionRuleFunction[str]
+    timing_condition_function: CandidateTransitionRuleFunction[str]
+    sequencing_condition_function: CandidateTransitionRuleFunction[str]
+    contribution_condition_function: CandidateTransitionRuleFunction[str]
+    scale_condition_function: CandidateTransitionRuleFunction[str]
+    unchanged_transition_function: CandidateTransitionRuleFunction[OpaqueReference]
+    unresolved_condition_function: CandidateTransitionRuleFunction[str]
+    reference_id: str
+    compiler_version: str
+    model_version: str
+    rule_set_version: str
 
     def compile(
         self,
@@ -83,7 +101,7 @@ class ValidatedTransitionPathwayCompiler:
         user_id: str,
         pathway_id: str,
     ) -> TransitionPathway:
-        """Invoke compilation without supplying transition-change semantics."""
+        """Compile, validate, and return one candidate transition state."""
 
         self._validate_inputs(
             product_pathway,
@@ -103,7 +121,8 @@ class ValidatedTransitionPathwayCompiler:
             user_id,
             pathway_id,
         )
-        raw_candidate = self.compilation_function(
+
+        arguments = (
             product_pathway,
             net_overall_system_contribution,
             scale_diagnostic_result,
@@ -121,12 +140,93 @@ class ValidatedTransitionPathwayCompiler:
             user_id,
             pathway_id,
         )
-        if type(raw_candidate) is not TransitionPathway:
-            raise TransitionPathwayCompilationInvariantError(
-                "Transition compilation must return exactly TransitionPathway"
-            )
+
+        # These rules derive sibling pieces of one candidate from the same
+        # completed upstream evaluation state. Runtime scheduling is not part
+        # of the compiler contract; each output must satisfy its own declared
+        # artifact/reference type before candidate construction.
+        incorporated_transition_references = _require_tuple_of(
+            self.incorporated_transition_function(*arguments),
+            OpaqueReference,
+            "Incorporated transition references",
+        )
+        affected_relationships = _require_tuple_of(
+            self.affected_relationship_function(*arguments),
+            PathwayRelationship,
+            "Affected relationships",
+        )
+        compiled_dependencies = _require_tuple_of(
+            self.dependency_function(*arguments),
+            OpaqueReference,
+            "Compiled dependency references",
+        )
+        compiled_conditions = _require_tuple_of(
+            self.condition_function(*arguments),
+            str,
+            "Compiled conditions",
+        )
+        timing_conditions = _require_tuple_of(
+            self.timing_condition_function(*arguments),
+            str,
+            "Timing conditions",
+        )
+        sequencing_conditions = _require_tuple_of(
+            self.sequencing_condition_function(*arguments),
+            str,
+            "Sequencing conditions",
+        )
+        contribution_conditions = _require_tuple_of(
+            self.contribution_condition_function(*arguments),
+            str,
+            "Contribution conditions",
+        )
+        scale_conditions = _require_tuple_of(
+            self.scale_condition_function(*arguments),
+            str,
+            "Scale conditions",
+        )
+        unchanged_transition_references = _require_tuple_of(
+            self.unchanged_transition_function(*arguments),
+            OpaqueReference,
+            "Unchanged transition references",
+        )
+        unresolved_conditions = _require_tuple_of(
+            self.unresolved_condition_function(*arguments),
+            str,
+            "Unresolved conditions",
+        )
+
+        candidate = TransitionPathway(
+            reference_id=self.reference_id,
+            provenance=provenance,
+            identity_token=identity_token,
+            evaluation_run_id=evaluation_run_id,
+            user_id=user_id,
+            pathway_id=pathway_id,
+            authoritative_transition_pathway=authoritative_transition_pathway,
+            product_pathway=product_pathway,
+            net_overall_system_contribution=net_overall_system_contribution,
+            scale_diagnostic_result=scale_diagnostic_result,
+            incorporated_transition_references=incorporated_transition_references,
+            affected_relationships=affected_relationships,
+            dependencies=dependencies + compiled_dependencies,
+            conditions=conditions + compiled_conditions,
+            timing_conditions=timing_conditions,
+            sequencing_conditions=sequencing_conditions,
+            contribution_conditions=contribution_conditions,
+            scale_conditions=scale_conditions,
+            unchanged_transition_references=unchanged_transition_references,
+            unresolved_conditions=unresolved_conditions,
+            assumptions=assumptions,
+            uncertainties=uncertainties,
+            evidence_references=evidence_references,
+            compiler_version=self.compiler_version,
+            model_version=self.model_version,
+            rule_set_version=self.rule_set_version,
+        )
+
         self._validate_candidate(
-            raw_candidate,
+            candidate,
             product_pathway,
             net_overall_system_contribution,
             scale_diagnostic_result,
@@ -136,7 +236,7 @@ class ValidatedTransitionPathwayCompiler:
             user_id,
             pathway_id,
         )
-        return raw_candidate
+        return candidate
 
     @staticmethod
     def _validate_inputs(
@@ -195,8 +295,7 @@ class ValidatedTransitionPathwayCompiler:
         )
         _require_tuple_of(provenance, SourceReference, "Compilation provenance")
         if not all(
-            isinstance(value, str)
-            for value in (evaluation_run_id, user_id, pathway_id)
+            isinstance(value, str) for value in (evaluation_run_id, user_id, pathway_id)
         ):
             raise TransitionPathwayCompilationInvariantError(
                 "Compilation attribution values must be strings"

@@ -4,8 +4,8 @@ from dataclasses import dataclass
 
 from .enums import BoundState
 from .final_pathway_assembly import (
+    FinalPathwayAssembly,
     FinalPathwayAssemblyInvariantError,
-    ValidatedFinalPathwayAssembly,
 )
 from .models import (
     BoundPathway,
@@ -33,9 +33,7 @@ def _validate_final_pathway(
     pathway_id: str,
 ) -> None:
     if type(result) is not FinalPathwayResult:
-        raise BindingInvariantError(
-            "Binding requires exactly FinalPathwayResult"
-        )
+        raise BindingInvariantError("Binding requires exactly FinalPathwayResult")
     if type(identity_token) is not IdentityToken:
         raise BindingInvariantError("Binding requires exactly IdentityToken")
     try:
@@ -44,7 +42,7 @@ def _validate_final_pathway(
                 "FinalPathwayResult must preserve exactly EvaluationTrace"
             )
         trace = result.evaluation_trace
-        ValidatedFinalPathwayAssembly._validate_inputs(
+        FinalPathwayAssembly._validate_inputs(
             result.product_pathway,
             result.authoritative_transition_pathway,
             result.candidate_transition_pathway,
@@ -59,7 +57,7 @@ def _validate_final_pathway(
             user_id,
             pathway_id,
         )
-        ValidatedFinalPathwayAssembly._validate_result(
+        FinalPathwayAssembly._validate_result(
             result,
             result.product_pathway,
             result.authoritative_transition_pathway,
