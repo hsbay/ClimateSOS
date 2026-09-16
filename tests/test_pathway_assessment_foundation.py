@@ -437,9 +437,9 @@ def test_determination_function_cannot_own_pathway_assessment_result() -> None:
     def whole_result(
         supplied_bound: BoundPathway,
         supplied_charter: FinalCharterResult,
-    ) -> object:
+    ) -> _PathwayAssessmentDetermination:
         del supplied_bound, supplied_charter
-        return object()
+        return cast(_PathwayAssessmentDetermination, object())
 
     with pytest.raises(
         PathwayAssessmentInvariantError,

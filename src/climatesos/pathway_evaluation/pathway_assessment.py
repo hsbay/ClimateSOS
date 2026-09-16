@@ -3,18 +3,29 @@
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from .enums import BoundState
+from .enums import BoundState, ProductEvaluationContextMode
 from .models import (
     BoundPathway,
+    CharterCheckResult,
     ComparisonFinding,
+    ContributionFinding,
+    DocumentationFinding,
+    FabricEvaluatorResult,
     FinalCharterResult,
     IdentityToken,
     InitialCharterResult,
     IntegratedCharterResult,
+    NetOverallSystemContribution,
+    NetOverallSystemRiskResult,
     OpaqueReference,
     PathwayAssessment,
+    PathwayEngineResult,
     ProductEvaluationContext,
     ProductPathway,
+    QueueEvaluatorResult,
+    ScaleDiagnosticResult,
+    ScaleFinding,
+    SystemRiskFinding,
     TransitionPathway,
 )
 
@@ -40,6 +51,23 @@ _PathwayAssessmentDeterminationFunction = Callable[
     [BoundPathway, FinalCharterResult],
     _PathwayAssessmentDetermination,
 ]
+
+
+@dataclass(frozen=True, slots=True)
+class _PathwayAssessmentLineage:
+    """Material evaluator-owned conclusions retained at their summary boundary."""
+
+    initial_charter_checks: tuple[CharterCheckResult, ...]
+    integrated_charter_checks: tuple[CharterCheckResult, ...]
+    final_charter_checks: tuple[CharterCheckResult, ...]
+    supported_comparison_findings: tuple[ComparisonFinding, ...]
+    queue_results: tuple[QueueEvaluatorResult, ...]
+    fabric_results: tuple[FabricEvaluatorResult, ...]
+    documentation_findings: tuple[DocumentationFinding, ...]
+    contribution_findings: tuple[ContributionFinding, ...]
+    scale_findings: tuple[ScaleFinding, ...]
+    risk_findings: tuple[SystemRiskFinding, ...]
+    candidate_conditions: tuple[str, ...]
 
 
 class PathwayAssessmentInvariantError(ValueError):
@@ -78,6 +106,263 @@ def _require_comparison_finding_tuple(
             f"{description} must be a tuple of ComparisonFinding objects"
         )
     return value
+
+
+def _require_exact_tuple(
+    value: object,
+    expected_type: type[object],
+    description: str,
+) -> None:
+    if not isinstance(value, tuple) or not all(
+        type(item) is expected_type for item in value
+    ):
+        raise PathwayAssessmentInvariantError(
+            f"{description} must be a tuple of {expected_type.__name__} objects"
+        )
+
+
+def _collect_material_lineage(
+    bound_pathway: BoundPathway,
+    initial_charter_result: InitialCharterResult,
+    integrated_charter_result: IntegratedCharterResult,
+    final_charter_result: FinalCharterResult,
+    candidate_transition_pathway: TransitionPathway,
+) -> _PathwayAssessmentLineage:
+    """Follow the concrete Section 18 spine without flattening subordinates."""
+
+    final_pathway = bound_pathway.final_pathway_result
+    trace = final_pathway.evaluation_trace
+    engine = trace.pathway_engine_result
+    contribution = trace.net_overall_system_contribution
+    scale = trace.scale_diagnostic_result
+    risk = final_pathway.net_overall_system_risk_result
+
+    exact_results = (
+        (engine, PathwayEngineResult, "Pathway engine result"),
+        (
+            contribution,
+            NetOverallSystemContribution,
+            "Net overall system contribution",
+        ),
+        (scale, ScaleDiagnosticResult, "Scale diagnostic result"),
+        (risk, NetOverallSystemRiskResult, "Net overall system risk result"),
+    )
+    for exact_result, exact_type, exact_description in exact_results:
+        if type(exact_result) is not exact_type:
+            raise PathwayAssessmentInvariantError(
+                f"{exact_description} must preserve exactly {exact_type.__name__}"
+            )
+
+    exact_relationships = (
+        (engine.initial_charter_result is initial_charter_result, "engine/initial"),
+        (
+            integrated_charter_result.pathway_engine_result is engine,
+            "integrated Charter/engine",
+        ),
+        (
+            contribution.pathway_engine_result is engine,
+            "contribution/engine",
+        ),
+        (
+            contribution.integrated_charter_result is integrated_charter_result,
+            "contribution/integrated Charter",
+        ),
+        (
+            scale.net_overall_system_contribution is contribution,
+            "scale/contribution",
+        ),
+        (
+            candidate_transition_pathway.net_overall_system_contribution
+            is contribution,
+            "candidate/contribution",
+        ),
+        (
+            candidate_transition_pathway.scale_diagnostic_result is scale,
+            "candidate/scale",
+        ),
+        (
+            risk.candidate_transition_pathway is candidate_transition_pathway,
+            "risk/candidate",
+        ),
+        (
+            risk.authoritative_transition_pathway
+            is final_pathway.authoritative_transition_pathway,
+            "risk/authoritative transition",
+        ),
+    )
+    for is_exact, relationship in exact_relationships:
+        if not is_exact:
+            raise PathwayAssessmentInvariantError(
+                f"Assessment lineage must preserve the exact {relationship} reference"
+            )
+
+    tuple_results = (
+        (
+            initial_charter_result.check_results,
+            CharterCheckResult,
+            "Initial Charter checks",
+        ),
+        (
+            integrated_charter_result.check_results,
+            CharterCheckResult,
+            "Integrated Charter checks",
+        ),
+        (
+            final_charter_result.check_results,
+            CharterCheckResult,
+            "Final Charter checks",
+        ),
+        (
+            engine.direct_comparison_findings,
+            ComparisonFinding,
+            "Direct comparison findings",
+        ),
+        (
+            engine.substitution_combination_findings,
+            ComparisonFinding,
+            "Substitution-combination findings",
+        ),
+        (
+            engine.downstream_propagation_findings,
+            ComparisonFinding,
+            "Downstream propagation findings",
+        ),
+        (engine.queue_results, QueueEvaluatorResult, "Queue evaluator results"),
+        (engine.fabric_results, FabricEvaluatorResult, "Fabric evaluator results"),
+        (
+            engine.documentation_findings,
+            DocumentationFinding,
+            "Documentation findings",
+        ),
+        (
+            contribution.contribution_findings,
+            ContributionFinding,
+            "Contribution findings",
+        ),
+        (scale.scale_findings, ScaleFinding, "Scale findings"),
+        (risk.risk_findings, SystemRiskFinding, "System risk findings"),
+    )
+    for tuple_values, tuple_type, tuple_description in tuple_results:
+        _require_exact_tuple(tuple_values, tuple_type, tuple_description)
+
+    available_comparison_findings = (
+        engine.direct_comparison_findings
+        + engine.substitution_combination_findings
+        + engine.downstream_propagation_findings
+    )
+    supported_comparison_findings: list[ComparisonFinding] = []
+    for owner, description in (
+        *(
+            (finding, "Contribution supporting comparison findings")
+            for finding in contribution.contribution_findings
+        ),
+        *(
+            (finding, "Scale supporting comparison findings")
+            for finding in scale.scale_findings
+        ),
+    ):
+        support_references = owner.supporting_comparison_findings
+        _require_exact_tuple(support_references, ComparisonFinding, description)
+        if any(
+            not any(
+                support_reference is available_finding
+                for available_finding in available_comparison_findings
+            )
+            for support_reference in support_references
+        ):
+            raise PathwayAssessmentInvariantError(
+                f"{description} must preserve PathwayEngineResult references"
+            )
+        supported_comparison_findings.extend(support_references)
+
+    candidate_condition_groups = (
+        candidate_transition_pathway.conditions,
+        candidate_transition_pathway.timing_conditions,
+        candidate_transition_pathway.sequencing_conditions,
+        candidate_transition_pathway.contribution_conditions,
+        candidate_transition_pathway.scale_conditions,
+        candidate_transition_pathway.unresolved_conditions,
+    )
+    for condition_group in candidate_condition_groups:
+        _require_exact_tuple(condition_group, str, "Candidate transition conditions")
+
+    # Subordinate details remain on their owning evaluator conclusions.
+    return _PathwayAssessmentLineage(
+        initial_charter_checks=initial_charter_result.check_results,
+        integrated_charter_checks=integrated_charter_result.check_results,
+        final_charter_checks=final_charter_result.check_results,
+        supported_comparison_findings=tuple(supported_comparison_findings),
+        queue_results=engine.queue_results,
+        fabric_results=engine.fabric_results,
+        documentation_findings=engine.documentation_findings,
+        contribution_findings=contribution.contribution_findings,
+        scale_findings=scale.scale_findings,
+        risk_findings=risk.risk_findings,
+        candidate_conditions=tuple(
+            condition
+            for condition_group in candidate_condition_groups
+            for condition in condition_group
+        ),
+    )
+
+
+def _assessment_outcome(bound_state: BoundState) -> str:
+    """Apply only the progression semantics explicitly defined for bound states."""
+
+    if bound_state is BoundState.CLEAN_BOUND:
+        return "successful"
+    if bound_state is BoundState.MIXED_BOUND:
+        return "restricted"
+    if bound_state in {BoundState.FOSSIL_BOUND, BoundState.HARM_BOUND}:
+        return "failed"
+    if bound_state is BoundState.UNBOUND:
+        return "unresolved"
+    if bound_state in {
+        BoundState.BOUNDARY_STRESS,
+        BoundState.BIO_BOUND,
+        BoundState.RESTORATION_BOUND,
+    }:
+        return bound_state.value
+    raise PathwayAssessmentInvariantError(
+        "Bound state does not establish a PathwayAssessment outcome"
+    )
+
+
+def _determine_assessment(
+    bound_pathway: BoundPathway,
+    initial_charter_result: InitialCharterResult,
+    integrated_charter_result: IntegratedCharterResult,
+    final_charter_result: FinalCharterResult,
+    product_evaluation_context: ProductEvaluationContext,
+    candidate_transition_pathway: TransitionPathway,
+) -> _PathwayAssessmentDetermination:
+    """Determine the conservative MVP assessment from the completed lineage."""
+
+    _collect_material_lineage(
+        bound_pathway,
+        initial_charter_result,
+        integrated_charter_result,
+        final_charter_result,
+        candidate_transition_pathway,
+    )
+
+    # ComparisonFinding has no structured improvement/regression discriminator,
+    # and the completed models establish neither correction nor replacement
+    # fitness semantics. Preserve those unknowns instead of parsing open prose.
+    del product_evaluation_context
+    return _PathwayAssessmentDetermination(
+        assessment_outcome=_assessment_outcome(bound_pathway.bound_state),
+        replacement_fitness=None,
+        material_comparative_findings=(),
+        material_improvements=(),
+        material_regressions=(),
+        progression_preventing_findings=(),
+        upstream_result_references=(),
+        correctable=None,
+        corrective_requirement=None,
+        corrective_justification=None,
+        successor_evaluation_conditions=(),
+    )
 
 
 def _validate_inputs(
@@ -124,6 +409,13 @@ def _validate_inputs(
         raise PathwayAssessmentInvariantError(
             "Assessment requires exactly ProductEvaluationContext"
         )
+    if not isinstance(
+        product_evaluation_context.context_mode,
+        ProductEvaluationContextMode,
+    ):
+        raise PathwayAssessmentInvariantError(
+            "ProductEvaluationContext must carry ProductEvaluationContextMode"
+        )
     if type(candidate_transition_pathway) is not TransitionPathway:
         raise PathwayAssessmentInvariantError(
             "Assessment requires exactly candidate TransitionPathway"
@@ -142,9 +434,7 @@ def _validate_inputs(
         trace = final_pathway.evaluation_trace
 
         if not isinstance(bound_pathway.bound_state, BoundState):
-            raise PathwayAssessmentInvariantError(
-                "BoundPathway must carry BoundState"
-            )
+            raise PathwayAssessmentInvariantError("BoundPathway must carry BoundState")
         if bound_pathway.bound_state is BoundState.NO_ACK:
             raise PathwayAssessmentInvariantError(
                 "NoAck BoundPathway cannot enter PathwayAssessment evaluation"
@@ -245,10 +535,7 @@ def _validate_inputs(
                 "Assessment inputs must share one pathway_id"
             )
 
-        if (
-            final_charter_result.initial_charter_result
-            is not initial_charter_result
-        ):
+        if final_charter_result.initial_charter_result is not initial_charter_result:
             raise PathwayAssessmentInvariantError(
                 "FinalCharterResult must preserve the traced InitialCharterResult"
             )
@@ -286,26 +573,24 @@ def _validate_determination(
             "replacement_fitness must be bool or None"
         )
 
-    for value, description in (
+    for comparison_value, comparison_description in (
         (result.material_comparative_findings, "material comparative findings"),
         (result.material_improvements, "material improvements"),
         (result.material_regressions, "material regressions"),
     ):
-        _require_comparison_finding_tuple(value, description)
+        _require_comparison_finding_tuple(comparison_value, comparison_description)
 
-    for value, description in (
+    for reference_value, reference_description in (
         (
             result.progression_preventing_findings,
             "progression-preventing findings",
         ),
         (result.upstream_result_references, "upstream result references"),
     ):
-        _require_reference_tuple(value, description)
+        _require_reference_tuple(reference_value, reference_description)
 
     if result.correctable is not None and not isinstance(result.correctable, bool):
-        raise PathwayAssessmentInvariantError(
-            "correctable must be bool or None"
-        )
+        raise PathwayAssessmentInvariantError("correctable must be bool or None")
 
     if result.corrective_requirement is not None:
         _require_nonempty_string(
@@ -417,7 +702,7 @@ def _validate_result(
 class PathwayAssessmentEvaluator:
     """Produce and validate one final assessment without revising upstream state."""
 
-    determination_function: _PathwayAssessmentDeterminationFunction
+    determination_function: _PathwayAssessmentDeterminationFunction | None = None
 
     def evaluate(
         self,
@@ -453,12 +738,21 @@ class PathwayAssessmentEvaluator:
             pathway_assessment_id,
         )
 
-        determination = _validate_determination(
-            self.determination_function(
+        if self.determination_function is None:
+            raw_determination: object = _determine_assessment(
+                bound_pathway,
+                initial_charter_result,
+                integrated_charter_result,
+                final_charter_result,
+                product_evaluation_context,
+                candidate_transition_pathway,
+            )
+        else:
+            raw_determination = self.determination_function(
                 bound_pathway,
                 final_charter_result,
             )
-        )
+        determination = _validate_determination(raw_determination)
 
         result = PathwayAssessment(
             identity_token=identity_token,
@@ -473,17 +767,13 @@ class PathwayAssessmentEvaluator:
             product_evaluation_context=product_evaluation_context,
             assessment_outcome=determination.assessment_outcome,
             replacement_fitness=determination.replacement_fitness,
-            material_comparative_findings=(
-                determination.material_comparative_findings
-            ),
+            material_comparative_findings=(determination.material_comparative_findings),
             material_improvements=determination.material_improvements,
             material_regressions=determination.material_regressions,
             progression_preventing_findings=(
                 determination.progression_preventing_findings
             ),
-            upstream_result_references=(
-                determination.upstream_result_references
-            ),
+            upstream_result_references=(determination.upstream_result_references),
             correctable=determination.correctable,
             corrective_requirement=determination.corrective_requirement,
             corrective_justification=determination.corrective_justification,
