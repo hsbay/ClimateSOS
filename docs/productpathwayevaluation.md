@@ -4490,6 +4490,65 @@ has later been completed, or initiate a successor evaluation run.
 Each completed execution of `PathwayAssessmentEvaluator` produces one
 `PathwayAssessment`.
 
+#### 18.1.1 Finding Lineage and Assessment Traversal
+
+The Product Pathway Evaluation progressively creates immutable results and
+findings. Later evaluators may rely on earlier results and preserve references
+to the findings, conditions, evidence, and provenance material to their
+determination. These references form the finding lineage of the completed
+Product Pathway Evaluation.
+
+The finding lineage is not necessarily linear. A later finding may rely on
+multiple earlier findings or results, and the same earlier finding may remain
+relevant to more than one later determination.
+
+`FinalPathwayResult` and its `evaluation_trace` preserve access to most of the
+completed upstream evaluation lineage, including the early and intermediate
+findings and results produced before Final Charter Evaluation and binding.
+After Final Charter Evaluation and binding, `PathwayAssessmentEvaluator` uses
+the completed `BoundPathway`, the applicable Charter results, upstream results,
+and the preserved evaluation lineage to determine the final assessment.
+
+For each assessment determination, `PathwayAssessmentEvaluator` follows the
+material finding lineage as needed to identify:
+
+* the evaluator-owned findings relevant to the determination;
+* the upstream findings and results materially relied upon to establish them;
+* the conditions, dependencies, assumptions, evidence, and provenance required
+  to understand those findings; and
+* any finding or condition that remains independently material to progression,
+  corrective action, Charter validity, replacement fitness, or another
+  assessment outcome.
+
+A later finding represents a new conclusion by its owning evaluator. It does not
+supersede, or take ownership of the earlier findings used to establish it.
+
+Where an upstream summary result already preserves subordinate execution,
+progress, evidence, or intermediate records, those records remain reachable
+through that result and are not treated as additional independent assessment
+signals merely because they are also reachable from the completed evaluation
+lineage.
+
+`PathwayAssessmentEvaluator` preserves evaluator ownership and does not revise or
+re-perform upstream evaluations. It considers all materially relevant finding
+lineages required for the applicable assessment determination rather than
+selecting the first adverse, favorable, restrictive, or unresolved finding
+encountered.
+
+Findings that concern the same underlying condition are interpreted according to
+their evaluator purpose, evaluation surface, provenance, and role in the
+completed evaluation. They are not automatically collapsed, duplicated, or
+treated as interchangeable.
+
+Charter findings retain the authority assigned to them by the Foundational
+Charter and Charter Evaluation Flow. Overlap with pathway, contribution, scale,
+candidate-transition, system-risk, or bound-state findings does not supersede a
+controlling Charter condition.
+
+The resulting `PathwayAssessment` records the final assessment and preserves the
+material findings, conditions, and upstream results required to show how that
+assessment was reached.
+
 ### 18.2 PathwayAssessment
 
 `PathwayAssessment` records the final assessment of the pathway-specific findings
