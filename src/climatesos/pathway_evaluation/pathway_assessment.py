@@ -11,6 +11,7 @@ from .models import (
     IdentityToken,
     OpaqueReference,
     PathwayAssessment,
+    ProductEvaluationContext,
 )
 
 
@@ -78,6 +79,7 @@ def _require_comparison_finding_tuple(
 def _validate_inputs(
     bound_pathway: BoundPathway,
     final_charter_result: FinalCharterResult,
+    product_evaluation_context: ProductEvaluationContext,
     identity_token: IdentityToken,
     evaluation_run_id: str,
     user_id: str,
@@ -96,6 +98,10 @@ def _validate_inputs(
     if type(final_charter_result) is not FinalCharterResult:
         raise PathwayAssessmentInvariantError(
             "Assessment requires exactly FinalCharterResult"
+        )
+    if type(product_evaluation_context) is not ProductEvaluationContext:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly ProductEvaluationContext"
         )
     if type(identity_token) is not IdentityToken:
         raise PathwayAssessmentInvariantError(
@@ -266,6 +272,7 @@ def _validate_result(
     result: PathwayAssessment,
     bound_pathway: BoundPathway,
     final_charter_result: FinalCharterResult,
+    product_evaluation_context: ProductEvaluationContext,
     identity_token: IdentityToken,
     evaluation_run_id: str,
     user_id: str,
@@ -288,6 +295,11 @@ def _validate_result(
         if result.final_charter_result is not final_charter_result:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the exact FinalCharterResult"
+            )
+
+        if result.product_evaluation_context is not product_evaluation_context:
+            raise PathwayAssessmentInvariantError(
+                "PathwayAssessment must preserve the exact ProductEvaluationContext"
             )
 
         if result.identity_token.token_id != identity_token.token_id:
@@ -348,6 +360,7 @@ class PathwayAssessmentEvaluator:
         self,
         bound_pathway: BoundPathway,
         final_charter_result: FinalCharterResult,
+        product_evaluation_context: ProductEvaluationContext,
         identity_token: IdentityToken,
         evaluation_run_id: str,
         user_id: str,
@@ -359,6 +372,7 @@ class PathwayAssessmentEvaluator:
         _validate_inputs(
             bound_pathway,
             final_charter_result,
+            product_evaluation_context,
             identity_token,
             evaluation_run_id,
             user_id,
@@ -386,6 +400,7 @@ class PathwayAssessmentEvaluator:
             integrated_charter_result=trace.integrated_charter_result,
             final_charter_result=final_charter_result,
             bound_pathway=bound_pathway,
+            product_evaluation_context=product_evaluation_context,
             assessment_outcome=determination.assessment_outcome,
             replacement_fitness=determination.replacement_fitness,
             material_comparative_findings=(
@@ -414,6 +429,7 @@ class PathwayAssessmentEvaluator:
             result,
             bound_pathway,
             final_charter_result,
+            product_evaluation_context,
             identity_token,
             evaluation_run_id,
             user_id,

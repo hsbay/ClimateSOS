@@ -88,6 +88,13 @@ class EvaluationExecutionStatus(_StringEnum):
     EVALUATION_FAILED = "evaluation_failed"
 
 
+class ProductEvaluationContextMode(_StringEnum):
+    """Established context for one Product Pathway Evaluation run."""
+
+    GLOBAL = "global"
+    USER_SUBMITTED = "user_submitted"
+
+
 class BoundState(_StringEnum):
     """Implemented, materially distinct Section 17 runtime states."""
 

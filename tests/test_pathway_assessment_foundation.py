@@ -18,6 +18,8 @@ from climatesos.pathway_evaluation import (
     OpaqueReference,
     PathwayAssessment,
     PathwayAssessmentEvaluator,
+    ProductEvaluationContext,
+    ProductEvaluationContextMode,
     ProductPathway,
     TransitionPathway,
 )
@@ -126,6 +128,7 @@ def _evaluate(
     return PathwayAssessmentEvaluator(_determination).evaluate(
         bound,
         final_charter,
+        ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED),
         token,
         "run-1",
         "user-1",
@@ -145,6 +148,7 @@ def test_pathway_assessment_has_exact_spec_derived_field_shape() -> None:
         "integrated_charter_result",
         "final_charter_result",
         "bound_pathway",
+        "product_evaluation_context",
         "assessment_outcome",
         "replacement_fitness",
         "material_comparative_findings",
@@ -160,9 +164,29 @@ def test_pathway_assessment_has_exact_spec_derived_field_shape() -> None:
     }
 
 
+def test_product_evaluation_context_is_exact_minimal_immutable_model() -> None:
+    context = ProductEvaluationContext(
+        ProductEvaluationContextMode.USER_SUBMITTED
+    )
+    hints = get_type_hints(ProductEvaluationContext)
+
+    assert {mode.value for mode in ProductEvaluationContextMode} == {
+        "global",
+        "user_submitted",
+    }
+    assert {field.name for field in fields(ProductEvaluationContext)} == {
+        "context_mode"
+    }
+    assert hints == {"context_mode": ProductEvaluationContextMode}
+
+    with pytest.raises(FrozenInstanceError):
+        context.context_mode = ProductEvaluationContextMode.GLOBAL  # type: ignore[misc]
+
+
 def test_comparative_assessment_fields_use_concrete_comparison_findings() -> None:
     hints = get_type_hints(PathwayAssessment)
 
+    assert hints["product_evaluation_context"] is ProductEvaluationContext
     assert hints["material_comparative_findings"] == tuple[ComparisonFinding, ...]
     assert hints["material_improvements"] == tuple[ComparisonFinding, ...]
     assert hints["material_regressions"] == tuple[ComparisonFinding, ...]
@@ -175,11 +199,24 @@ def test_comparative_assessment_fields_use_concrete_comparison_findings() -> Non
 
 def test_evaluator_preserves_exact_required_references_and_immutability() -> None:
     bound, final_charter, token = _inputs()
+    context = ProductEvaluationContext(
+        ProductEvaluationContextMode.USER_SUBMITTED
+    )
 
-    result = _evaluate(bound, final_charter, token)
+    result = PathwayAssessmentEvaluator(_determination).evaluate(
+        bound,
+        final_charter,
+        context,
+        token,
+        "run-1",
+        "user-1",
+        "pathway-1",
+        "assessment-1",
+    )
 
     assert result.bound_pathway is bound
     assert result.final_charter_result is final_charter
+    assert result.product_evaluation_context is context
     assert result.identity_token is token
     assert result.product_pathway is bound.final_pathway_result.product_pathway
 
@@ -255,6 +292,9 @@ def test_input_identity_and_attribution_mismatch_is_rejected(
         PathwayAssessmentEvaluator(_determination).evaluate(
             bound,
             final_charter,
+            ProductEvaluationContext(
+                ProductEvaluationContextMode.USER_SUBMITTED
+            ),
             token,
             run_id,
             user_id,
@@ -270,6 +310,7 @@ def test_equivalent_identity_token_instance_preserves_canonical_lineage() -> Non
     result = PathwayAssessmentEvaluator(_determination).evaluate(
         bound,
         final_charter,
+        ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED),
         equivalent,
         "run-1",
         "user-1",
@@ -298,6 +339,9 @@ def test_determination_function_cannot_own_pathway_assessment_result() -> None:
         PathwayAssessmentEvaluator(whole_result).evaluate(
             bound,
             final_charter,
+            ProductEvaluationContext(
+                ProductEvaluationContextMode.USER_SUBMITTED
+            ),
             token,
             "run-1",
             "user-1",
@@ -341,6 +385,9 @@ def test_comparative_determinations_reject_opaque_references() -> None:
         PathwayAssessmentEvaluator(invalid_determination).evaluate(
             bound,
             final_charter,
+            ProductEvaluationContext(
+                ProductEvaluationContextMode.USER_SUBMITTED
+            ),
             token,
             "run-1",
             "user-1",
@@ -360,6 +407,8 @@ def test_public_surface_contains_only_required_section_18_components() -> None:
 
     assert "PathwayAssessment" in pathway_evaluation.__all__
     assert "PathwayAssessmentEvaluator" in pathway_evaluation.__all__
+    assert "ProductEvaluationContext" in pathway_evaluation.__all__
+    assert "ProductEvaluationContextMode" in pathway_evaluation.__all__
     assert forbidden.isdisjoint(pathway_evaluation.__all__)
     assert all(
         not hasattr(pathway_evaluation, name)

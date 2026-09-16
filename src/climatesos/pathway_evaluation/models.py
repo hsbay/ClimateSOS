@@ -11,6 +11,7 @@ from .enums import (
     BoundState,
     CharterCheckStatus,
     EvaluationExecutionStatus,
+    ProductEvaluationContextMode,
     QueueCategory,
     QueueEvaluationState,
     QueueLifecycleState,
@@ -60,6 +61,13 @@ class EvaluationRun:
     identity_token_id: str
     predecessor_run_id: str | None = None
     resolution_record_id: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ProductEvaluationContext:
+    """Immutable evaluation context established before shared PAE entry."""
+
+    context_mode: ProductEvaluationContextMode
 
 
 @dataclass(frozen=True, slots=True)
@@ -654,6 +662,7 @@ class PathwayAssessment:
     integrated_charter_result: IntegratedCharterResult
     final_charter_result: FinalCharterResult
     bound_pathway: BoundPathway
+    product_evaluation_context: ProductEvaluationContext
     assessment_outcome: str
     replacement_fitness: bool | None
     material_comparative_findings: tuple[ComparisonFinding, ...]
