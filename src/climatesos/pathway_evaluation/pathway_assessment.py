@@ -9,9 +9,13 @@ from .models import (
     ComparisonFinding,
     FinalCharterResult,
     IdentityToken,
+    InitialCharterResult,
+    IntegratedCharterResult,
     OpaqueReference,
     PathwayAssessment,
     ProductEvaluationContext,
+    ProductPathway,
+    TransitionPathway,
 )
 
 
@@ -77,9 +81,14 @@ def _require_comparison_finding_tuple(
 
 
 def _validate_inputs(
-    bound_pathway: BoundPathway,
+    product_pathway: ProductPathway,
+    initial_charter_result: InitialCharterResult,
+    integrated_charter_result: IntegratedCharterResult,
     final_charter_result: FinalCharterResult,
+    bound_pathway: BoundPathway,
     product_evaluation_context: ProductEvaluationContext,
+    candidate_transition_pathway: TransitionPathway,
+    authoritative_transition_pathway: TransitionPathway,
     identity_token: IdentityToken,
     evaluation_run_id: str,
     user_id: str,
@@ -91,17 +100,37 @@ def _validate_inputs(
     _require_nonempty_string(pathway_id, "pathway_id")
     _require_nonempty_string(pathway_assessment_id, "pathway_assessment_id")
 
-    if type(bound_pathway) is not BoundPathway:
+    if type(product_pathway) is not ProductPathway:
         raise PathwayAssessmentInvariantError(
-            "Assessment requires exactly BoundPathway"
+            "Assessment requires exactly ProductPathway"
+        )
+    if type(initial_charter_result) is not InitialCharterResult:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly InitialCharterResult"
+        )
+    if type(integrated_charter_result) is not IntegratedCharterResult:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly IntegratedCharterResult"
         )
     if type(final_charter_result) is not FinalCharterResult:
         raise PathwayAssessmentInvariantError(
             "Assessment requires exactly FinalCharterResult"
         )
+    if type(bound_pathway) is not BoundPathway:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly BoundPathway"
+        )
     if type(product_evaluation_context) is not ProductEvaluationContext:
         raise PathwayAssessmentInvariantError(
             "Assessment requires exactly ProductEvaluationContext"
+        )
+    if type(candidate_transition_pathway) is not TransitionPathway:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly candidate TransitionPathway"
+        )
+    if type(authoritative_transition_pathway) is not TransitionPathway:
+        raise PathwayAssessmentInvariantError(
+            "Assessment requires exactly authoritative TransitionPathway"
         )
     if type(identity_token) is not IdentityToken:
         raise PathwayAssessmentInvariantError(
@@ -111,7 +140,6 @@ def _validate_inputs(
     try:
         final_pathway = bound_pathway.final_pathway_result
         trace = final_pathway.evaluation_trace
-        product_pathway = final_pathway.product_pathway
 
         if not isinstance(bound_pathway.bound_state, BoundState):
             raise PathwayAssessmentInvariantError(
@@ -125,6 +153,42 @@ def _validate_inputs(
         if final_charter_result.final_pathway_result is not final_pathway:
             raise PathwayAssessmentInvariantError(
                 "FinalCharterResult must preserve the assessed FinalPathwayResult"
+            )
+
+        if final_pathway.product_pathway is not product_pathway:
+            raise PathwayAssessmentInvariantError(
+                "Supplied ProductPathway must be the completed evaluated pathway"
+            )
+        if trace.initial_charter_result is not initial_charter_result:
+            raise PathwayAssessmentInvariantError(
+                "Supplied InitialCharterResult must be the traced initial result"
+            )
+        if trace.integrated_charter_result is not integrated_charter_result:
+            raise PathwayAssessmentInvariantError(
+                "Supplied IntegratedCharterResult must be the traced integrated result"
+            )
+        if final_pathway.candidate_transition_pathway is not (
+            candidate_transition_pathway
+        ):
+            raise PathwayAssessmentInvariantError(
+                "Supplied candidate TransitionPathway must be the completed candidate"
+            )
+        if final_pathway.authoritative_transition_pathway is not (
+            authoritative_transition_pathway
+        ):
+            raise PathwayAssessmentInvariantError(
+                "Supplied authoritative TransitionPathway must be "
+                "the evaluation reference"
+            )
+        if candidate_transition_pathway.product_pathway is not product_pathway:
+            raise PathwayAssessmentInvariantError(
+                "Candidate TransitionPathway must preserve the ProductPathway"
+            )
+        if candidate_transition_pathway.authoritative_transition_pathway is not (
+            authoritative_transition_pathway
+        ):
+            raise PathwayAssessmentInvariantError(
+                "Candidate must preserve the authoritative TransitionPathway"
             )
 
         if bound_pathway.identity_token.token_id != identity_token.token_id:
@@ -183,7 +247,7 @@ def _validate_inputs(
 
         if (
             final_charter_result.initial_charter_result
-            is not trace.initial_charter_result
+            is not initial_charter_result
         ):
             raise PathwayAssessmentInvariantError(
                 "FinalCharterResult must preserve the traced InitialCharterResult"
@@ -191,7 +255,7 @@ def _validate_inputs(
 
         if (
             final_charter_result.integrated_charter_result
-            is not trace.integrated_charter_result
+            is not integrated_charter_result
         ):
             raise PathwayAssessmentInvariantError(
                 "FinalCharterResult must preserve the traced IntegratedCharterResult"
@@ -270,9 +334,13 @@ def _validate_determination(
 
 def _validate_result(
     result: PathwayAssessment,
+    product_pathway: ProductPathway,
+    initial_charter_result: InitialCharterResult,
+    integrated_charter_result: IntegratedCharterResult,
     bound_pathway: BoundPathway,
     final_charter_result: FinalCharterResult,
     product_evaluation_context: ProductEvaluationContext,
+    authoritative_transition_pathway: TransitionPathway,
     identity_token: IdentityToken,
     evaluation_run_id: str,
     user_id: str,
@@ -284,9 +352,6 @@ def _validate_result(
         )
 
     try:
-        final_pathway = bound_pathway.final_pathway_result
-        trace = final_pathway.evaluation_trace
-
         if result.bound_pathway is not bound_pathway:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the exact BoundPathway"
@@ -307,24 +372,22 @@ def _validate_result(
                 "PathwayAssessment must preserve the canonical IdentityToken lineage"
             )
 
-        if result.product_pathway is not final_pathway.product_pathway:
+        if result.product_pathway is not product_pathway:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the exact ProductPathway"
             )
 
-        if result.initial_charter_result is not trace.initial_charter_result:
+        if result.initial_charter_result is not initial_charter_result:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the exact InitialCharterResult"
             )
 
-        if result.integrated_charter_result is not trace.integrated_charter_result:
+        if result.integrated_charter_result is not integrated_charter_result:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the exact IntegratedCharterResult"
             )
 
-        if result.reference_transition_pathway is not (
-            final_pathway.authoritative_transition_pathway
-        ):
+        if result.reference_transition_pathway is not authoritative_transition_pathway:
             raise PathwayAssessmentInvariantError(
                 "PathwayAssessment must preserve the reference TransitionPathway"
             )
@@ -358,9 +421,14 @@ class PathwayAssessmentEvaluator:
 
     def evaluate(
         self,
-        bound_pathway: BoundPathway,
+        product_pathway: ProductPathway,
+        initial_charter_result: InitialCharterResult,
+        integrated_charter_result: IntegratedCharterResult,
         final_charter_result: FinalCharterResult,
+        bound_pathway: BoundPathway,
         product_evaluation_context: ProductEvaluationContext,
+        candidate_transition_pathway: TransitionPathway,
+        authoritative_transition_pathway: TransitionPathway,
         identity_token: IdentityToken,
         evaluation_run_id: str,
         user_id: str,
@@ -370,9 +438,14 @@ class PathwayAssessmentEvaluator:
         """Evaluate one successfully bound pathway run."""
 
         _validate_inputs(
-            bound_pathway,
+            product_pathway,
+            initial_charter_result,
+            integrated_charter_result,
             final_charter_result,
+            bound_pathway,
             product_evaluation_context,
+            candidate_transition_pathway,
+            authoritative_transition_pathway,
             identity_token,
             evaluation_run_id,
             user_id,
@@ -387,17 +460,14 @@ class PathwayAssessmentEvaluator:
             )
         )
 
-        final_pathway = bound_pathway.final_pathway_result
-        trace = final_pathway.evaluation_trace
-
         result = PathwayAssessment(
             identity_token=identity_token,
             evaluation_run_id=evaluation_run_id,
             pathway_assessment_id=pathway_assessment_id,
             user_id=user_id,
-            product_pathway=final_pathway.product_pathway,
-            initial_charter_result=trace.initial_charter_result,
-            integrated_charter_result=trace.integrated_charter_result,
+            product_pathway=product_pathway,
+            initial_charter_result=initial_charter_result,
+            integrated_charter_result=integrated_charter_result,
             final_charter_result=final_charter_result,
             bound_pathway=bound_pathway,
             product_evaluation_context=product_evaluation_context,
@@ -420,16 +490,18 @@ class PathwayAssessmentEvaluator:
             successor_evaluation_conditions=(
                 determination.successor_evaluation_conditions
             ),
-            reference_transition_pathway=(
-                final_pathway.authoritative_transition_pathway
-            ),
+            reference_transition_pathway=authoritative_transition_pathway,
         )
 
         _validate_result(
             result,
+            product_pathway,
+            initial_charter_result,
+            integrated_charter_result,
             bound_pathway,
             final_charter_result,
             product_evaluation_context,
+            authoritative_transition_pathway,
             identity_token,
             evaluation_run_id,
             user_id,

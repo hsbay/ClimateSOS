@@ -1,4 +1,5 @@
 import inspect
+from copy import copy
 from dataclasses import FrozenInstanceError, fields
 from typing import TypeVar, cast, get_type_hints
 
@@ -64,11 +65,17 @@ def _inputs(
         reference_id="authoritative-transition",
         model_version="transition-model-v1",
     )
+    candidate = TransitionPathway(
+        reference_id="candidate-transition",
+        product_pathway=product,
+        authoritative_transition_pathway=authoritative,
+    )
 
     final_pathway = _record(
         FinalPathwayResult,
         product_pathway=product,
         authoritative_transition_pathway=authoritative,
+        candidate_transition_pathway=candidate,
         evaluation_trace=trace,
         identity_token=token,
         evaluation_run_id="run-1",
@@ -126,15 +133,102 @@ def _evaluate(
     token: IdentityToken,
 ) -> PathwayAssessment:
     return PathwayAssessmentEvaluator(_determination).evaluate(
-        bound,
+        final_charter.final_pathway_result.product_pathway,
+        final_charter.initial_charter_result,
+        final_charter.integrated_charter_result,
         final_charter,
+        bound,
         ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED),
+        final_charter.final_pathway_result.candidate_transition_pathway,
+        final_charter.final_pathway_result.authoritative_transition_pathway,
         token,
         "run-1",
         "user-1",
         "pathway-1",
         "assessment-1",
     )
+
+
+@pytest.mark.parametrize(
+    "substitution",
+    ["product", "initial", "integrated", "final", "candidate", "authoritative",
+     "context"],
+)
+def test_substituted_direct_inputs_rejected_before_determination(
+    substitution: str,
+) -> None:
+    bound, final_charter, token = _inputs()
+    final_pathway = bound.final_pathway_result
+    product = final_pathway.product_pathway
+    initial = final_charter.initial_charter_result
+    integrated = final_charter.integrated_charter_result
+    candidate = final_pathway.candidate_transition_pathway
+    authoritative = final_pathway.authoritative_transition_pathway
+    context = ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED)
+    if substitution == "product":
+        product = _inputs()[0].final_pathway_result.product_pathway
+    elif substitution == "initial":
+        initial = _record(InitialCharterResult)
+    elif substitution == "integrated":
+        integrated = _record(IntegratedCharterResult)
+    elif substitution == "final":
+        # The bound result has no FinalCharterResult back-reference. Validate
+        # applicability against its exact completed pathway, not an invented ID.
+        final_charter = _inputs()[1]
+    elif substitution == "candidate":
+        candidate = copy(candidate)
+    elif substitution == "authoritative":
+        authoritative = copy(authoritative)
+    else:
+        context = cast(ProductEvaluationContext, object())
+
+    def unexpected_determination(
+        supplied_bound: BoundPathway,
+        supplied_charter: FinalCharterResult,
+    ) -> _PathwayAssessmentDetermination:
+        pytest.fail("Invalid direct inputs reached determination")
+
+    with pytest.raises(PathwayAssessmentInvariantError):
+        PathwayAssessmentEvaluator(unexpected_determination).evaluate(
+            product, initial, integrated, final_charter, bound, context,
+            candidate, authoritative, token, "run-1", "user-1", "pathway-1",
+            "assessment-1",
+        )
+
+
+def test_direct_input_signature_and_determination_contract() -> None:
+    assert tuple(inspect.signature(PathwayAssessmentEvaluator.evaluate).parameters) == (
+        "self", "product_pathway", "initial_charter_result",
+        "integrated_charter_result", "final_charter_result", "bound_pathway",
+        "product_evaluation_context", "candidate_transition_pathway",
+        "authoritative_transition_pathway", "identity_token", "evaluation_run_id",
+        "user_id", "pathway_id", "pathway_assessment_id",
+    )
+    bound, final_charter, token = _inputs()
+    expected = _determination(bound, final_charter)
+    calls = []
+
+    def determination(
+        supplied_bound: BoundPathway,
+        supplied_charter: FinalCharterResult,
+    ) -> _PathwayAssessmentDetermination:
+        calls.append((supplied_bound, supplied_charter))
+        return expected
+
+    final_pathway = bound.final_pathway_result
+    result = PathwayAssessmentEvaluator(determination).evaluate(
+        final_pathway.product_pathway, final_charter.initial_charter_result,
+        final_charter.integrated_charter_result, final_charter, bound,
+        ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED),
+        final_pathway.candidate_transition_pathway,
+        final_pathway.authoritative_transition_pathway,
+        token, "run-1", "user-1", "pathway-1", "assessment-1",
+    )
+    assert len(calls) == 1
+    assert calls[0][0] is bound
+    assert calls[0][1] is final_charter
+    for field in fields(expected):
+        assert getattr(result, field.name) is getattr(expected, field.name)
 
 
 def test_pathway_assessment_has_exact_spec_derived_field_shape() -> None:
@@ -204,9 +298,14 @@ def test_evaluator_preserves_exact_required_references_and_immutability() -> Non
     )
 
     result = PathwayAssessmentEvaluator(_determination).evaluate(
-        bound,
+        bound.final_pathway_result.product_pathway,
+        final_charter.initial_charter_result,
+        final_charter.integrated_charter_result,
         final_charter,
+        bound,
         context,
+        bound.final_pathway_result.candidate_transition_pathway,
+        bound.final_pathway_result.authoritative_transition_pathway,
         token,
         "run-1",
         "user-1",
@@ -290,11 +389,16 @@ def test_input_identity_and_attribution_mismatch_is_rejected(
 
     with pytest.raises(PathwayAssessmentInvariantError):
         PathwayAssessmentEvaluator(_determination).evaluate(
-            bound,
+            bound.final_pathway_result.product_pathway,
+            final_charter.initial_charter_result,
+            final_charter.integrated_charter_result,
             final_charter,
+            bound,
             ProductEvaluationContext(
                 ProductEvaluationContextMode.USER_SUBMITTED
             ),
+            bound.final_pathway_result.candidate_transition_pathway,
+            bound.final_pathway_result.authoritative_transition_pathway,
             token,
             run_id,
             user_id,
@@ -308,9 +412,14 @@ def test_equivalent_identity_token_instance_preserves_canonical_lineage() -> Non
     equivalent = IdentityToken(token.token_id)
 
     result = PathwayAssessmentEvaluator(_determination).evaluate(
-        bound,
+        bound.final_pathway_result.product_pathway,
+        final_charter.initial_charter_result,
+        final_charter.integrated_charter_result,
         final_charter,
+        bound,
         ProductEvaluationContext(ProductEvaluationContextMode.USER_SUBMITTED),
+        bound.final_pathway_result.candidate_transition_pathway,
+        bound.final_pathway_result.authoritative_transition_pathway,
         equivalent,
         "run-1",
         "user-1",
@@ -337,11 +446,16 @@ def test_determination_function_cannot_own_pathway_assessment_result() -> None:
         match="determination",
     ):
         PathwayAssessmentEvaluator(whole_result).evaluate(
-            bound,
+            bound.final_pathway_result.product_pathway,
+            final_charter.initial_charter_result,
+            final_charter.integrated_charter_result,
             final_charter,
+            bound,
             ProductEvaluationContext(
                 ProductEvaluationContextMode.USER_SUBMITTED
             ),
+            bound.final_pathway_result.candidate_transition_pathway,
+            bound.final_pathway_result.authoritative_transition_pathway,
             token,
             "run-1",
             "user-1",
@@ -383,11 +497,16 @@ def test_comparative_determinations_reject_opaque_references() -> None:
         match="ComparisonFinding",
     ):
         PathwayAssessmentEvaluator(invalid_determination).evaluate(
-            bound,
+            bound.final_pathway_result.product_pathway,
+            final_charter.initial_charter_result,
+            final_charter.integrated_charter_result,
             final_charter,
+            bound,
             ProductEvaluationContext(
                 ProductEvaluationContextMode.USER_SUBMITTED
             ),
+            bound.final_pathway_result.candidate_transition_pathway,
+            bound.final_pathway_result.authoritative_transition_pathway,
             token,
             "run-1",
             "user-1",
